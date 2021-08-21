@@ -645,13 +645,14 @@ echo -e "${rojo}No se ha identificado una base de datos con usuarios${cierre}"
 echo -e "${rojo}Los usuarios a seguir no contienen ninguna informacion${cierre}"
 echo -e "$bar1"
 fi
+echo -e "$bar4"
 txtvar=$(printf '%-16s' "USUARIO")
 txtvar+=$(printf '%-16s' "CONTRASENA")
 txtvar+=$(printf '%-16s' "FECHA")
 txtvar+=$(printf '%-16s' "T/RESTANTE")
 txtvar+=$(printf '%-16s' "LIMITE")
 echo -e "\033[1;33m${txtvar}"
-echo -e "$bar1"
+echo -e "$bar4"
 VPSsec=$(date +%s)
 while read user; do
 unset txtvar
@@ -667,6 +668,7 @@ if [[ -e "${USRdatabase}" ]]; then
     else
     EXPTIME="${gren}[$(($(($DataSec - $VPSsec)) / 86400))]"
     fi
+    echo -e "$bar4"
     #txtvar+="$(printf '%-26s' "${yellow}${DateExp}${EXPTIME}")"
     txtvar+="$(printf '%-26s' "${yellow}${DateExp}")"
     txtvar+="$(printf '%-18s' "${EXPTIME}")"
