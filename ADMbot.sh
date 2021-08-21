@@ -406,6 +406,8 @@ echo -e "${rojo}No se ha identificado una base de datos con usuarios${cierre}"
 echo -e "${rojo}Los usuarios a seguir no contienen ninguna informacion${cierre}"
 echo -e "$bar1"
 fi
+clear
+echo -e "$bar1"
 txtvar=$(printf '%-16s' "USUARIO")
 txtvar+=$(printf '%-16s' "CONTRASENA")
 txtvar+=$(printf '%-16s' "FECHA")
