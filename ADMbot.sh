@@ -14,7 +14,7 @@ bar1="\e[1;30m◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚
 bar2="\033[38;5;226m---------------------------------------------------------\033[0m"
 bar3="\033[38;5;226m--------------------- = MENU = --------------------------\033[0m"
 bar4="\033[0;31m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
-bar5="\033[38;5;14m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+bar5="\033[38;5;14m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
 
 
 ## VARIABLES DE ENTORNO Y SYSTEMA 
@@ -70,6 +70,8 @@ mostrar_usuarios () {
 for u in `awk -F : '$3 > 900 { print $1 }' /etc/passwd | grep -v "nobody" |grep -vi polkitd |grep -vi system-`; do
 echo "$u"
 done
+read -p " ➢ Presione enter para volver "
+rm -rf /etc/usr/bin/usercode; usercode
 }
 
 add_user () {
@@ -88,7 +90,10 @@ useradd -M -s /bin/false $1 -e ${valid} > /dev/null 2>&1 || return 1
    echo $value >> ${USRdatabase}
    done
    } || echo "$1|$2|${datexp}|$4" > ${USRdatabase}
+read -p " ➢ Presione enter para volver "
+rm -rf /etc/usr/bin/usercode; usercode
 }
+
 renew_user_fun () {
 ## RENOVACION DE USUARIOS
 datexp=$(date "+%F" -d " + $2 days") && valid=$(date '+%C%y-%m-%d' -d " + $2 days")
@@ -103,7 +108,10 @@ chage -E $valid $1 2> /dev/null || return 1
    echo $value >> ${USRdatabase}
    done
    }
+read -p " ➢ Presione enter para volver "
+rm -rf /etc/usr/bin/usercode; usercode
 }
+
 edit_user_fun () {
 ## EDICION DE USUARIOS
 (echo "$2" ; echo "$2" ) |passwd $1 > /dev/null 2>&1 || return 1
@@ -116,7 +124,10 @@ chage -E $valid $1 2> /dev/null || return 1
    echo $value >> ${USRdatabase}
    done
    } || echo "$1|$2|${datexp}|$4" > ${USRdatabase}
+read -p " ➢ Presione enter para volver "
+rm -rf /etc/usr/bin/usercode; usercode
 }
+
 rm_user () {
 ## ELIMINA USUARIOS
 userdel --force "$1" &>/dev/null || return 1
@@ -126,6 +137,8 @@ userdel --force "$1" &>/dev/null || return 1
    echo $value >> ${USRdatabase}
    done
    }
+read -p " ➢ Presione enter para volver "
+rm -rf /etc/usr/bin/usercode; usercode
 }
 
 nuevo_usuario () {
@@ -206,7 +219,10 @@ echo -e "$bar1"
 add_user "${nomeuser}" "${senhauser}" "${diasuser}" "${limiteuser}" && echo -e "${verde}Usuario creado con exito${cierre}" || echo -e "${rojo}Error, Usuario no creado!!${cierre}"
 [[ $(dpkg --get-selections|grep -w "openvpn"|head -1) ]] && [[ -e /etc/openvpn/openvpn-status.log ]] && newclient "$nomeuser" "$senhauser"
 echo -e "$bar1"
+read -p " ➢ Presione enter para volver "
+rm -rf /etc/usr/bin/usercode; usercode
 }
+
 eliminar_usuario () {
 usuarios_ativos=($(mostrar_usuarios))
 if [[ -z ${usuarios_ativos[@]} ]]; then
