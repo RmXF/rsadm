@@ -684,56 +684,6 @@ read -p  " ➢ Presione enter para volver "
 rm -rf /etc/usr/bin/usercode; usercode
 }
 
-monit_user () {
-amarillo=$(tput setaf 3) 
-gren=$(tput setaf 2) 
-echo -e  "Monitor de Conexiones de Usuarios" 
-echo -e  "${bar4}" 
-txtvar=$(printf  '%-17s'   "USUARIO") 
-txtvar+=$(printf  '%-23s'   "ESTATUS") 
-txtvar+=$(printf  '%-19s'   "CONEXION") 
-txtvar+=$(printf  '%-8s'   "TIEMPO ONLINE") 
-echo -e  "\033[1;33m${txtvar}" 
-echo -e  "${bar4}" 
-mientras que el usuario de lectura ; hacer
- _=$(
-PID="0+" 
-[[  $(dpkg --get-selections| grep -w  "openssh"| head -1)  ]] && PID+="$(ps aux| grep -vgrep | grep sshd | grep -w  "$user"| | raíz grep-v wc -l)+" 
-[[  $(dpkg --get-selections| grep -w  "dropbear"| head -1)  ]] && PID+="$(dropbear_pids| grep -w  "${usuario}"| wc -l)+" 
-[[  $(dpkg --get-selections| grep -w  "openvpn"| head -1)  ]] && [[ -e /etc/openvpn/openvpn-status.log ]] && [[  $(openvpn_pids| grep -w  "$user"| cut -d'|'  -f2)  ]] && PID+="$(openvpn_pids| grep -w  "$user"| cut -d'|'  -f2)+" 
-PID+="0" 
-TIMEON="${TIMEUS[$user]}" 
-[[ -z $TIMEON ]] && TIMEON=0
-MIN=$(($TIMEON/60)) 
-SEC=$(($TIMEON-$MIN*60)) 
-HOR=$(($MIN/60)) 
-MIN=$(($MIN-$HOR*60)) 
-HORA="${HOR}h:${MIN}m:${SEC}s" 
-[[ -z  $(cat ${USRdatabase}| grep -w  "${usuario}")  ]] && MAXUSER="-"  || MAXUSER="$(cat ${USRdatabase}| grep -w  "${usuario}"| cut -d'|'  -f4)" 
-[[  $( | de $PID de eco bc)  -gt 0 ]] && user="$user [${verde}ONLINE${cierre}]"  || user="$user [${rojo}OFLINE${cierre}]" 
-echo -e  "${bar4}" 
-TOTALPID="$( $PIDde eco| bc)/$MAXUSER" 
- mientras que [[ ${#usuario} -lt 59 ]]; do
- usuario =$user" "
- hecho
- mientras que [[ ${#TOTALPID} -lt 19 ]]; do
- TOTALPID=$TOTALPID" "
- hecho
- mientras que [[ ${#HORA} -lt 15 ]]; do
- HORA=$HOUR" "
- hecho
-echo -e  "${yellow}$user $TOTALPID $HOUR"  >&2
-) &
-pid=$!
-sleep 0.5s
-done <<< "$(mostrar_usuarios)"
-while [[ -d /proc/$pid ]]; do
-sleep 1s
-done
-${bar4}
-}
-
-
 No_user="$(cat /etc/RSdb | wc -l)"
 
 menu () {
