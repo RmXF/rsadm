@@ -61,7 +61,7 @@ echo -e " \033[1;33m[ ☑ ] apt-get update -y "
 apt-get update -y > /dev/null 2>&1 
 echo -e " \033[1;33m[ ☑ ] apt-get upgrade -y "
 apt-get upgrade -y > /dev/null 2>&1 
-rm -rf $HOME/ADMbot.sh; wget https://raw.githubusercontent.com/RmXF/rsadm/main/ADMbot.sh; chmod 755 *; mv ADMbot.sh /usr/bin/rs; rs
+rm -rf $HOME/ADMbot.sh; wget https://raw.githubusercontent.com/RmXF/rsadm/main/ADMbot.sh; chmod 755 *; mv ADMbot.sh /usr/bin/usercode; usercode
 echo ""
 }
 
@@ -429,6 +429,7 @@ if [[ -e "${USRdatabase}" ]]; then
     else
     EXPTIME="${gren}[$(($(($DataSec - $VPSsec)) / 86400))]"
     fi
+    echo -e "$bar1"
     txtvar+="$(printf '%-26s' "${yellow}${DateExp}${EXPTIME}")"
     txtvar+="$(printf '%-11s' "${yellow}$(cat ${USRdatabase}|grep -w "${user}"|cut -d'|' -f4)")"
     else
@@ -448,7 +449,7 @@ echo -e "Monitor de Conexiones de Usuarios"
 echo -e "${bar4}"
 txtvar=$(printf '%-17s' "USUARIO")
 txtvar+=$(printf '%-23s' "ESTATUS")
-txtvar+=$(printf '%-21s' "CONEXION")
+txtvar+=$(printf '%-19s' "CONEXION")
 txtvar+=$(printf '%-8s' "TIEMPO ONLINE")
 echo -e "\033[1;33m${txtvar}"
 echo -e "${bar4}"
@@ -492,8 +493,11 @@ done
 No_user="$(cat /etc/RSdb | wc -l)"
 
 menu () {
-  clear
-echo -e "${melon}               == manager user == (${amarillo}Reycode${cierre}${melon})
+clear
+echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+echo -e "\e[41;1;37m                          ⇱  ADMINITRADOR REYCODE ⇲                     \e[0m\e[7;32m V1.2 \e[0m"
+echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+echo -e "${verde}     CUENTAS SSH - DROPLET - SCRIPT - APK MOD - DISEÑO WED (${amarillo}Reycode${cierre}${melon})
 ${bar1}
 ${blanco}TOTAL DE USUARIOS: ${rojo}>${cierre} ${azul}No: ${blanco}$No_user  ${cierre}
 ${bar3}
