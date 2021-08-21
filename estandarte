@@ -94,7 +94,7 @@ echo "<h$_size>$msg1</h$_size>" >> $local
 /etc/init.d/ssh restart > /dev/null 2>&1
 echo -e "\E[44;1;37m              SU BANER AH SIDO COLOCADO CON EXITO !!!              \E[0m"
 sleep 2
-menu
+usercode
 else
 echo -e "\n\033[1;31mOpcion no valida !\033[0m"
 	sleep 2
