@@ -690,9 +690,10 @@ rm -rf /etc/usr/bin/usercode; usercode
 }
 
 monit_user () {
+clear
 yellow=$(tput setaf 3)
 gren=$(tput setaf 2)
-msg -verm "$(fun_trans "Monitor de conexiones de usuario")"
+echo -e  "Monitor de conexiones de usuario"
 echo -e  "$bar4"
 txtvar=$(printf  '%-17s'   "USUARIO") 
 txtvar+=$(printf  '%-23s'   "ESTATUS") 
@@ -715,7 +716,7 @@ HOR=$(($MIN/60))
 MIN=$(($MIN-$HOR*60))
 HOUR="${HOR}h:${MIN}m:${SEC}s"
 [[ -z $(cat ${USRdatabase}|grep -w "${user}") ]] && MAXUSER="**" || MAXUSER="$(cat ${USRdatabase}|grep -w "${user}"|cut -d'|' -f4)"
-[[ $(echo $PID|bc) -gt 0 ]] && user="$user      [${verde}ONLINE${cierre}]" || user="$user      [${verde}OFLINE${cierre}]"
+[[ $(echo $PID|bc) -gt 0 ]] && user="$user        [${verde}ONLINE${cierre}]" || user="$user        [${rojo}OFLINE${cierre}]"
 TOTALPID="$(echo $PID|bc)/$MAXUSER"
  while [[ ${#user} -lt 59 ]]; do
  user=$user" "
