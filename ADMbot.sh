@@ -398,61 +398,6 @@ edit_user_fun "${useredit}" "${senhauser}" "${diasuser}" "${limiteuser}" && echo
 echo -e "$bar1"
 }
 
-monit_user () {
-clear
-clear
-echo -e "$bar4"
-yellow=$(tput setaf 3)
-gren=$(tput setaf 2)
-echo -e "$bar1"
-echo -e  "\e[93m   MONITOR DE USUARIOS ONLINES"
-echo -e "$bar4"
-txtvar=$(printf '%-19s' " USUARIO")
-txtvar+=$(printf '%-11s' "CONEXIONES")
-txtvar+=$(printf '%-10s' "TIEMPO ONLINE")
-echo -e "\033[1;92m${txtvar}"
-echo -e "$bar4"
-while read user; do
- _=$(
-PID="0+"
-[[ $(dpkg --get-selections|grep -w "openssh"|head -1) ]] && PID+="$(ps aux|grep -v grep|grep sshd|grep -w "$user"|grep -v root|wc -l)+"
-[[ $(dpkg --get-selections|grep -w "dropbear"|head -1) ]] && PID+="$(dropbear_pids|grep -w "${user}"|wc -l)+"
-[[ $(dpkg --get-selections|grep -w "openvpn"|head -1) ]] && [[ -e /etc/openvpn/openvpn-status.log ]] && [[ $(openvpn_pids|grep -w "$user"|cut -d'|' -f2) ]] && PID+="$(openvpn_pids|grep -w "$user"|cut -d'|' -f2)+"
-PID+="0"
-TIMEON="${TIMEUS[$user]}"
-[[ -z $TIMEON ]] && TIMEON=0
-MIN=$(($TIMEON/60))
-SEC=$(($TIMEON-$MIN*60))
-HOR=$(($MIN/60))
-MIN=$(($MIN-$HOR*60))
-HOUR="${HOR}h:${MIN}m:${SEC}s"
-[[ -z $(cat ${USRdatabase}|grep -w "${user}") ]] && MAXUSER="?" || MAXUSER="$(cat ${USRdatabase}|grep -w "${user}"|cut -d'|' -f4)"
-[[ $(echo $PID|bc) -gt 0 ]] && user="$user ${verde} ONLINE ${cierre}" || user="$user "${rojo} OFLINE ${cierre}"
-echo -e "$bar4"
-TOTALPID="$(echo $PID|bc)/$MAXUSER"
- while [[ ${#user} -lt 45 ]]; do
- user=$user" "
- done
- while [[ ${#TOTALPID} -lt 13 ]]; do
- TOTALPID=$TOTALPID" "
- done
- while [[ ${#HOUR} -lt 8 ]]; do
- HOUR=$HOUR" "
- done
-echo -e "${yellow}$user $TOTALPID $HOUR" >&2
-) &
-pid=$!
-sleep 0.5s
-done <<< "$(mostrar_usuarios)"
-while [[ -d /proc/$pid ]]; do
-sleep 3s
-done
-msg -bar
-msg -ne " Enter Para Continuar" && read enter
-${SCPusr}/usercodes
-}
-
-
 
 detalles_de_usuario () {
 red=$(tput setaf 1)
