@@ -70,8 +70,6 @@ mostrar_usuarios () {
 for u in `awk -F : '$3 > 900 { print $1 }' /etc/passwd | grep -v "nobody" |grep -vi polkitd |grep -vi system-`; do
 echo "$u"
 done
-read -p " ➢ Presione enter para volver "
-rm -rf /etc/usr/bin/usercode; usercode
 }
 
 add_user () {
@@ -90,10 +88,7 @@ useradd -M -s /bin/false $1 -e ${valid} > /dev/null 2>&1 || return 1
    echo $value >> ${USRdatabase}
    done
    } || echo "$1|$2|${datexp}|$4" > ${USRdatabase}
-read -p " ➢ Presione enter para volver "
-rm -rf /etc/usr/bin/usercode; usercode
 }
-
 renew_user_fun () {
 ## RENOVACION DE USUARIOS
 datexp=$(date "+%F" -d " + $2 days") && valid=$(date '+%C%y-%m-%d' -d " + $2 days")
@@ -108,10 +103,7 @@ chage -E $valid $1 2> /dev/null || return 1
    echo $value >> ${USRdatabase}
    done
    }
-read -p " ➢ Presione enter para volver "
-rm -rf /etc/usr/bin/usercode; usercode
 }
-
 edit_user_fun () {
 ## EDICION DE USUARIOS
 (echo "$2" ; echo "$2" ) |passwd $1 > /dev/null 2>&1 || return 1
@@ -124,10 +116,7 @@ chage -E $valid $1 2> /dev/null || return 1
    echo $value >> ${USRdatabase}
    done
    } || echo "$1|$2|${datexp}|$4" > ${USRdatabase}
-read -p " ➢ Presione enter para volver "
-rm -rf /etc/usr/bin/usercode; usercode
 }
-
 rm_user () {
 ## ELIMINA USUARIOS
 userdel --force "$1" &>/dev/null || return 1
@@ -137,8 +126,6 @@ userdel --force "$1" &>/dev/null || return 1
    echo $value >> ${USRdatabase}
    done
    }
-read -p " ➢ Presione enter para volver "
-rm -rf /etc/usr/bin/usercode; usercode
 }
 
 nuevo_usuario () {
@@ -467,6 +454,7 @@ echo -e "$txtvar"
 done <<< "$(mostrar_usuarios)"
 echo -e "$bar1"
 }
+
 monit_user () {
 yellow=$(tput setaf 3)
 gren=$(tput setaf 2)
