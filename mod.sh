@@ -693,7 +693,7 @@ menu () {
 clear
 clear
 echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
-echo -e "\e[41;1;37m                              ⇱  REYCODESSH  ⇲                     \e[0m\e[7;32m [ V1.3 ] \e[0m"
+echo -e "\e[41;1;37m                              ⇱  REYCODESSH  ⇲                     \e[0m\e[7;32m [ V1.4 ] \e[0m"
 echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
 echo -e "${verde}   CUENTAS SSH - DROPLET - SCRIPT - APK MOD - DISEÑO WED ( ${rojo}dev:${cierre} ${melon}@Reycode${cierre} )
 ${bar4}
