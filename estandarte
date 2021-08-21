@@ -1,0 +1,119 @@
+#!/bin/bash
+
+#BARRAS
+blanco='\033[38;5;231m'
+amarillo='\033[38;5;228m'
+azul='\033[38;5;14m'
+rojo='\033[0;31m'
+rosa='\033[1;36m'
+verde='\033[38;5;148m'
+resaltadorojo='\e[41;1;37m'
+cierre1='\e[0m'
+cierre='\033[0m'
+bar1="\e[1;30m◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚\e[0m"
+bar2="\033[38;5;226m---------------------------------------------------------\033[0m"
+bar3="\033[38;5;226m--------------------- = MENU = --------------------------\033[0m"
+bar4="\033[38;5;14m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\e[0m"
+
+
+clear
+chk=$(cat /etc/ssh/sshd_config | grep Banner)
+[[ $(netstat -nltp|grep 'dropbear' | wc -l) != '0' ]] && {
+    local="/etc/bannerssh"
+	[[ $(grep -wc $local /etc/default/dropbear) = '0' ]] && echo 'DROPBEAR_BANNER="/etc/bannerssh"' >>  /etc/default/dropbear
+}
+[[ "$(echo "$chk" | grep -v '#Banner' | grep Banner)" != "" ]] && {
+	local=$(echo "$chk" |grep -v "#Banner" | grep Banner | awk '{print $2}')
+} || {
+    local="/etc/bannerssh"
+    [[ $(grep -wc $local /etc/ssh/sshd_config) = '0' ]] && echo "Banner /etc/bannerssh" >> /etc/ssh/sshd_config
+}
+echo -e "\E[44;1;37m                        COLOCAR BANNER SSH                        \E[0m"
+echo ""
+echo -ne "${amarillo}[${cierre}${rojo}01${cierre}${amarillo}]${cierre} - AGREGAR BANNER SSH\n" 
+echo -ne "${amarillo}[${cierre}${rojo}02${cierre}${amarillo}]${cierre} - ELIMINAR BANNER SSH\n"
+echo -ne "${amarillo}[${cierre}${rojo}02${cierre}${amarillo}]${cierre} - VOLVER\n"
+echo ""
+echo -ne "\033[1;32mOQUE DESEJA FAZER\033[1;31m ?\033[1;37m : "; read resp
+if [[ "$resp" = "1" ]]; then
+echo ""
+echo -ne "\033[1;32mPUEDE ESCRIBA SU MENSAJE A COTINUACION \033[1;31m ?\033[1;37m : "; read msg1
+if [[ -z "$msg1" ]]; then
+	echo -e "\n\033[1;31mPor favor coloque un mensaje no puede dejar vacio este campo\033[0m"
+	sleep 2
+	banner
+fi
+echo -ne "${amarillo}[${cierre}${rojo}01${cierre}${amarillo}]${cierre} - PEQUEÑO\n" 
+echo -ne "${amarillo}[${cierre}${rojo}02${cierre}${amarillo}]${cierre} - MEDIANO\n"
+echo -ne "${amarillo}[${cierre}${rojo}03${cierre}${amarillo}]${cierre} - GRANDE\n"
+echo -ne "${amarillo}[${cierre}${rojo}04${cierre}${amarillo}]${cierre} - MAS GRANDE\n"
+echo ""
+echo -ne "\033[1;32m QUE TAMAÑO DE FUENTE DESEAS ELEGIR ? \033[1;31m ?\033[1;37m : "; read opc
+if [[ "$opc" = "1" ]] || [[ "$opc" = "01" ]]; then
+_size='6'
+elif [[ "$opc" = "2" ]] || [[ "$opc" = "02" ]]; then
+_size='4'
+elif [[ "$opc" = "3" ]] || [[ "$opc" = "03" ]]; then
+_size='3'
+elif [[ "$opc" = "4" ]] || [[ "$opc" = "04" ]]; then
+_size='1'
+fi
+
+echo -e "${amarillo}[${cierre}${rojo}01${cierre}${amarillo}]${cierre} --- ${azul} AZUL"
+echo -e "${amarillo}[${cierre}${rojo}02${cierre}${amarillo}]${cierre} --- ${verde}VERDE"
+echo -e "${amarillo}[${cierre}${rojo}03${cierre}${amarillo}]${cierre} --- ${rojo} ROJO"
+echo -e "${amarillo}[${cierre}${rojo}04${cierre}${amarillo}]${cierre} --- ${amarillo} AMARILLO"
+echo -e "${amarillo}[${cierre}${rojo}05${cierre}${amarillo}]${cierre} --- ${rosa} ROSA"
+echo -e "${amarillo}[${cierre}${rojo}06${cierre}${amarillo}]${cierre} --- CYANO"
+echo -e "${amarillo}[${cierre}${rojo}07${cierre}${amarillo}]${cierre} --- NARANJADO"
+echo -e "${amarillo}[${cierre}${rojo}08${cierre}${amarillo}]${cierre} --- MORADO"
+echo -e "${amarillo}[${cierre}${rojo}09${cierre}${amarillo}]${cierre} --- NEGRO"
+echo -e "${amarillo}[${cierre}${rojo}10${cierre}${amarillo}]${cierre} --- SIN COLOR"
+echo ""
+echo -ne "\033[1;32mSELECCIONE EL COLOR QUE SEA PONERLE A SU BANNER\033[1;31m ?\033[1;37m : "; read ban_cor
+if [[ "$ban_cor" = "1" ]] || [[ "$ban_cor" = "01" ]]; then
+echo "<h$_size><font color='blue'>$msg1" >> $local
+elif [[ "$ban_cor" = "2" ]] || [[ "$ban_cor" = "02" ]]; then
+echo "<h$_size><font color='green'>$msg1" >> $local
+elif [[ "$ban_cor" = "3" ]] || [[ "$ban_cor" = "03" ]]; then
+echo "<h$_size><font color='red'>$msg1" >> $local
+elif [[ "$ban_cor" = "4" ]] || [[ "$ban_cor" = "04" ]]; then
+echo "<h$_size><font color='yellow'>$msg1" >> $local
+elif [[ "$ban_cor" = "5" ]] || [[ "$ban_cor" = "05" ]]; then
+echo "<h$_size><font color='#F535AA'>$msg1" >> $local
+elif [[ "$ban_cor" = "6" ]] || [[ "$ban_cor" = "06" ]]; then
+echo "<h$_size><font color='cyan'>$msg1" >> $local
+elif [[ "$ban_cor" = "7" ]] || [[ "$ban_cor" = "07" ]]; then
+echo "<h$_size><font color='#FF7F00'>$msg1" >> $local
+elif [[ "$ban_cor" = "8" ]] || [[ "$ban_cor" = "08" ]]; then
+echo "<h$_size><font color='#9932CD'>$msg1" >> $local
+elif [[ "$ban_cor" = "9" ]] || [[ "$ban_cor" = "09" ]]; then
+echo "<h$_size><font color='black'>$msg1" >> $local
+elif [[ "$ban_cor" = "10" ]]; then
+echo "<h$_size>$msg1</h$_size>" >> $local
+/etc/init.d/ssh restart > /dev/null 2>&1
+echo -e "\E[44;1;37m              SU BANER AH SIDO COLOCADO CON EXITO !!!              \E[0m"
+sleep 2
+menu
+else
+echo -e "\n\033[1;31mOpcion no valida !\033[0m"
+	sleep 2
+	banner
+fi
+echo "</font></h$_size>" >> $local
+service ssh restart > /dev/null 2>&1 && service dropbear restart > /dev/null 2>&1
+echo -e "\E[44;1;37m              SU BANER AH SIDO AGREGADO CON EXITO !!!              \E[0m"
+unset ban_cor
+elif [[ "$resp" = "2" ]]; then
+	echo " " > $local
+	echo -e "\E[44;1;37m              BANNER ELIMINADO !!!              \E[0m"
+	service ssh restart > /dev/null 2>&1 && service dropbear restart > /dev/null 2>&1
+	sleep 2
+	menu
+elif [[ "$resp" = "3" ]]; then
+	menu
+else
+	echo -e "\n\033[1;31mOpcion no valida !\033[0m"
+	sleep 2
+	banner
+fi
