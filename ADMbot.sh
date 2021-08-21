@@ -14,6 +14,7 @@ bar1="\e[1;30m◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚
 bar2="\033[38;5;226m---------------------------------------------------------\033[0m"
 bar3="\033[38;5;226m--------------------- = MENU = --------------------------\033[0m"
 bar4="\033[0;31m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+bar5="\033[38;5;14m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
 
 
 ## VARIABLES DE ENTORNO Y SYSTEMA 
@@ -248,7 +249,10 @@ echo -ne "${blanco}Usuario Selecionado: " && echo -ne "$usuario_del"
 rm_user "$usuario_del" && echo -e "${verde} [Eliminado]${blanco}" || echo -e "${rojo} [No Eliminado]${cierre}"
 sed -i "/$usuario_del/d" $USRdatabase
 echo -e "$bar1"
+read -p " ➢ Presione enter para volver "
+rm -rf /etc/usr/bin/usercode; usercode
 }
+
 renovar_usuario () {
 usuarios_ativos=($(mostrar_usuarios))
 if [[ -z ${usuarios_ativos[@]} ]]; then
@@ -306,7 +310,10 @@ done
 echo -e "$bar1"
 renew_user_fun "${useredit}" "${diasuser}" && echo -e "${verde}Usuario Modificado Con Exito!!!${cierre}" || echo -e "${rojo}Error, Usuario no modificado${cierre}"
 echo -e "$bar1"
+read -p " ➢ Presione enter para volver "
+rm -rf /etc/usr/bin/usercode; usercode
 }
+
 editar_usuario () {
 usuarios_ativos=($(mostrar_usuarios))
 if [[ -z ${usuarios_ativos[@]} ]]; then
@@ -394,6 +401,8 @@ done
 echo -e "$bar1"
 edit_user_fun "${useredit}" "${senhauser}" "${diasuser}" "${limiteuser}" && echo -e "${verde}Usuario Modificado Con Exito${cierre}" || echo -e "${rojo}Error, Usuario no modificado${cierre}"
 echo -e "$bar1"
+read -p " ➢ Presione enter para volver "
+rm -rf /etc/usr/bin/usercode; usercode
 }
 
 
@@ -429,7 +438,7 @@ if [[ -e "${USRdatabase}" ]]; then
     else
     EXPTIME="${gren}[$(($(($DataSec - $VPSsec)) / 86400))]"
     fi
-    echo -e "$bar1"
+    echo -e "$bar5"
     txtvar+="$(printf '%-26s' "${yellow}${DateExp}${EXPTIME}")"
     txtvar+="$(printf '%-11s' "${yellow}$(cat ${USRdatabase}|grep -w "${user}"|cut -d'|' -f4)")"
     else
@@ -488,6 +497,8 @@ done <<< "$(mostrar_usuarios)"
 while [[ -d /proc/$pid ]]; do
 sleep 3s
 done
+read -p " ➢ Presione enter para volver "
+rm -rf /etc/usr/bin/usercode; usercode
 }
 
 No_user="$(cat /etc/RSdb | wc -l)"
