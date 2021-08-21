@@ -693,7 +693,6 @@ monit_user () {
 clear
 yellow=$(tput setaf 3)
 gren=$(tput setaf 2)
-echo -e  "Monitor de conexiones de usuario"
 echo -e  "$bar4"
 txtvar=$(printf  '%-17s'   "USUARIO") 
 txtvar+=$(printf  '%-23s'   "ESTATUS") 
@@ -716,7 +715,7 @@ HOR=$(($MIN/60))
 MIN=$(($MIN-$HOR*60))
 HOUR="${HOR}h:${MIN}m:${SEC}s"
 [[ -z $(cat ${USRdatabase}|grep -w "${user}") ]] && MAXUSER="**" || MAXUSER="$(cat ${USRdatabase}|grep -w "${user}"|cut -d'|' -f4)"
-[[ $(echo $PID|bc) -gt 0 ]] && user="$user        [${verde}ONLINE${cierre}]" || user="$user        [${rojo}OFLINE${cierre}]"
+[[ $(echo $PID|bc) -gt 0 ]] && user="$user         [${verde}ONLINE${cierre}]" || user="$user         [${rojo}OFLINE${cierre}]"
 TOTALPID="$(echo $PID|bc)/$MAXUSER"
  while [[ ${#user} -lt 59 ]]; do
  user=$user" "
@@ -744,24 +743,24 @@ menu () {
 clear
 clear
 echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
-echo -e "\e[41;1;37m                              ⇱  REYCODESSH  ⇲                     \e[0m\e[7;32m [ V1.4 ] \e[0m"
+echo -e "\e[41;1;37m                              ⇱  REYCODESSH  ⇲                     \e[0m\e[7;32m [ V1.5 ] \e[0m"
 echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
 echo -e "${verde}   CUENTAS SSH - DROPLET - SCRIPT - APK MOD - DISEÑO WED ( ${rojo}dev:${cierre} ${melon}@Reycode${cierre} )
 ${bar4}
 ${blanco}TOTAL DE USUARIOS: ${rojo}>${cierre} ${azul}No: ${blanco}$No_user  ${cierre}
 ${bar3}
-${azul}[01]${cierre} ${rojo}>${cierre} ${blanco}Agregar  ${amarillo}===============${cierre}${rojo}>${cierre} ${verde}Usuario${cierre}
-${azul}[02]${cierre} ${rojo}>${cierre} ${blanco}Eliminar ${amarillo}===============${cierre}${rojo}>${cierre} ${rojo}Usuario${cierre}
-${azul}[03]${cierre} ${rojo}>${cierre} ${blanco}Editar   ${amarillo}===============${cierre}${rojo}>${cierre} ${amarillo}Usuario${cierre}
-${azul}[04]${cierre} ${rojo}>${cierre} ${blanco}Renovar  ${amarillo}===============${cierre}${rojo}>${cierre} ${verde}Usuarios${cierre}
-${azul}[05]${cierre} ${rojo}>${cierre} ${blanco}Informacion de  ${amarillo}========${cierre}${rojo}>${cierre} ${amarillo}Usuarios${cierre}
-${azul}[06]${cierre} ${rojo}>${cierre} ${blanco}Usuarios  ${amarillo}==============${cierre}${rojo}>${cierre} ${amarillo}Onlines${cierre}
-${azul}[07]${cierre} ${rojo}>${cierre} ${blanco}Actualizar  ${amarillo}============${cierre}${rojo}>${cierre} ${amarillo}script${cierre}
-${azul}[08]${cierre} ${rojo}>${cierre} ${blanco}Desistalar  ${amarillo}============${cierre}${rojo}>${cierre} ${amarillo}script${cierre}
-${azul}[09]${cierre} ${rojo}>${cierre} ${blanco}Limpiar memoria  ${amarillo}=======${cierre}${rojo}>${cierre} ${amarillo}cache${cierre}
-${azul}[10]${cierre} ${rojo}>${cierre} ${blanco}Detalles de la  ${amarillo}========${cierre}${rojo}>${cierre} ${amarillo}maquina${cierre}
-${azul}[11]${cierre} ${rojo}>${cierre} ${blanco}Crear copia de  ${amarillo}========${cierre}${rojo}>${cierre} ${amarillo}usuarios${cierre}
-${azul}[0]${cierre} ${rojo}>>>${cierre} ${resaltadorojo} SALIR ${cierre1}
+${blanco}[${cierre}${rojo}01${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Agregar  ${amarillo}===============${cierre}${rojo}>${cierre} ${verde}Usuario${cierre}
+${blanco}[${cierre}${rojo}02${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Eliminar ${amarillo}===============${cierre}${rojo}>${cierre} ${rojo}Usuario${cierre}
+${blanco}[${cierre}${rojo}03${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Editar   ${amarillo}===============${cierre}${rojo}>${cierre} ${amarillo}Usuario${cierre}
+${blanco}[${cierre}${rojo}04${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Renovar  ${amarillo}===============${cierre}${rojo}>${cierre} ${verde}Usuarios${cierre}
+${blanco}[${cierre}${rojo}05${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Informacion de  ${amarillo}========${cierre}${rojo}>${cierre} ${amarillo}Usuarios${cierre}
+${blanco}[${cierre}${rojo}06${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Usuarios  ${amarillo}==============${cierre}${rojo}>${cierre} ${azul}Onlines${cierre}
+${blanco}[${cierre}${rojo}07${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Actualizar  ${amarillo}============${cierre}${rojo}>${cierre} ${verde}script${cierre}
+${blanco}[${cierre}${rojo}08${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Desistalar  ${amarillo}============${cierre}${rojo}>${cierre} ${rojo}script${cierre}
+${blanco}[${cierre}${rojo}09${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Limpiar memoria  ${amarillo}=======${cierre}${rojo}>${cierre} ${amarillo}cache${cierre}
+${blanco}[${cierre}${rojo}10${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Detalles de la  ${amarillo}========${cierre}${rojo}>${cierre} ${azul}maquina${cierre}
+${blanco}[${cierre}${rojo}11${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Crear copia de  ${amarillo}========${cierre}${rojo}>${cierre} ${verde}usuarios${cierre}
+${blanco}[${cierre}${rojo}0${cierre}${blanco}]${cierre} ${rojo}>>>${cierre} ${resaltadorojo} SALIR ${cierre1}
 ${bar2}"
 read -p "$(echo -e "${blanco}seleccione [0-5]:${cierre}")" selection
 case "$selection" in
