@@ -445,8 +445,8 @@ gren=$(tput setaf 2)
 echo -e "Monitor de Conexiones de Usuarios"
 echo -e "${bar4}"
 txtvar=$(printf '%-40s' "USUARIO")
-txtvar=$(printf  '%-16s' "ESTATUS")
-txtvar+=$(printf '%-25s' "CONEXIONES")
+txtvar+=$(printf '%-25s' "ESTATUS")
+txtvar+=$(printf '%-23s' "CONEXION")
 txtvar+=$(printf '%-28s' "TIME/ON")
 echo -e "\033[1;33m${txtvar}"
 echo -e "${bar4}"
