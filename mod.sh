@@ -748,7 +748,9 @@ echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━�
 echo -e "${verde}   CUENTAS SSH - DROPLET - SCRIPT - APK MOD - DISEÑO WED ( ${rojo}dev:${cierre} ${melon}@Reycode${cierre} )
 ${bar4}
 ${blanco}TOTAL DE USUARIOS: ${rojo}>${cierre} ${azul}No: ${blanco}$No_user  ${cierre}
-${bar3}
+${bar4}
+${resaltadoazul}                COMANDO PARA ACCESO AL PANEL: usercode                        ${cierre1}"      
+${bar4}
 ${blanco}[${cierre}${rojo}01${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Agregar  ${amarillo}===============${cierre}${rojo}>${cierre} ${verde}Usuario${cierre}
 ${blanco}[${cierre}${rojo}02${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Eliminar ${amarillo}===============${cierre}${rojo}>${cierre} ${rojo}Usuario${cierre}
 ${blanco}[${cierre}${rojo}03${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Editar   ${amarillo}===============${cierre}${rojo}>${cierre} ${amarillo}Usuario${cierre}
@@ -761,7 +763,7 @@ ${blanco}[${cierre}${rojo}09${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${bla
 ${blanco}[${cierre}${rojo}10${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Detalles de la  ${amarillo}========${cierre}${rojo}>${cierre} ${azul}maquina${cierre}
 ${blanco}[${cierre}${rojo}11${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Crear copia de  ${amarillo}========${cierre}${rojo}>${cierre} ${verde}usuarios${cierre}
 ${blanco}[${cierre}${rojo}0${cierre}${blanco}]${cierre} ${rojo}>>>${cierre} ${resaltadorojo} SALIR ${cierre1}
-${bar2}"
+${bar4}"
 read -p "$(echo -e "${blanco}seleccione [0-5]:${cierre}")" selection
 case "$selection" in
 1)nuevo_usuario ;;
