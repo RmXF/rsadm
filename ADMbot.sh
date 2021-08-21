@@ -445,6 +445,7 @@ gren=$(tput setaf 2)
 echo -e "Monitor de Conexiones de Usuarios"
 echo -e "${bar4}"
 txtvar=$(printf '%-25s' "USUARIO")
+txtvar=$(printf  '%-25s' "ESTATUS")
 txtvar+=$(printf '%-25s' "CONEXIONES")
 txtvar+=$(printf '%-20s' "TIME/ON")
 echo -e "\033[1;33m${txtvar}"
@@ -464,7 +465,7 @@ HOR=$(($MIN/60))
 MIN=$(($MIN-$HOR*60))
 HOUR="${HOR}h:${MIN}m:${SEC}s"
 [[ -z $(cat ${USRdatabase}|grep -w "${user}") ]] && MAXUSER="?" || MAXUSER="$(cat ${USRdatabase}|grep -w "${user}"|cut -d'|' -f4)"
-[[ $(echo $PID|bc) -gt 0 ]] && user="$user                [\033[1;32mON\033[0m${yellow}]" || user="$user                 [\033[1;31mOFF\033[0m${yellow}]"
+[[ $(echo $PID|bc) -gt 0 ]] && user="$user           [\033[1;32mONLINE\033[0m${yellow}]" || user="$user             [\033[1;31mOFLINE\033[0m${yellow}]"
 TOTALPID="$(echo $PID|bc)/$MAXUSER"
  while [[ ${#user} -lt 45 ]]; do
  user=$user" "
