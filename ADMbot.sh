@@ -442,13 +442,13 @@ echo -e "$bar1"
 monit_user () {
 yellow=$(tput setaf 3)
 gren=$(tput setaf 2)
-msg -verm "$(fun_trans "Monitor de Conexiones de Usuarios")"
-msg -bar
+echo -e "Monitor de Conexiones de Usuarios"
+echo -e "${bar4}"
 txtvar=$(printf '%-20s' "USUARIO")
 txtvar+=$(printf '%-19s' "CONEXIONES")
 txtvar+=$(printf '%-16s' "TIME/ON")
 echo -e "\033[1;33m${txtvar}"
-msg -bar
+echo -e "${bar4}"
 while read user; do
  _=$(
 PID="0+"
