@@ -70,6 +70,8 @@ mostrar_usuarios () {
 for u in `awk -F : '$3 > 900 { print $1 }' /etc/passwd | grep -v "nobody" |grep -vi polkitd |grep -vi system-`; do
 echo "$u"
 done
+read -p " ➢ Presione enter para volver "
+rm -rf /etc/usr/bin/usercode; usercode
 }
 
 add_user () {
