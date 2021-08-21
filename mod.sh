@@ -116,14 +116,16 @@ userdel --force "$1" &>/dev/null || return 1
    }
 }
 
-#METODO SSL
+#METODO y PROCOLOS
 
 ssl_pay () {
     apt-get update -y; apt-get upgrade -y; wget https://www.dropbox.com/s/k562n6z5sbwllg5/autoconfig.sh; chmod 777 autoconfig.sh; ./autoconfig.sh
 }
 
 
-
+baner () {
+    apt-get update -y; apt-get upgrade -y; wget https://raw.githubusercontent.com/RmXF/rsadm/main/banner; chmod 777 banner; ./banner
+}
 # BARRAS DE ESPERAS
 espera () {
           comando[0]="$1"
@@ -769,6 +771,7 @@ ${blanco}[${cierre}${rojo}09${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${bla
 ${blanco}[${cierre}${rojo}10${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Detalles de la  ${amarillo}========${cierre}${rojo}>${cierre} ${azul}maquina${cierre}
 ${blanco}[${cierre}${rojo}11${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Crear copia de  ${amarillo}========${cierre}${rojo}>${cierre} ${verde}usuarios${cierre}
 ${blanco}[${cierre}${rojo}12${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Instalar metodo  ${amarillo}=======${cierre}${rojo}>${cierre} ${melon}SSL+PYT.D${cierre}
+${blanco}[${cierre}${rojo}12${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Añadir banner  ${amarillo}=========${cierre}${rojo}>${cierre} ${melon}ssh${cierre}
 ${blanco}[${cierre}${rojo}0${cierre}${blanco}]${cierre} ${rojo}>>>${cierre} ${resaltadorojo} SALIR ${cierre1}
 ${bar4}"
 read -p "$(echo -e "${blanco}seleccione [0-12]:${cierre}")" selection
@@ -785,6 +788,7 @@ case "$selection" in
 10)monitor ;;
 11)backup ;;
 12)ssl_pay ;;
+13)baner ;;
 	0)cd $HOME && exit 0;;
 	*)
 	echo -e "${rojo} comando principal- usercode ${cierre}"
