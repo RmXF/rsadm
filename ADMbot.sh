@@ -512,8 +512,6 @@ clear
 echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
 echo -e "\e[41;1;37m                          ⇱  ADMINITRADOR REYCODE ⇲                     \e[0m\e[7;32m V1.3 \e[0m"
 echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
-echo -e "\E[44;1;37m         SISTEMAS                  \e[0m" "\E[44;1;37m |                USOS                    \e[0m"
-echo -e "\E[44;1;37m -RAM:               CPU:          \e[0m" "\E[44;1;37m |   -RAM AL:              CPU AL:        \e[0m"
 echo -e "${verde}     CUENTAS SSH - DROPLET - SCRIPT - APK MOD - DISEÑO WED (${amarillo}Reycode${cierre}${melon})"
 ${bar4}
 ${blanco}TOTAL DE USUARIOS: ${rojo}>${cierre} ${azul}No: ${blanco}$No_user  ${cierre}
