@@ -109,7 +109,7 @@ elif [[ "$resp" = "2" ]]; then
 	echo -e "\E[44;1;37m              BANNER ELIMINADO !!!              \E[0m"
 	service ssh restart > /dev/null 2>&1 && service dropbear restart > /dev/null 2>&1
 	sleep 2
-	menu
+	usercode
 elif [[ "$resp" = "3" ]]; then
 	menu
 else
