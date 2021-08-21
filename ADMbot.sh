@@ -61,7 +61,7 @@ echo -e " \033[1;33m[ ☑ ] apt-get update -y "
 apt-get update -y > /dev/null 2>&1 
 echo -e " \033[1;33m[ ☑ ] apt-get upgrade -y "
 apt-get upgrade -y > /dev/null 2>&1 
-rm -rf $HOME/ADMbot.sh; wget https://raw.githubusercontent.com/RmXF/rsadm/main/ADMbot.sh; chmod 755 *; mv ADMbot.sh /usr/bin/usercode; usercode
+rm -rf $HOME/ADMbot.sh; wget https://raw.githubusercontent.com/RmXF/rsadm/main/ADMbot.sh; chmod 755 *; mv ADMbot.sh /usr/bin/rs; rs
 echo ""
 }
 
@@ -448,7 +448,7 @@ echo -e "Monitor de Conexiones de Usuarios"
 echo -e "${bar4}"
 txtvar=$(printf '%-17s' "USUARIO")
 txtvar+=$(printf '%-23s' "ESTATUS")
-txtvar+=$(printf '%-22s' "CONEXION")
+txtvar+=$(printf '%-21s' "CONEXION")
 txtvar+=$(printf '%-8s' "TIEMPO ONLINE")
 echo -e "\033[1;33m${txtvar}"
 echo -e "${bar4}"
