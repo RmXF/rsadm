@@ -722,7 +722,7 @@ case "$selection" in
 7)actualizar_fun ;;
 8)eliminar_script ;;
 9)caches ;;
-10)monit_user ;;
+10)monitor ;;
 11)backup ;;
 	0)cd $HOME && exit 0;;
 	*)
