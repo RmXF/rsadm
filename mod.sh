@@ -254,7 +254,7 @@ echo -e "\E[41;1;37m SISTEMAS      CANTIDAD         USO              IP         
 echo -e "\e[7;35  CPU ➛ \e[0m           \033[1;93m$_core\e[0m             \033[1;32m$_usop\e[0m       \e[33;1;34m  $(meu_ip) \e[0m"
 echo -e "\e[7;35  RAM ➛ \e[0m          \033[1;93m$ram1\e[0m           \033[1;32m$_usor\e[0m"
 echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
-echo -e "\e[7;35m          Sistema su es Operativo: $(os_system)          \e[0m "
+echo -e "\e[7;35m         Su Siatema  Operativo es: $(os_system)          \e[0m "
 echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
 read -p " ➢ Presione enter para volver "
 rm -rf /etc/usr/bin/usercode; usercode
@@ -756,7 +756,7 @@ menu () {
 clear
 clear
 echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
-echo -e "\e[41;1;37m                              ⇱  REYCODESSH  ⇲                      \e[0m\e[7;32m [ V1.9 ] \e[0m"
+echo -e "\e[41;1;37m                              ⇱  REYCODESSH  ⇲                      \e[0m\e[7;32m [ V2.0 ] \e[0m"
 echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
 echo -e "${verde}CUENTAS SSH - DROPLET - SCRIPT - APK MOD - DISEÑO WEB ( ${rojo}dev:${cierre} ${melon}@ReyRs_ViPro${cierre} )
 ${bar4}
@@ -774,10 +774,10 @@ ${blanco}[${cierre}${rojo}09${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${bla
 ${blanco}[${cierre}${rojo}10${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Detalles de la  ${amarillo}========${cierre}${rojo}>${cierre} ${azul}maquina${cierre}
 ${blanco}[${cierre}${rojo}11${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Crear copia de  ${amarillo}========${cierre}${rojo}>${cierre} ${verde}usuarios${cierre}
 ${blanco}[${cierre}${rojo}12${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Instalar metodo  ${amarillo}=======${cierre}${rojo}>${cierre} ${melon}SSL+PYT.D${cierre}
-${blanco}[${cierre}${rojo}12${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Añadir banner  ${amarillo}=========${cierre}${rojo}>${cierre} ${melon}ssh${cierre}
+${blanco}[${cierre}${rojo}13${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Añadir banner  ${amarillo}=========${cierre}${rojo}>${cierre} ${melon}ssh${cierre}
 ${blanco}[${cierre}${rojo}0${cierre}${blanco}]${cierre} ${rojo}>>>${cierre} ${resaltadorojo} SALIR ${cierre1}
 ${bar4}"
-read -p "$(echo -e "${blanco}seleccione [0-12]:${cierre}")" selection
+read -p "$(echo -e "${blanco}seleccione [0-13]:${cierre}")" selection
 case "$selection" in
 1)nuevo_usuario ;;
 2)eliminar_usuario ;;
