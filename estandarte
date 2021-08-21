@@ -28,7 +28,7 @@ chk=$(cat /etc/ssh/sshd_config | grep Banner)
 }
 clear
 echo -e "${rojo}===============================================================================${cierre}"
-echo -e "\E[44;1;37m                              COLOCAR BANNER SSH                              \E[0m"
+echo -e "\E[44;1;37m                              COLOCAR BANNER SSH                               \E[0m"
 echo -e "${rojo}===============================================================================${cierre}"
 echo -ne "${amarillo}[${cierre}${rojo}01${cierre}${amarillo}]${cierre} - AGREGAR BANNER SSH\n" 
 echo -ne "${amarillo}[${cierre}${rojo}02${cierre}${amarillo}]${cierre} - ELIMINAR BANNER SSH\n"
