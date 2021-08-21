@@ -663,7 +663,7 @@ if [[ -e "${USRdatabase}" ]]; then
     DateExp="$(cat ${USRdatabase}|grep -w "${user}"|cut -d'|' -f3)"
     DataSec=$(date +%s --date="$DateExp")
     if [[ "$VPSsec" -gt "$DataSec" ]]; then    
-    EXPTIME="${red}[Exp]"
+    EXPTIME="${resaltadorojo}[Exp]${cierre1}"
     else
     EXPTIME="${gren}[$(($(($DataSec - $VPSsec)) / 86400))]"
     fi
@@ -672,9 +672,9 @@ if [[ -e "${USRdatabase}" ]]; then
     txtvar+="$(printf '%-18s' "${EXPTIME}")"
     txtvar+="$(printf '%-11s' "${yellow}$(cat ${USRdatabase}|grep -w "${user}"|cut -d'|' -f4)")"
     else
-    txtvar+="$(printf '%-21s' "${red}???")"
-    txtvar+="$(printf '%-21s' "${red}???")"
-    txtvar+="$(printf '%-11s' "${red}???")"
+    txtvar+="$(printf '%-21s' "${red}***")"
+    txtvar+="$(printf '%-21s' "${red}***")"
+    txtvar+="$(printf '%-11s' "${red}***")"
   fi
 fi
 echo -e "$txtvar"
@@ -684,7 +684,7 @@ read -p  " ➢ Presione enter para volver "
 rm -rf /etc/usr/bin/usercode; usercode
 }
 
-status_dev () {
+monit_user () {
 amarillo=$(tput setaf 3) 
 gren=$(tput setaf 2) 
 echo -e  "Monitor de Conexiones de Usuarios" 
@@ -771,7 +771,7 @@ case "$selection" in
 7)actualizar_fun ;;
 8)eliminar_script ;;
 9)caches ;;
-10)monitor ;;
+10)monit_user ;;
 11)backup ;;
 	0)cd $HOME && exit 0;;
 	*)
