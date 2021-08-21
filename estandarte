@@ -27,13 +27,13 @@ chk=$(cat /etc/ssh/sshd_config | grep Banner)
     [[ $(grep -wc $local /etc/ssh/sshd_config) = '0' ]] && echo "Banner /etc/bannerssh" >> /etc/ssh/sshd_config
 }
 clear
-${bar2}
+echo -e "${rojo}===============================================================================${cierre}"
 echo -e "\E[44;1;37m                           COLOCAR BANNER SSH                           \E[0m"
-${bar2}
+echo -e "${rojo}===============================================================================${cierre}"
 echo -ne "${amarillo}[${cierre}${rojo}01${cierre}${amarillo}]${cierre} - AGREGAR BANNER SSH\n" 
 echo -ne "${amarillo}[${cierre}${rojo}02${cierre}${amarillo}]${cierre} - ELIMINAR BANNER SSH\n"
 echo -ne "${amarillo}[${cierre}${rojo}02${cierre}${amarillo}]${cierre} - VOLVER\n"
-${bar2}
+echo -e "${rojo}===============================================================================${cierre}"
 echo -ne "\033[1;32mSELECCION LA OPCION QUE DESEES \033[1;31m ?\033[1;37m : "; read resp
 if [[ "$resp" = "1" ]]; then
 echo ""
@@ -43,12 +43,13 @@ if [[ -z "$msg1" ]]; then
 	sleep 2
 	banner
 fi
+echo -e "${rojo}===============================================================================${cierre}"
 echo -ne "${amarillo}[${cierre}${rojo}01${cierre}${amarillo}]${cierre} - PEQUEÑO\n" 
 echo -ne "${amarillo}[${cierre}${rojo}02${cierre}${amarillo}]${cierre} - MEDIANO\n"
 echo -ne "${amarillo}[${cierre}${rojo}03${cierre}${amarillo}]${cierre} - GRANDE\n"
 echo -ne "${amarillo}[${cierre}${rojo}04${cierre}${amarillo}]${cierre} - MAS GRANDE\n"
-echo ""
-echo -ne "\033[1;32m QUE TAMAÑO DE FUENTE DESEAS ELEGIR \033[1;31m ?\033[1;37m : "; read opc
+echo -e "${rojo}===============================================================================${cierre}"
+echo -ne "\033[1;32m SELECCIONE EL TAMAÑO DE LETRA QUE DESEA COLOCARLE A SU BANNER \033[1;31m ?\033[1;37m : "; read opc
 if [[ "$opc" = "1" ]] || [[ "$opc" = "01" ]]; then
 _size='6'
 elif [[ "$opc" = "2" ]] || [[ "$opc" = "02" ]]; then
@@ -59,6 +60,7 @@ elif [[ "$opc" = "4" ]] || [[ "$opc" = "04" ]]; then
 _size='1'
 fi
 
+echo -e "${rojo}===============================================================================${cierre}"
 echo -e "${amarillo}[${cierre}${rojo}01${cierre}${amarillo}]${cierre} --- ${azul} AZUL"
 echo -e "${amarillo}[${cierre}${rojo}02${cierre}${amarillo}]${cierre} --- ${verde} VERDE"
 echo -e "${amarillo}[${cierre}${rojo}03${cierre}${amarillo}]${cierre} --- ${rojo} ROJO"
@@ -69,7 +71,7 @@ echo -e "${amarillo}[${cierre}${rojo}07${cierre}${amarillo}]${cierre} --- NARANJ
 echo -e "${amarillo}[${cierre}${rojo}08${cierre}${amarillo}]${cierre} --- MORADO"
 echo -e "${amarillo}[${cierre}${rojo}09${cierre}${amarillo}]${cierre} --- NEGRO"
 echo -e "${amarillo}[${cierre}${rojo}10${cierre}${amarillo}]${cierre} --- SIN COLOR"
-echo ""
+echo -e "${rojo}===============================================================================${cierre}"
 echo -ne "\033[1;32mSELECCIONE EL COLOR QUE SEA PONERLE A SU BANNER\033[1;31m ?\033[1;37m : "; read ban_cor
 if [[ "$ban_cor" = "1" ]] || [[ "$ban_cor" = "01" ]]; then
 echo "<h$_size><font color='blue'>$msg1" >> $local
