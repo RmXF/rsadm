@@ -444,7 +444,7 @@ yellow=$(tput setaf 3)
 gren=$(tput setaf 2)
 echo -e "Monitor de Conexiones de Usuarios"
 echo -e "${bar4}"
-txtvar=$(printf '%-40s' "USUARIO")
+txtvar=$(printf '%-20s' "USUARIO")
 txtvar+=$(printf '%-25s' "ESTATUS")
 txtvar+=$(printf '%-23s' "CONEXION")
 txtvar+=$(printf '%-28s' "TIME/ON")
@@ -470,7 +470,7 @@ TOTALPID="$(echo $PID|bc)/$MAXUSER"
  while [[ ${#user} -lt 45 ]]; do
  user=$user" "
  done
- while [[ ${#TOTALPID} -lt 18 ]]; do
+ while [[ ${#TOTALPID} -lt 20 ]]; do
  TOTALPID=$TOTALPID" "
  done
  while [[ ${#HOUR} -lt 8 ]]; do
