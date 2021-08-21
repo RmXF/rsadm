@@ -469,17 +469,17 @@ HOUR="${HOR}h:${MIN}m:${SEC}s"
 [[ -z $(cat ${USRdatabase}|grep -w "${user}") ]] && MAXUSER="-" || MAXUSER="$(cat ${USRdatabase}|grep -w "${user}"|cut -d'|' -f4)"
 [[ $(echo $PID|bc) -gt 0 ]] && user="$user           [${verde}ONLINE${cierre}]" || user="$user           [${rojo}OFLINE${cierre}]"
 TOTALPID="$(echo $PID|bc)/$MAXUSER"
- while [[ ${#user} -lt 60 ]]; do
+ while [[ ${#user} -lt 59 ]]; do
  user=$user" "
  done
- while [[ ${#TOTALPID} -lt 18 ]]; do
+ while [[ ${#TOTALPID} -lt 19 ]]; do
  TOTALPID=$TOTALPID" "
  done
  while [[ ${#HOUR} -lt 15 ]]; do
  HOUR=$HOUR" "
  done
+ echo -e "${bar4}"
 echo -e "${yellow}$user $TOTALPID $HOUR" >&2
-echo -e "${bar4}"
 ) &
 pid=$!
 sleep 0.5s
