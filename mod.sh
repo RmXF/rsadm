@@ -236,11 +236,10 @@ autm=$(grep "usercode;" /etc/profile > /dev/null && echo -e "\033[1;32m ◉ " ||
 monitor () {
 clear
 echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
-echo -e "\E[41;1;37m           SISTEMAS        |            USO                   \E[0m"
-echo -e "\e[7;35  CPU ➛ \e[0m \033[1;93m$_core\e[0m" echo -e "|\033[1;32m$_usop\e[0m"
-echo -e "\e[7;35  RAM ➛ \e[0m \033[1;93m$ram1\e[0m" echo -e "|\033[1;32m$_usor\e[0m"
+echo -e "\E[41;1;37m           SISTEMAS        |            USO                  \E[0m"
+echo -e "    CPU: $_core"       RAM: $ram1"    |  CPU AL: $_usop    RAM AL: $_usor "
 echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
-echo -e "\e[7;35m  S.O: $(os_system) \e[0m " echo -e " \e[33;1;34m  $(meu_ip) \e[0m "
+echo -e "          S.O: $(os_system) \e[0m "   | " IP:  $(meu_ip)                      "
 echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
 read -p " ➢ Presione enter para volver "
 rm -rf /etc/usr/bin/usercode; usercode
