@@ -725,13 +725,12 @@ TOTALPID="$( $PIDde eco| bc)/$MAXUSER"
 echo -e  "${yellow}$user $TOTALPID $HOUR"  >&2
 ) &
 pid=$!
-dormir 0,5 s
-hecho <<<  "$(mostrar_usuarios)" 
-mientras que [[ -d /proc/$pid ]]; do
-dormir 3s
-hecho
-read -p  " ➢ Presione enter para volver " 
-rm -rf /etc/usr/bin/usercode; usercode
+sleep 0.5s
+done <<< "$(mostrar_usuarios)"
+while [[ -d /proc/$pid ]]; do
+sleep 1s
+done
+${bar4}
 }
 
 
