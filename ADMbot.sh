@@ -1,6 +1,18 @@
 #!/bin/bash
 #20/09/2020
 
+# COLORES Y BARRAS
+blanco='\033[38;5;231m'
+amarillo='\033[38;5;228m'
+azul='\033[38;5;14m'
+rojo='\033[0;31m'
+verde='\033[38;5;148m'
+cierre='\033[0m'
+bar1="\e[1;30m◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚\e[0m"
+bar2="\033[38;5;226m---------------------------------------------------------\033[0m"
+bar3="\033[38;5;226m--------------------- = MENU = --------------------------\033[0m"
+
+
 # DIRECCIONES DE CARPETAS Y ARCHIVOS 
 
 SCPdir="/etc/newadm" && [[ ! -d ${SCPdir} ]] && exit 1
@@ -27,12 +39,14 @@ USRdatacredi="/etc/BOT-C2/creditos"
 [[ $(dpkg --get-selections|grep -w "vnstat"|head -1) ]] || apt-get install vnstat -y &>/dev/null
 [[ $(dpkg --get-selections|grep -w "vnstati"|head -1) ]] || apt-get install vnstati -y &>/dev/null
 [[ $(dpkg --get-selections|grep -w "nmap"|head -1) ]] || apt-get install nmap -y &>/dev/null
-
+  
 ## INGRESO DE TOKEN BOT
 clear
-msg -bar
-msg -ama "      💀 BOT DE GESTION 💀 \033[1;31m"
-msg -bar
+echo -e "${verde}###########################################################${cierre}"
+echo -e "${verde}#                  ${azul}GESTION DEL BOT${cierre}        #${cierre}"
+echo -e "${verde}#                                                         #${cierre}"
+echo -e "${verde}#                   ${rojo}@ReyRs_ViPro${cierre}          #${cierre}"
+echo -e "${verde}###########################################################${cierre}"
 if [[ $1 = "id" || -z $(ps aux |grep -v grep |grep -w "ADMbot.sh"|grep dmS|awk '{print $2}') ]]; then
 [[ -z $2 ]] && echo -ne "\033[1;96m #Digite el Token del BOT\033[0;92m\nTOKEN: \033[0;97m" && read TOKEN || TOKEN="$2"
 [[ -z "$TOKEN" ]] && exit 1 #SEM TOKEN, SEM BOT
@@ -43,17 +57,17 @@ IDIOMA="$(cat ${SCPidioma})" && [[ -z $IDIOMA ]] && IDIOMA="es" #ARGUMENTO 2 (ID
 [[ -z "$PASSLIB" ]] && exit 1 #SENHA
 [[ -z $2 ]] && [[ -z $3 ]] && [[ -z $4 ]] && {
 screen -dmS telebot ${SCPfrm}/ADMbot.sh id "$TOKEN" "$USERLIB" "$PASSLIB"
-msg -bar
-echo -e "\033[1;92m                BOT INICIADO CON EXCITO"
-msg -bar
+echo -e "${verde}===========================================================${cierre}"
+echo -e "\033[1;92m                BOT INICIADO CON EXCITO                           "
+echo -e "${verde}===========================================================${cierre}"
 exit 0
 }
 else
 kill -9 $(ps aux |grep -v grep |grep -w "ADMbot.sh"|grep dmS|awk '{print $2}') && echo -e "\033[1;91m                BOT DETENIDO CON EXCITO"
-msg -bar
+echo -e "${verde}===========================================================${cierre}"
 exit 0
 fi
-LINE='━━━━━━━━━━━━━━━━━━━━'
+LINE='━━━━━━━━━━━━━━━━━━━━━━━'
 USRdatabase="/etc/ADMuser"
 #IMPORTANDO API
 source ShellBot.sh
