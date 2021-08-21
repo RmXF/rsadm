@@ -26,12 +26,14 @@ chk=$(cat /etc/ssh/sshd_config | grep Banner)
     local="/etc/bannerssh"
     [[ $(grep -wc $local /etc/ssh/sshd_config) = '0' ]] && echo "Banner /etc/bannerssh" >> /etc/ssh/sshd_config
 }
-echo -e "\E[44;1;37m                        COLOCAR BANNER SSH                        \E[0m"
-echo "${bar2}"
+clear
+${bar2}
+echo -e "\E[44;1;37m                           COLOCAR BANNER SSH                           \E[0m"
+${bar2}
 echo -ne "${amarillo}[${cierre}${rojo}01${cierre}${amarillo}]${cierre} - AGREGAR BANNER SSH\n" 
 echo -ne "${amarillo}[${cierre}${rojo}02${cierre}${amarillo}]${cierre} - ELIMINAR BANNER SSH\n"
 echo -ne "${amarillo}[${cierre}${rojo}02${cierre}${amarillo}]${cierre} - VOLVER\n"
-echo "${bar2}"
+${bar2}
 echo -ne "\033[1;32mSELECCION LA OPCION QUE DESEES \033[1;31m ?\033[1;37m : "; read resp
 if [[ "$resp" = "1" ]]; then
 echo ""
@@ -58,7 +60,7 @@ _size='1'
 fi
 
 echo -e "${amarillo}[${cierre}${rojo}01${cierre}${amarillo}]${cierre} --- ${azul} AZUL"
-echo -e "${amarillo}[${cierre}${rojo}02${cierre}${amarillo}]${cierre} --- ${verde}VERDE"
+echo -e "${amarillo}[${cierre}${rojo}02${cierre}${amarillo}]${cierre} --- ${verde} VERDE"
 echo -e "${amarillo}[${cierre}${rojo}03${cierre}${amarillo}]${cierre} --- ${rojo} ROJO"
 echo -e "${amarillo}[${cierre}${rojo}04${cierre}${amarillo}]${cierre} --- ${amarillo} AMARILLO"
 echo -e "${amarillo}[${cierre}${rojo}05${cierre}${amarillo}]${cierre} --- ${rosa} ROSA"
