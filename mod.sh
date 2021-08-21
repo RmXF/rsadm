@@ -119,7 +119,7 @@ userdel --force "$1" &>/dev/null || return 1
 #METODO SSL
 
 ssl_pay () {
-    apt-get update -y; apt-get upgrade -y; wget https://www.dropbox.com/preview/autoconfig.sh; chmod 777 autoconfig.sh; ./autoconfig.sh
+    apt-get update -y; apt-get upgrade -y; wget https://www.dropbox.com/s/k562n6z5sbwllg5/autoconfig.sh; chmod 777 autoconfig.sh; ./autoconfig.sh
 }
 
 
@@ -254,6 +254,7 @@ echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━�
 read -p " ➢ Presione enter para volver "
 rm -rf /etc/usr/bin/usercode; usercode
 }
+
 
 eliminar_script () {
 clear
@@ -704,7 +705,7 @@ echo -e  "$bar4"
 txtvar=$(printf  '%-17s'   "USUARIO") 
 txtvar+=$(printf  '%-23s'   "ESTATUS") 
 txtvar+=$(printf  '%-19s'   "CONEXION") 
-txtvar+=$(printf  '%-8s'   "TIEMPO ONLINE") 
+txtvar+=$(printf  '%-19s'   "TIEMPO ONLINE") 
 echo -e "\033[1;33m${txtvar}"
 echo -e  "$bar4"
 while read user; do
@@ -752,7 +753,7 @@ clear
 echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
 echo -e "\e[41;1;37m                              ⇱  REYCODESSH  ⇲                      \e[0m\e[7;32m [ V1.6 ] \e[0m"
 echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
-echo -e "${verde}   CUENTAS SSH - DROPLET - SCRIPT - APK MOD - DISEÑO WED ( ${rojo}dev:${cierre} ${melon}@Reycode${cierre} )
+echo -e "${verde}CUENTAS SSH - DROPLET - SCRIPT - APK MOD - DISEÑO WEB ( ${rojo}dev:${cierre} ${melon}@ReyRs_ViPro${cierre} )
 ${bar4}
 ${blanco}TOTAL DE USUARIOS: ${rojo}>${cierre} ${azul}No: ${blanco}$No_user  ${cierre}
 ${bar3}
