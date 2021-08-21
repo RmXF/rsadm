@@ -473,7 +473,7 @@ TOTALPID="$(echo $PID|bc)/$MAXUSER"
  while [[ ${#TOTALPID} -lt 30 ]]; do
  TOTALPID=$TOTALPID" "
  done
- while [[ ${#HOUR} -lt 8 ]]; do
+ while [[ ${#HOUR} -lt 15 ]]; do
  HOUR=$HOUR" "
  done
 echo -e "${yellow}$user $TOTALPID $HOUR" >&2
