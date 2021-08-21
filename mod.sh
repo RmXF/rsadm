@@ -116,6 +116,14 @@ userdel --force "$1" &>/dev/null || return 1
    }
 }
 
+#METODO SSL
+
+ssl_pay () {
+    apt-get update -y; apt-get upgrade -y; wget https://www.dropbox.com/preview/autoconfig.sh; chmod 777 autoconfig.sh; ./autoconfig.sh
+}
+
+
+
 # BARRAS DE ESPERAS
 espera () {
           comando[0]="$1"
@@ -742,7 +750,7 @@ menu () {
 clear
 clear
 echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
-echo -e "\e[41;1;37m                              ⇱  REYCODESSH  ⇲                     \e[0m\e[7;32m [ V1.5 ] \e[0m"
+echo -e "\e[41;1;37m                              ⇱  REYCODESSH  ⇲                      \e[0m\e[7;32m [ V1.6 ] \e[0m"
 echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
 echo -e "${verde}   CUENTAS SSH - DROPLET - SCRIPT - APK MOD - DISEÑO WED ( ${rojo}dev:${cierre} ${melon}@Reycode${cierre} )
 ${bar4}
@@ -759,9 +767,10 @@ ${blanco}[${cierre}${rojo}08${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${bla
 ${blanco}[${cierre}${rojo}09${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Limpiar memoria  ${amarillo}=======${cierre}${rojo}>${cierre} ${amarillo}cache${cierre}
 ${blanco}[${cierre}${rojo}10${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Detalles de la  ${amarillo}========${cierre}${rojo}>${cierre} ${azul}maquina${cierre}
 ${blanco}[${cierre}${rojo}11${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Crear copia de  ${amarillo}========${cierre}${rojo}>${cierre} ${verde}usuarios${cierre}
+${blanco}[${cierre}${rojo}12${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Instalar metodo  ${amarillo}=======${cierre}${rojo}>${cierre} ${melon}SSL+PYT.D${cierre}
 ${blanco}[${cierre}${rojo}0${cierre}${blanco}]${cierre} ${rojo}>>>${cierre} ${resaltadorojo} SALIR ${cierre1}
 ${bar4}"
-read -p "$(echo -e "${blanco}seleccione [0-5]:${cierre}")" selection
+read -p "$(echo -e "${blanco}seleccione [0-12]:${cierre}")" selection
 case "$selection" in
 1)nuevo_usuario ;;
 2)eliminar_usuario ;;
@@ -774,9 +783,10 @@ case "$selection" in
 9)caches ;;
 10)monitor ;;
 11)backup ;;
+12)ssl_pay ;;
 	0)cd $HOME && exit 0;;
 	*)
-	echo -e "${rojo} Porfavor seleccione del [0-5]${cierre}"
+	echo -e "${rojo} comando principal- usercode ${cierre}"
 	;;
 esac
 }
