@@ -710,7 +710,7 @@ ${azul}[08]${cierre} ${rojo}>${cierre} ${blanco}Desistalar  ${amarillo}=========
 ${azul}[09]${cierre} ${rojo}>${cierre} ${blanco}Limpiar memoria  ${amarillo}=======${cierre}${rojo}>${cierre} ${amarillo}cache${cierre}
 ${azul}[10]${cierre} ${rojo}>${cierre} ${blanco}Detalles de la  ${amarillo}========${cierre}${rojo}>${cierre} ${amarillo}maquina${cierre}
 ${azul}[11]${cierre} ${rojo}>${cierre} ${blanco}Crear copia de  ${amarillo}========${cierre}${rojo}>${cierre} ${amarillo}usuarios${cierre}
-${azul}[0]${cierre} ${rojo}>${cierre} ${resaltadorojo}SALIR${cierre1}
+${azul}[0]${cierre} ${rojo}>>>${cierre} ${resaltadorojo} SALIR ${cierre1}
 ${bar2}"
 read -p "$(echo -e "${blanco}seleccione [0-5]:${cierre}")" selection
 case "$selection" in
