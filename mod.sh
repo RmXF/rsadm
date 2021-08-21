@@ -637,6 +637,7 @@ rm -rf /etc/usr/bin/usercode; usercode
 
 
 detalles_de_usuario () {
+clear
 red=$(tput setaf 1)
 gren=$(tput setaf 2)
 yellow=$(tput setaf 3)
@@ -681,7 +682,7 @@ if [[ -e "${USRdatabase}" ]]; then
 fi
 echo -e "$txtvar"
 done <<< "$(mostrar_usuarios)"
-echo -e  "$bar 1" 
+echo -e  "$bar4" 
 read -p  " ➢ Presione enter para volver " 
 rm -rf /etc/usr/bin/usercode; usercode
 }
