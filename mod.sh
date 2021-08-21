@@ -254,7 +254,7 @@ echo -e "\E[41;1;37m SISTEMAS      CANTIDAD         USO              IP         
 echo -e "\e[7;35  CPU ➛ \e[0m           \033[1;93m$_core\e[0m             \033[1;32m$_usop\e[0m       \e[33;1;34m  $(meu_ip) \e[0m"
 echo -e "\e[7;35  RAM ➛ \e[0m          \033[1;93m$ram1\e[0m           \033[1;32m$_usor\e[0m"
 echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
-echo -e "\e[7;35m         Su Siatema  Operativo es: $(os_system)          \e[0m "
+echo -e "\e[7;35m         Su Sistema Operativo es: $(os_system)          \e[0m "
 echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
 read -p " ➢ Presione enter para volver "
 rm -rf /etc/usr/bin/usercode; usercode
