@@ -516,13 +516,13 @@ echo -e "${verde}     CUENTAS SSH - DROPLET - SCRIPT - APK MOD - DISEÑO WED (${
 ${bar4}
 ${blanco}TOTAL DE USUARIOS: ${rojo}>${cierre} ${azul}No: ${blanco}$No_user  ${cierre}
 ${bar3}
-${azul}[1]${cierre} ${rojo}>${cierre} ${blanco}Agregar ===================== ${verde}Usuario${cierre}
-${azul}[2]${cierre} ${rojo}>${cierre} ${blanco}Eliminar ==================== ${rojo}Usuario${cierre}
-${azul}[3]${cierre} ${rojo}>${cierre} ${blanco}Editar ====================== ${amarillo}Usuario${cierre}
-${azul}[4]${cierre} ${rojo}>${cierre} ${blanco}Renovar ===================== ${verde}Usuarios${cierre}
-${azul}[5]${cierre} ${rojo}>${cierre} ${blanco}Detalles de los ============= ${amarillo}Usuarios${cierre}
-${azul}[6]${cierre} ${rojo}>${cierre} ${blanco}Clientes ==================== ${amarillo}Onliness${cierre}
-${azul}[7]${cierre} ${rojo}>${cierre} ${blanco}Actualizar ================== ${amarillo}Script${cierre}
+${azul}[1]${cierre} ${rojo}>${cierre} ${blanco}Agregar ${verde}Usuario${cierre}
+${azul}[2]${cierre} ${rojo}>${cierre} ${blanco}Eliminar ${rojo}Usuario${cierre}
+${azul}[3]${cierre} ${rojo}>${cierre} ${blanco}Editar ${amarillo}Usuario${cierre}
+${azul}[4]${cierre} ${rojo}>${cierre} ${blanco}Renovar ${verde}Usuarios${cierre}
+${azul}[5]${cierre} ${rojo}>${cierre} ${blanco}Detalles de los ${amarillo}Usuarios${cierre}
+${azul}[6]${cierre} ${rojo}>${cierre} ${blanco}Clientes ${amarillo}Onliness${cierre}
+${azul}[7]${cierre} ${rojo}>${cierre} ${blanco}Actualizar ${amarillo}Script${cierre}
 ${azul}[0]${cierre} ${rojo}>${cierre} ${rojo}SALIR${cierre}
 ${bar2}"
 read -p "$(echo -e "${blanco}seleccione [0-5]:${cierre}")" selection
