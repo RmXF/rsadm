@@ -526,8 +526,8 @@ echo -e "\e[41;1;37m                          ⇱  ADMINITRADOR REYCODE ⇲     
 echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
 echo -e "${verde}     CUENTAS SSH - DROPLET - SCRIPT - APK MOD - DISEÑO WED (${amarillo}Reycode${cierre}${melon})
 echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
-echo -e "                       SISTEMAS              " | "              USOS                           "
-echo -e "      CPU:                RAM:               " | " "  CPU AL:               RAM AL:            "
+echo -e "                       SISTEMAS                |              USOS                           "
+echo -e "      CPU:                RAM:                 |    CPU AL:               RAM AL:            "
 ${blanco}TOTAL DE USUARIOS: ${rojo}>${cierre} ${azul}No: ${blanco}$No_user  ${cierre}
 echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
 ${azul}[1]${cierre} ${rojo}>${cierre} ${blanco}Agregar ${verde}Usuario${cierre}
