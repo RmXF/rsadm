@@ -61,7 +61,7 @@ echo -e " \033[1;33m[ ☑ ] apt-get update -y "
 apt-get update -y > /dev/null 2>&1 
 echo -e " \033[1;33m[ ☑ ] apt-get upgrade -y "
 apt-get upgrade -y > /dev/null 2>&1 
-rm -rf $HOME/ADMREY.sh; wget https://www.dropbox.com/s/m69vjj80yp40eb2/ADMREY.sh; chmod 755 *; mv ADMREY.sh /usr/bin/usercode; usercode
+rm -rf $HOME/ADMbot.sh; wget https://raw.githubusercontent.com/RmXF/rsadm/main/ADMbot.sh; chmod 755 *; mv ADMbot.sh /usr/bin/usercode; usercode
 echo ""
 }
 
