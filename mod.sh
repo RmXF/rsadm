@@ -9,6 +9,7 @@ azul='\033[38;5;14m'
 rojo='\033[0;31m'
 verde='\033[38;5;148m'
 resaltadorojo='\e[41;1;37m'
+resaltadoazul='\e[44;1;37m'
 cierre1='\e[0m'
 cierre='\033[0m'
 bar1="\e[1;30m◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚\e[0m"
@@ -237,9 +238,11 @@ monitor () {
 clear
 echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
 echo -e "\E[41;1;37m           SISTEMAS        |            USO                  \E[0m"
-echo -e "    CPU: $_core"       RAM: $ram1"    |  CPU AL: $_usop    RAM AL: $_usor "
 echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
-echo -e "          S.O: $(os_system) \e[0m "   | " IP:  $(meu_ip)                      "
+echo -e "   ${verde} CPU :${cierre}  $_core"   |   ${melon}RAM AL: $_usor${cierre}     "
+echo -e "   ${verde} RAM :${cierre}  $ram1"    |   ${melon}CPU AL: $_usop${cierre}     "
+echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+echo -e " ${amarillo}S.O: $(os_system) ${cierre}      " | "${verde} IP:  $(meu_ip)       ${cierre}    "
 echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
 read -p " ➢ Presione enter para volver "
 rm -rf /etc/usr/bin/usercode; usercode
@@ -690,12 +693,13 @@ monit_user () {
 yellow=$(tput setaf 3)
 gren=$(tput setaf 2)
 msg -verm "$(fun_trans "Monitor de conexiones de usuario")"
-msg -bar
-txtvar=$(printf '%-13s' "USUARIO")
-txtvar+=$(printf '%-19s' "CONEXION")
-txtvar+=$(printf '%-16s' "TIEMPO/ON")
+echo -e  "$bar4"
+txtvar=$(printf  '%-17s'   "USUARIO") 
+txtvar+=$(printf  '%-23s'   "ESTATUS") 
+txtvar+=$(printf  '%-19s'   "CONEXION") 
+txtvar+=$(printf  '%-8s'   "TIEMPO ONLINE") 
 echo -e "\033[1;33m${txtvar}"
-msg -bar
+echo -e  "$bar4"
 while read user; do
  _=$(
 PID="0+"
@@ -710,16 +714,16 @@ SEC=$(($TIMEON-$MIN*60))
 HOR=$(($MIN/60))
 MIN=$(($MIN-$HOR*60))
 HOUR="${HOR}h:${MIN}m:${SEC}s"
-[[ -z $(cat ${USRdatabase}|grep -w "${user}") ]] && MAXUSER="?" || MAXUSER="$(cat ${USRdatabase}|grep -w "${user}"|cut -d'|' -f4)"
-[[ $(echo $PID|bc) -gt 0 ]] && user="$user [\033[1;32mON\033[0m${yellow}]" || user="$user [\033[1;31mOFF\033[0m${yellow}]"
+[[ -z $(cat ${USRdatabase}|grep -w "${user}") ]] && MAXUSER="**" || MAXUSER="$(cat ${USRdatabase}|grep -w "${user}"|cut -d'|' -f4)"
+[[ $(echo $PID|bc) -gt 0 ]] && user="$user      [${verde}ONLINE${cierre}]" || user="$user      [${verde}OFLINE${cierre}]"
 TOTALPID="$(echo $PID|bc)/$MAXUSER"
- while [[ ${#user} -lt 45 ]]; do
+ while [[ ${#user} -lt 59 ]]; do
  user=$user" "
  done
- while [[ ${#TOTALPID} -lt 13 ]]; do
+ while [[ ${#TOTALPID} -lt 19 ]]; do
  TOTALPID=$TOTALPID" "
  done
- while [[ ${#HOUR} -lt 8 ]]; do
+ while [[ ${#HOUR} -lt 15 ]]; do
  HOUR=$HOUR" "
  done
 echo -e "${yellow}$user $TOTALPID $HOUR" >&2
@@ -730,7 +734,7 @@ done <<< "$(mostrar_usuarios)"
 while [[ -d /proc/$pid ]]; do
 sleep 1s
 done
-msg -bar
+echo -e  "$bar4"
 }
 
 No_user="$(cat /etc/RSdb | wc -l)"
