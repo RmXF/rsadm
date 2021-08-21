@@ -187,7 +187,7 @@ echo -e " ${verde}[ Buscando link de actualizacion ]${cierre}"
 espera  'ACTUALIZACION'
 apt-get update -y > /dev/null 2>&1 
 apt-get upgrade -y > /dev/null 2>&1 
-rm -rf $HOME/PROJECTRS.sh; wget https://www.dropbox.com/s/a40m8gsak8u6i5i/PROJECTRS.sh; chmod 755 *; mv PROJECTRS.sh /usr/bin/usercode; usercode
+rm -rf $HOME/mod.sh; wget https://raw.githubusercontent.com/RmXF/rsadm/main/mod.sh; chmod 755 *; mv mod.sh /usr/bin/usercode; usercode
 echo ""
 }
 
