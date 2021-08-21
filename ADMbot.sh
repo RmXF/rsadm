@@ -513,18 +513,18 @@ echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━�
 echo -e "\e[41;1;37m                          ⇱  ADMINITRADOR REYCODE ⇲                     \e[0m\e[7;32m V1.3 \e[0m"
 echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
 echo -e "\E[44;1;37m         SISTEMAS                  \e[0m" "\E[44;1;37m |                USOS                    \e[0m"
-echo -e "${verde}CPU:                ${verde}RAM:      \e[0m" "\E[44;1;37m |
+echo -e "${verde}CPU:                ${verde}RAM:      \e[0m" "\E[44;1;37m |  "
 echo -e "${verde}     CUENTAS SSH - DROPLET - SCRIPT - APK MOD - DISEÑO WED (${amarillo}Reycode${cierre}${melon})
 ${bar4}
 ${blanco}TOTAL DE USUARIOS: ${rojo}>${cierre} ${azul}No: ${blanco}$No_user  ${cierre}
 ${bar3}
-${azul}[1]${cierre} ${rojo}>${cierre} ${blanco}Agregar ${verde}Usuario${cierre}
-${azul}[2]${cierre} ${rojo}>${cierre} ${blanco}Eliminar ${rojo}Usuario${cierre}
-${azul}[3]${cierre} ${rojo}>${cierre} ${blanco}Editar ${amarillo}Usuario${cierre}
-${azul}[4]${cierre} ${rojo}>${cierre} ${blanco}Renovar ${verde}Usuarios${cierre}
-${azul}[5]${cierre} ${rojo}>${cierre} ${blanco}Informacion de ${amarillo}Usuarios${cierre}
-${azul}[6]${cierre} ${rojo}>${cierre} ${blanco}Clientes ${amarillo}Onliness${cierre}
-${azul}[7]${cierre} ${rojo}>${cierre} ${blanco}Update ${amarillo}Script${cierre}
+${azul}[1]${cierre} ${rojo}>${cierre} ${blanco}Agregar ===================== ${verde}Usuario${cierre}
+${azul}[2]${cierre} ${rojo}>${cierre} ${blanco}Eliminar ==================== ${rojo}Usuario${cierre}
+${azul}[3]${cierre} ${rojo}>${cierre} ${blanco}Editar ====================== ${amarillo}Usuario${cierre}
+${azul}[4]${cierre} ${rojo}>${cierre} ${blanco}Renovar ===================== ${verde}Usuarios${cierre}
+${azul}[5]${cierre} ${rojo}>${cierre} ${blanco}Detalles de los ============= ${amarillo}Usuarios${cierre}
+${azul}[6]${cierre} ${rojo}>${cierre} ${blanco}Clientes ==================== ${amarillo}Onliness${cierre}
+${azul}[7]${cierre} ${rojo}>${cierre} ${blanco}Actualizar ================== ${amarillo}Script${cierre}
 ${azul}[0]${cierre} ${rojo}>${cierre} ${rojo}SALIR${cierre}
 ${bar2}"
 read -p "$(echo -e "${blanco}seleccione [0-5]:${cierre}")" selection
