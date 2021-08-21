@@ -527,7 +527,7 @@ echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━�
 echo -e "${verde}     CUENTAS SSH - DROPLET - SCRIPT - APK MOD - DISEÑO WED (${amarillo}Reycode${cierre}${melon})
 echo -e "${bar4}"
 ${blanco}TOTAL DE USUARIOS: ${rojo}>${cierre} ${azul}No: ${blanco}$No_user  ${cierre}
-echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+echo -e "${bar3}"
 ${azul}[1]${cierre} ${rojo}>${cierre} ${blanco}Agregar ${verde}Usuario${cierre}
 ${azul}[2]${cierre} ${rojo}>${cierre} ${blanco}Eliminar ${rojo}Usuario${cierre}
 ${azul}[3]${cierre} ${rojo}>${cierre} ${blanco}Editar ${amarillo}Usuario${cierre}
