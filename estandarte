@@ -28,13 +28,13 @@ chk=$(cat /etc/ssh/sshd_config | grep Banner)
 }
 clear
 echo -e "${rojo}===============================================================================${cierre}"
-echo -e "\E[44;1;37m                           COLOCAR BANNER SSH                           \E[0m"
+echo -e "\E[44;1;37m                              COLOCAR BANNER SSH                              \E[0m"
 echo -e "${rojo}===============================================================================${cierre}"
 echo -ne "${amarillo}[${cierre}${rojo}01${cierre}${amarillo}]${cierre} - AGREGAR BANNER SSH\n" 
 echo -ne "${amarillo}[${cierre}${rojo}02${cierre}${amarillo}]${cierre} - ELIMINAR BANNER SSH\n"
 echo -ne "${amarillo}[${cierre}${rojo}02${cierre}${amarillo}]${cierre} - VOLVER\n"
 echo -e "${rojo}===============================================================================${cierre}"
-echo -ne "\033[1;32mSELECCION LA OPCION QUE DESEES \033[1;31m ?\033[1;37m : "; read resp
+echo -ne "${resaltadorojo}SELECCION LA OPCION QUE DESEES \033[1;31m ?\033[1;37m : "; read resp
 if [[ "$resp" = "1" ]]; then
 echo ""
 echo -ne "\033[1;32mPUEDE ESCRIBA SU MENSAJE A COTINUACION \033[1;31m =>>\033[1;37m : "; read msg1
@@ -44,10 +44,10 @@ if [[ -z "$msg1" ]]; then
 	banner
 fi
 echo -e "${rojo}===============================================================================${cierre}"
-echo -ne "${amarillo}[${cierre}${rojo}01${cierre}${amarillo}]${cierre} - PEQUEÑO\n" 
+echo -ne "${amarillo}[${cierre}${rojo}01${cierre}${amarillo}]${cierre} - ${verde}PEQUEÑO${cierre}\n" 
 echo -ne "${amarillo}[${cierre}${rojo}02${cierre}${amarillo}]${cierre} - MEDIANO\n"
-echo -ne "${amarillo}[${cierre}${rojo}03${cierre}${amarillo}]${cierre} - GRANDE\n"
-echo -ne "${amarillo}[${cierre}${rojo}04${cierre}${amarillo}]${cierre} - MAS GRANDE\n"
+echo -ne "${amarillo}[${cierre}${rojo}03${cierre}${amarillo}]${cierre} - ${amarillo}GRANDE${cierre}\n"
+echo -ne "${amarillo}[${cierre}${rojo}04${cierre}${amarillo}]${cierre} - ${rojo}MAS GRANDE${cierre}\n"
 echo -e "${rojo}===============================================================================${cierre}"
 echo -ne "\033[1;32m SELECCIONE EL TAMAÑO DE LETRA QUE DESEA COLOCARLE A SU BANNER \033[1;31m ?\033[1;37m : "; read opc
 if [[ "$opc" = "1" ]] || [[ "$opc" = "01" ]]; then
@@ -96,7 +96,7 @@ echo "<h$_size>$msg1</h$_size>" >> $local
 /etc/init.d/ssh restart > /dev/null 2>&1
 echo -e "\E[44;1;37m              SU BANER AH SIDO COLOCADO CON EXITO !!!              \E[0m"
 sleep 2
-usercode
+menu
 else
 echo -e "\n\033[1;31mOpcion no valida !\033[0m"
 	sleep 2
