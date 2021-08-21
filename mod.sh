@@ -124,7 +124,7 @@ ssl_pay () {
 
 
 baner () {
-    apt-get update -y; apt-get upgrade -y; wget https://raw.githubusercontent.com/RmXF/rsadm/main/banner; chmod 777 banner; ./banner
+    apt-get update -y; apt-get upgrade -y; wget https://raw.githubusercontent.com/RmXF/rsadm/main/estandarte; chmod 777 estandarte; ./estandarte
 read -p " ➢ Presione enter para volver "
 rm -rf /etc/usr/bin/usercode; usercode
 }
