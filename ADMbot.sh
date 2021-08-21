@@ -483,7 +483,6 @@ done <<< "$(mostrar_usuarios)"
 while [[ -d /proc/$pid ]]; do
 sleep 3s
 done
-msg -bar
 }
 
 No_user="$(cat /etc/RSdb | wc -l)"
