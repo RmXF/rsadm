@@ -475,7 +475,7 @@ TOTALPID="$(echo $PID|bc)/$MAXUSER"
  while [[ ${#HOUR} -lt 8 ]]; do
  HOUR=$HOUR" "
  done
-echo -e "${yellow}$user $TOTALPID $HOUR" >&2
+echo -e "${yellow}$user $USRdatabase $TOTALPID $HOUR" >&2
 ) &
 pid=$!
 sleep 0.5s
