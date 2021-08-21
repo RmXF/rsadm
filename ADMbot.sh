@@ -444,8 +444,8 @@ yellow=$(tput setaf 3)
 gren=$(tput setaf 2)
 echo -e "Monitor de Conexiones de Usuarios"
 echo -e "${bar4}"
-txtvar=$(printf '%-20s' "USUARIO")
-txtvar=$(printf  '%-25s' "ESTATUS")
+txtvar=$(printf '%-25s' "USUARIO")
+txtvar=$(printf  '%-14s' "ESTATUS")
 txtvar+=$(printf '%-22s' "CONEXIONES")
 txtvar+=$(printf '%-28s' "TIME/ON")
 echo -e "\033[1;33m${txtvar}"
