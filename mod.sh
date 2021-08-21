@@ -237,12 +237,11 @@ autm=$(grep "usercode;" /etc/profile > /dev/null && echo -e "\033[1;32m ◉ " ||
 monitor () {
 clear
 echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
-echo -e "\E[41;1;37m           SISTEMAS        |            USO                  \E[0m"
+echo -e "\E[41;1;37m SISTEMAS      CANTIDAD         USO              IP          \E[0m"
+echo -e "\e[7;35  CPU ➛ \e[0m           \033[1;93m$_core\e[0m             \033[1;32m$_usop\e[0m       \e[33;1;34m  $(meu_ip) \e[0m"
+echo -e "\e[7;35  RAM ➛ \e[0m          \033[1;93m$ram1\e[0m           \033[1;32m$_usor\e[0m"
 echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
-echo -e "   ${verde} CPU :${cierre}  $_core"   |   ${melon}RAM AL: $_usor${cierre}     "
-echo -e "   ${verde} RAM :${cierre}  $ram1"    |   ${melon}CPU AL: $_usop${cierre}     "
-echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
-echo -e " ${amarillo}S.O: $(os_system) ${cierre}      " | "${verde} IP:  $(meu_ip)       ${cierre}    "
+echo -e "\e[7;35m          Sistema su es Operativo: $(os_system)          \e[0m "
 echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
 read -p " ➢ Presione enter para volver "
 rm -rf /etc/usr/bin/usercode; usercode
@@ -748,9 +747,7 @@ echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━�
 echo -e "${verde}   CUENTAS SSH - DROPLET - SCRIPT - APK MOD - DISEÑO WED ( ${rojo}dev:${cierre} ${melon}@Reycode${cierre} )
 ${bar4}
 ${blanco}TOTAL DE USUARIOS: ${rojo}>${cierre} ${azul}No: ${blanco}$No_user  ${cierre}
-${bar4}
-${resaltadoazul}                COMANDO PARA ACCESO AL PANEL: usercode                        ${cierre1}"      
-${bar4}
+${bar3}
 ${blanco}[${cierre}${rojo}01${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Agregar  ${amarillo}===============${cierre}${rojo}>${cierre} ${verde}Usuario${cierre}
 ${blanco}[${cierre}${rojo}02${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Eliminar ${amarillo}===============${cierre}${rojo}>${cierre} ${rojo}Usuario${cierre}
 ${blanco}[${cierre}${rojo}03${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Editar   ${amarillo}===============${cierre}${rojo}>${cierre} ${amarillo}Usuario${cierre}
