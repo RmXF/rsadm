@@ -193,35 +193,6 @@ fun_bar () {
         }
 
 
-autoinicio () {
-   if grep  "usercode;"  /etc/profile > /dev/null; then
- claro
-      echo -e  "\033[1;32mDESACTIVANDO AUTO EJECUCON DEL SCRIPT\033[0m" 
-      offautusercode () {
- sed -i  '/usercode;/d'  /etc/profile
-      }
-      eco ""
- fun_bar  'offautusercode' 
-      eco ""
-      echo -e  "\033[1;31mAUTO EJECUCION DESACTIVADA CON EXITO !\033[0m" 
-      sleep 1.5s
- usercode
-   más
- claro
-      echo -e  "\033[1;32mATIVANDO AUTO EJECUCION\033[0m" 
-      autusercode () {
- grep -v  "^usercode;"  /etc/profile > /tmp/tmpass && mv /tmp/tmpass /etc/profile
-         echo  "usercode;"  >> /etc/profile
-      }
-      eco ""
- fun_bar  'autusercode' 
-      eco ""
-      echo -e  "\033[1;32 AUTO EJECCION ACTIVADA CON EXITO !\033[0m" 
-      sleep 1.5s
- usercode
-   Fi
-
-}
 
 
 autm=$(grep  "menu;"  /etc/profile > /dev/null && echo -e  "\033[1;32m◉ "  || echo -e  "\033[1;31m○ ") 
@@ -809,8 +780,7 @@ ${blanco}[${cierre}${rojo}09${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${bla
 ${blanco}[${cierre}${rojo}10${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Detalles de la  ${amarillo}========${cierre}${rojo}>${cierre} ${azul}maquina${cierre}
 ${blanco}[${cierre}${rojo}11${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Crear copia de  ${amarillo}========${cierre}${rojo}>${cierre} ${verde}usuarios${cierre}
 ${blanco}[${cierre}${rojo}12${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Instalar metodo  ${amarillo}=======${cierre}${rojo}>${cierre} ${melon}SSL+PYT.D${cierre}
-${blanco}[${cierre}${rojo}13${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Añadir banner  ${amarillo}=========${cierre}${rojo}>${cierre} ${melon}ssh${cierre}
-${blanco}[${cierre}${rojo}13${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}AutoInicio  ${amarillo}============${cierre}${rojo}>${cierre} $autm 
+${blanco}[${cierre}${rojo}13${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Añadir banner  ${amarillo}=========${cierre}${rojo}>${cierre} ${melon}ssh${cierre} 
 ${blanco}[${cierre}${rojo}0${cierre}${blanco}]${cierre} ${rojo}>>>${cierre} ${resaltadorojo} SALIR ${cierre1}
 ${bar4}"
 read -p "$(echo -e "${blanco}seleccione [0-13]:${cierre}")" selection
@@ -828,7 +798,6 @@ case "$selection" in
 11)backup ;;
 12)ssl_pay ;;
 13)baner ;;
-14)autoinicio ;;
 	0)cd $HOME && exit 0;;
 	*)
 	echo -e "${rojo} comando principal- usercode ${cierre}"
