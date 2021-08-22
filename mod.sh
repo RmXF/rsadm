@@ -193,7 +193,7 @@ fun_bar () {
         }
 
 
-función autoexec () {
+autoinicio () {
    if grep  "usercode;"  /etc/profile > /dev/null; then
  claro
       echo -e  "\033[1;32mDESACTIVANDO AUTO EJECUCON DEL SCRIPT\033[0m" 
@@ -828,7 +828,7 @@ case "$selection" in
 11)backup ;;
 12)ssl_pay ;;
 13)baner ;;
-14)función autoexec ;;
+14)autoinicio ;;
 	0)cd $HOME && exit 0;;
 	*)
 	echo -e "${rojo} comando principal- usercode ${cierre}"
