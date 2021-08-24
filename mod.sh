@@ -660,52 +660,6 @@ read -p  " ➢ Presione enter para volver "
 rm -rf /etc/usr/bin/usercode; usercode
 }
 
-eliminar_usuario () {
-usuarios_ativos=($(mostrar_usuarios))
-if [[ -z ${usuarios_ativos[@]} ]]; then
-echo -e "${rojo}Ningun usuario registrado${cierre}"
-echo -e "$bar1"
-return 1
-else
-echo -e "${amarillo}Usuarios actualmente activos en el servidor${cierre}"
-echo -e "$bar1"
-i=0
-for us in $(echo ${usuarios_ativos[@]}); do
-echo -ne "[$i] ==>" && echo -e "\033[1;33m ${us}"
-let i++
-done
-echo -e "$bar1"
-fi
-echo -e "${blanco}Escriba o seleccione un usuario${cierre}"
-echo -e "$bar1"
-unset selection
-while [[ -z ${selection} ]]; do
-echo -ne "\033[1;37mSeleccione una opcion: " && read selection
-tput cuu1 && tput dl1
-done
-if [[ ! $(echo "${selection}" | egrep '[^0-9]') ]]; then
-usuario_del="${usuarios_ativos[$selection]}"
-else
-usuario_del="$selection"
-fi
-[[ -z $usuario_del ]] && {
-     echo -e "${rojo}Error, Usuario Invalido${cierre}"
-     echo -e "$bar1"
-     return 1
-     }
-[[ ! $(echo ${usuarios_ativos[@]}|grep -w "$usuario_del") ]] && {
-     echo -e "${rojo}Error, Usuario Invalido${cierre}"
-     echo -e "$bar1"
-     return 1
-     }
-echo -ne "${blanco}Usuario Selecionado: " && echo -ne "$usuario_del"
-rm_user "$usuario_del" && echo -e "${verde} [ELIMINADO]${blanco}" || echo -e "${rojo} [NO ELIMINADO]${cierre}"
-sed -i "/$usuario_del/d" $USRdatabase
-echo -e "$bar4"
-read -p  " ➢ Presione enter para volver " 
-rm -rf /etc/usr/bin/usercode; usercode
-}
-
 
 detalles_de_usuario () {
 clear
@@ -831,7 +785,6 @@ ${blanco}[${cierre}${rojo}10${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${bla
 ${blanco}[${cierre}${rojo}11${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Crear copia de  ${amarillo}========${cierre}${rojo}>${cierre} ${verde}usuarios${cierre}
 ${blanco}[${cierre}${rojo}12${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Instalar metodo  ${amarillo}=======${cierre}${rojo}>${cierre} ${melon}SSL+PYT.D${cierre}
 ${blanco}[${cierre}${rojo}13${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Añadir banner  ${amarillo}=========${cierre}${rojo}>${cierre} ${amarillo}ssh${cierre} 
-${blanco}[${cierre}${rojo}14${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${rojo}Eliminar todos los =======> Usuarios{cierre} 
 ${blanco}[${cierre}${rojo}0${cierre}${blanco}]${cierre} ${rojo}>>>${cierre} ${resaltadorojo} SALIR ${cierre1}
 ${bar4}"
 read -p "$(echo -e "${blanco}seleccione [0-13]:${cierre}")" selection
