@@ -1,7 +1,7 @@
 #!/bin/bash
 clear
 cd $HOME
-SCPdir="/etc/newadm"
+SCPdir="/etc/usercode"
 SCPinstal="$HOME/install"
 SCPidioma="${SCPdir}/idioma"
 SCPusr="${SCPdir}/ger-user"
