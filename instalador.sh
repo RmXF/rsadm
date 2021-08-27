@@ -319,4 +319,4 @@ mv -f /etc/bash.bashrc.2 /etc/bash.bashrc
 [[ ${#id} -gt 2 ]] && echo "es" > ${SCPidioma} || echo "${id}" > ${SCPidioma}
 msg -bar2
 [[ ${byinst} = "true" ]] && install_fim
-rm -rf instalscript.sh
+rm -rf instalador.sh
