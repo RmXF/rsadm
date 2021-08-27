@@ -17,7 +17,7 @@ cierre1='\e[0m'
 cierre='\033[0m'
 bar1="\e[1;30m◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚◚\e[0m"
 bar2="\033[38;5;226m---------------------------------------------------------\033[0m"
-bar3="\033[38;5;226m-------------------------------- =/ ADMIN \= -------------------------------\033[0m"
+bar3="\033[38;5;226m-------------------------------- ${blanco}=/${cierre}${rojo} ADMIN ${cierre}${blanco}\=${cierre} -------------------------------\033[0m"
 bar4="\033[38;5;14m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\e[0m"
 
 ## VARIABLES DE ENTORNO Y SYSTEMA 
@@ -214,7 +214,7 @@ echo -e " ${verde}[ Buscando link de actualizacion ]${cierre}"
 espera  'ACTUALIZACION'
 apt-get update -y > /dev/null 2>&1 
 apt-get upgrade -y > /dev/null 2>&1 
-rm -rf $HOME/mod.sh; wget https://raw.githubusercontent.com/RmXF/rsadm/main/mod.sh; chmod 755 *; mv mod.sh /usr/bin/usercode; usercode
+rm -rf $HOME/panelrs.sh; wget https://raw.githubusercontent.com/RmXF/rsadm/main/panelrs.sh; chmod 755 *; mv panelrs.sh /usr/bin/usercode; usercode
 echo ""
 }
 
