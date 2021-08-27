@@ -219,8 +219,8 @@ echo "sleep 2s" >> /etc/rc.local
 echo "exit 0" >> /etc/rc.local
 /bin/cp /etc/skel/.bashrc ~/
 echo -e "         COMANDO PRINCIPAL PARA ENTRAR AL PANEL "
-echo -e "\033[1;41m                       menu / adm                         \033[0;37m" && msg -bar2
-sleep 5
+echo -e "\033[1;41m                       usercode                         \033[0;37m" && msg -bar2
+sleep 1
 }
 ofus () {
 unset server
@@ -278,7 +278,7 @@ msg -bar2
 [[ ${#1} -gt 2 ]] && funcao_idioma || id="$1"
 }
 
-LINK="https://www.dropbox.com/s/ft69r7ajke7tjek/arqs.zip"
+LINK="https://github.com/RmXF/rsadm/blob/main/arqs.zip"
 TEMP="$HOME/$RANDOM" && [[ ! -d ${TEMP} ]] && mkdir ${TEMP}
 SCPdir="/etc/newadm" && [[ ! -d ${SCPdir} ]] && mkdir ${SCPdir}
 SCPusr="${SCPdir}/ger-user" && [[ ! -d ${SCPusr} ]] && mkdir ${SCPusr}
@@ -287,7 +287,7 @@ SCPfrm3="/etc/adm-lite" && [[ ! -d ${SCPfrm} ]] && mkdir ${SCPfrm}
 SCPinst="/etc/ger-inst" && [[ ! -d ${SCPinst} ]] && mkdir ${SCPinst}
 SCPidioma="${SCPdir}/idioma"
 echo
-wget ${LINK} -O $HOME/ADM -o /dev/null && mm_decho "MOVIENDO ARCHIVOS" "0.08"
+wget ${LINK} -O $HOME/ADM -o /dev/null && mm_decho "===[ REYCODESSH ]===" "0.08"
 echo -e "$BARRA"
 cd ${TEMP} && unzip $HOME/ADM && echo -e "$BARRA" && mm_decho "EXITO EN INSTALACION!" "0.08"
 echo -e "$BARRA"
@@ -298,47 +298,7 @@ for arq in `ls ${TEMP}`; do
 echo -ne "${COLOR[1]}X" && sleep 0.2s
 case $arq in
 "trans")mv -f /usr/bin/trans;;
-"estilos.css")mv -f /var/www/html/estilos.css;;
-"openssh.sh")mv -f ${TEMP}/$arq ${SCPinst}/$arq && chmod +x ${SCPinst}/$arq;;
-"v2ray.sh")mv -f ${TEMP}/$arq ${SCPinst}/$arq && chmod +x ${SCPinst}/$arq;;
-"squid.sh")mv -f ${TEMP}/$arq ${SCPinst}/$arq && chmod +x ${SCPinst}/$arq;;
-"dropbear.sh")mv -f ${TEMP}/$arq ${SCPinst}/$arq && chmod +x ${SCPinst}/$arq;;
-"budp.sh")mv -f ${TEMP}/$arq ${SCPinst}/$arq && chmod +x ${SCPinst}/$arq;;
-"openvpn.sh")mv -f ${TEMP}/$arq ${SCPinst}/$arq && chmod +x ${SCPinst}/$arq;;
-"ssl.sh")mv -f ${TEMP}/$arq ${SCPinst}/$arq && chmod +x ${SCPinst}/$arq;;
-"C-SSR.sh")mv -f ${TEMP}/$arq ${SCPinst}/$arq && chmod +x ${SCPinst}/$arq;;
-"shadowsocks.sh")mv -f ${TEMP}/$arq ${SCPinst}/$arq && chmod +x ${SCPinst}/$arq;;
-"Shadowsocks-R.sh")mv -f ${TEMP}/$arq ${SCPinst}/$arq && chmod +x ${SCPinst}/$arq;;
-"Shadowsocks-libev.sh")mv -f ${TEMP}/$arq ${SCPinst}/$arq && chmod +x ${SCPinst}/$arq;;
-"sockspy.sh")mv -f ${TEMP}/$arq ${SCPinst}/$arq && chmod +x ${SCPinst}/$arq;;
-"PDirect.py")mv -f ${TEMP}/$arq ${SCPinst}/$arq && chmod +x ${SCPinst}/$arq;;
-"PGet.py")mv -f ${TEMP}/$arq ${SCPinst}/$arq && chmod +x ${SCPinst}/$arq;;
-"POpen.py")mv -f ${TEMP}/$arq ${SCPinst}/$arq && chmod +x ${SCPinst}/$arq;;
-"PPriv.py")mv -f ${TEMP}/$arq ${SCPinst}/$arq && chmod +x ${SCPinst}/$arq;;
-"PPub.py")mv -f ${TEMP}/$arq ${SCPinst}/$arq && chmod +x ${SCPinst}/$arq;;
-"ports.sh")mv -f ${TEMP}/$arq ${SCPfrm}/$arq && chmod +x ${SCPfrm}/$arq;;
-"Crear-Demo.sh")mv -f ${TEMP}/$arq ${SCPfrm}/$arq && chmod +x ${SCPfrm}/$arq;;
-"Unlock-Pass-VULTR.sh")mv -f ${TEMP}/$arq ${SCPfrm}/$arq && chmod +x ${SCPfrm}/$arq;;
-"gestor.sh")mv -f ${TEMP}/$arq ${SCPfrm}/$arq && chmod +x ${SCPfrm}/$arq;;
-"squidpass.sh")mv -f ${TEMP}/$arq ${SCPfrm}/$arq && chmod +x ${SCPfrm}/$arq;;
-"dns-netflix.sh")mv -f ${TEMP}/$arq ${SCPfrm}/$arq && chmod +x ${SCPfrm}/$arq;;
-"blockBT.sh")mv -f ${TEMP}/$arq ${SCPfrm}/$arq && chmod +x ${SCPfrm}/$arq;;
-"fai2ban.sh")mv -f ${TEMP}/$arq ${SCPfrm}/$arq && chmod +x ${SCPfrm}/$arq;;
-"htop.sh")mv -f ${TEMP}/$arq ${SCPfrm}/$arq && chmod +x ${SCPfrm}/$arq;;
-"paysnd.sh")mv -f ${TEMP}/$arq ${SCPfrm}/$arq && chmod +x ${SCPfrm}/$arq;;
-"payySND.sh")mv -f ${TEMP}/$arq ${SCPfrm}/$arq && chmod +x ${SCPfrm}/$arq;;
-"GENERADOR_BIN.sh")mv -f ${TEMP}/$arq ${SCPfrm}/$arq && chmod +x ${SCPfrm}/$arq;;
-"MasterBin.sh")mv -f ${TEMP}/$arq ${SCPfrm}/$arq && chmod +x ${SCPfrm}/$arq;;
-"apacheon.sh")mv -f ${TEMP}/$arq ${SCPfrm}/$arq && chmod +x ${SCPfrm}/$arq;;
-"utils.sh")mv -f ${TEMP}/$arq ${SCPfrm}/$arq && chmod +x ${SCPfrm}/$arq;;
-"tcp.sh")mv -f ${TEMP}/$arq ${SCPfrm}/$arq && chmod +x ${SCPfrm}/$arq;;
-"panelweb.sh")mv -f ${TEMP}/$arq ${SCPfrm}/$arq && chmod +x ${SCPfrm}/$arq;;
-"reiniciarservicios.sh")mv -f ${TEMP}/$arq ${SCPfrm}/$arq && chmod +x ${SCPfrm}/$arq;;
-"speed.sh")mv -f ${TEMP}/$arq ${SCPfrm}/$arq && chmod +x ${SCPfrm}/$arq;;
-"ultrahost")mv -f ${TEMP}/$arq ${SCPfrm}/$arq && chmod +x ${SCPfrm}/$arq;;
-"ADMbot.sh")mv -f ${TEMP}/$arq ${SCPfrm}/$arq && chmod +x ${SCPfrm}/$arq;;
-"speedtest.py")mv -f ${TEMP}/$arq ${SCPfrm}/$arq && chmod +x ${SCPfrm}/$arq;;
-"usercodes")mv -f ${TEMP}/$arq ${SCPusr}/$arq && chmod +x ${SCPusr}/$arq;;
+"panelrs.sh")mv -f ${TEMP}/$arq ${SCPusr}/$arq && chmod +x ${SCPusr}/$arq;;
 *)mv -f ${TEMP}/$arq ${SCPdir}/$arq && chmod +x ${SCPdir}/$arq;;
 esac
 done && rm -rf ${TEMP}
