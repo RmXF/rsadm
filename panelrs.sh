@@ -156,7 +156,7 @@ echo -e "\033[38;5;226m=========================================================
     chmod 777 /bin/badvpn-udpgw
     fi
     screen -dmS badvpn2 /bin/badvpn-udpgw --listen-addr 127.0.0.1:7300 --max-clients 1000 --max-connections-for-client 10 
- [[ "$(ps x | grep badvpn | grep -v grep | awk '{print $1}')" ]] &&  "                  ACTIVADO CON EXITO" ||  "   Instalacion Fallida "
+ [[ "$(ps x | grep badvpn | grep -v grep | awk '{print $1}')" ]] &&  -verd "                  ACTIVADO CON EXITO" ||  -ama"   Instalacion Fallida "
  echo -e "\033[38;5;226m=========================================================\033[0m"
 else
 echo -e "\033[38;5;226m=========================================================\033[0m"
