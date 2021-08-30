@@ -136,6 +136,44 @@ read -p " ➢ Presione enter para volver "
 rm -rf /etc/usr/bin/usercode; usercode
 }
 
+BadVPN () {
+pid_badvpn=$(ps x | grep badvpn | grep -v grep | awk '{print $1}')
+if [ "$pid_badvpn" = "" ]; then
+echo -e "\033[38;5;226m=========================================================\033[0m"
+echo -e "${resaltadoazul}               INSTALACION RAPIDA DE BADVPN              ${cierre1}"
+echo -e "\033[38;5;226m=========================================================\033[0m"
+echo -e "${azul} Puerto predeterminado 7300 para el uso badvpn ${cierre}"
+echo -e "${azul} pero si gustas podes modifcarlo abajo ${cierre}"
+echo -e "\033[38;5;226m=========================================================\033[0m"
+read -p "[Puerto Predeterminado]: " -e -i 7300 udpport
+echo -e "\033[38;5;226m=========================================================\033[0m"
+echo -e "${verde}Puerto Seccionado con exito${cierre}  ${udpport}"
+echo -e "\033[38;5;226m=========================================================\033[0m"
+echo -e  " ${resaltadoverde}     PUERTO BADVPN ACTIVADO CON EXITO ${cierre1} (UDP ${udpport})  "
+echo -e "\033[38;5;226m=========================================================\033[0m"
+    if [[ ! -e /bin/badvpn-udpgw ]]; then
+    wget -O /bin/badvpn-udpgw https://www.dropbox.com/preview/badvpn-udpgw &>/dev/null
+    chmod 777 /bin/badvpn-udpgw
+    fi
+    screen -dmS badvpn2 /bin/badvpn-udpgw --listen-addr 127.0.0.1:7300 --max-clients 1000 --max-connections-for-client 10 
+ [[ "$(ps x | grep badvpn | grep -v grep | awk '{print $1}')" ]] && msg -verd "                  ACTIVADO CON EXITO" || msg -ama "   Instalacion Fallida "
+ echo -e "\033[38;5;226m=========================================================\033[0m"
+else
+echo -e "\033[38;5;226m=========================================================\033[0m"
+    echo -e " ${resaltadorojo}       DESACTIVADOR DE BADVPN ${cierre1} (UDP ${udpport})  "
+echo -e "\033[38;5;226m=========================================================\033[0m"
+    kill -9 $(ps x | grep badvpn | grep -v grep | awk '{print $1'}) > /dev/null 2>&1
+    killall badvpn-udpgw > /dev/null 2>&1
+    [[ ! "$(ps x | grep badvpn | grep -v grep | awk '{print $1}')" ]] && echo -ne "                DESACTIVADO CON EXITO \n"
+    unset pid_badvpn
+echo -e "\033[38;5;226m=========================================================\033[0m"
+    fi
+unset pid_badvpn
+read -p " ➢ Presione enter para volver "
+rm -rf /etc/usr/bin/usercode; usercode
+}
+
+
 # BARRAS DE ESPERAS
 espera () {
           comando[0]="$1"
