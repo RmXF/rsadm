@@ -424,14 +424,14 @@ usuarios_ativos=($(mostrar_usuarios))
 if [[ -z ${usuarios_ativos[@]} ]]; then
 clear
 echo -e "$bar1"
-⚠️ SE RECOMIENDA HACER LOS USUARIOS  CON 7 LETRAS PARA TENER UN MEJOR ORDEN EN VISUALIZACION ⚠️
+echo -e " ⚠️ SE RECOMIENDA HACER LOS USUARIOS  CON 7 LETRAS PARA TENER UN MEJOR ORDEN EN VISUALIZACION ⚠️ "
 echo -e "$bar1"
 echo -e "${rojo}Ningun usuario registrado${cierre}"
 echo -e "$bar1"
 else
 clear
 echo -e "$bar1"
-⚠️ SE RECOMIENDA HACER LOS USUARIOS  CON 7 LETRAS PARA TENER UN MEJOR ORDEN EN VISUALIZACION ⚠️
+echo -e "⚠️ SE RECOMIENDA HACER LOS USUARIOS  CON 7 LETRAS PARA TENER UN MEJOR ORDEN EN VISUALIZACION ⚠️ "
 echo -e "$bar1"
 echo -e "${azul}Usuarios actualmente activos en el servidor${cierre}"
 echo -e "$bar1"
