@@ -156,15 +156,16 @@ echo -e "\033[38;5;226m=========================================================
     chmod 777 /bin/badvpn-udpgw
     fi
     screen -dmS badvpn2 /bin/badvpn-udpgw --listen-addr 127.0.0.1:7300 --max-clients 1000 --max-connections-for-client 10 
- [[ "$(ps x | grep badvpn | grep -v grep | awk '{print $1}')" ]] &&  msg -verd "                  ACTIVADO CON EXITO" ||  msg -ama"   Instalacion Fallida "
+ [[ "$(ps x | grep badvpn | grep -v grep | awk '{print $1}')" ]] && msg -verd "                  ACTIVADO CON EXITO" || msg -ama "   Instalacion Fallida "
  echo -e "\033[38;5;226m=========================================================\033[0m"
 else
 echo -e "\033[38;5;226m=========================================================\033[0m"
+	msg -tit
     echo -e " ${resaltadorojo}       DESACTIVADOR DE BADVPN ${cierre1} (UDP ${udpport})  "
 echo -e "\033[38;5;226m=========================================================\033[0m"
     kill -9 $(ps x | grep badvpn | grep -v grep | awk '{print $1'}) > /dev/null 2>&1
     killall badvpn-udpgw > /dev/null 2>&1
-    [[ ! "$(ps x | grep badvpn | grep -v grep | awk '{print $1}')" ]] && echo -ne "                DESACTIVADO CON EXITO \n"
+    [[ ! "$(ps x | grep badvpn | grep -v grep | awk '{print $1}')" ]] && msg -ne "                DESACTIVADO CON EXITO \n"
     unset pid_badvpn
 echo -e "\033[38;5;226m=========================================================\033[0m"
     fi
@@ -803,7 +804,7 @@ No_user="$(cat /etc/RSdb | wc -l)"
 menu () {
 clear
 echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
-echo -e "\e[41;1;37m                              ⇱  REYCODESSH  ⇲                      \e[0m\e[7;32m [ V2.1 ] \e[0m"
+echo -e "\e[41;1;37m                              ⇱  REYCODESSH  ⇲                      \e[0m\e[7;32m [ V2.2 ] \e[0m"
 echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
 echo -e "${verde}CUENTAS SSH - DROPLET - SCRIPT - APK MOD - DISEÑO WEB ( ${rojo}dev:${cierre} ${melon}@ReyRs_ViPro${cierre} )
 ${bar4}
