@@ -813,20 +813,20 @@ echo -e "${verde}CUENTAS SSH - DROPLET - SCRIPT - APK MOD - DISEÑO WEB ( ${rojo
 ${bar4}
 ${blanco}TOTAL DE USUARIOS: ${rojo}>${cierre} ${azul}No: ${blanco}$No_user  ${cierre}
 ${bar3}
-${blanco}[${cierre}${rojo}01${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Agregar  ${amarillo}===============${cierre}${rojo}>${cierre} ${verde}Usuario${cierre}
-${blanco}[${cierre}${rojo}02${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Eliminar ${amarillo}===============${cierre}${rojo}>${cierre} ${rojo}Usuario${cierre}
-${blanco}[${cierre}${rojo}03${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Editar   ${amarillo}===============${cierre}${rojo}>${cierre} ${amarillo}Usuario${cierre}
-${blanco}[${cierre}${rojo}04${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Renovar  ${amarillo}===============${cierre}${rojo}>${cierre} ${verde}Usuarios${cierre}
-${blanco}[${cierre}${rojo}05${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Informacion de  ${amarillo}========${cierre}${rojo}>${cierre} ${amarillo}Usuarios${cierre}
-${blanco}[${cierre}${rojo}06${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Usuarios  ${amarillo}==============${cierre}${rojo}>${cierre} ${azul}Onlines${cierre}
-${blanco}[${cierre}${rojo}07${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Actualizar  ${amarillo}============${cierre}${rojo}>${cierre} ${verde}script${cierre}
-${blanco}[${cierre}${rojo}08${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Desistalar  ${amarillo}============${cierre}${rojo}>${cierre} ${rojo}script${cierre}
-${blanco}[${cierre}${rojo}09${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Limpiar memoria  ${amarillo}=======${cierre}${rojo}>${cierre} ${amarillo}cache${cierre}
-${blanco}[${cierre}${rojo}10${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Detalles de la  ${amarillo}========${cierre}${rojo}>${cierre} ${azul}maquina${cierre}
-${blanco}[${cierre}${rojo}11${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Crear copia de  ${amarillo}========${cierre}${rojo}>${cierre} ${verde}usuarios${cierre}
-${blanco}[${cierre}${rojo}12${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Instalar metodo  ${amarillo}=======${cierre}${rojo}>${cierre} ${melon}SSL+PYT.D${cierre}
-${blanco}[${cierre}${rojo}13${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Añadir banner  ${amarillo}=========${cierre}${rojo}>${cierre} ${amarillo}ssh${cierre} 
-${blanco}[${cierre}${rojo}14${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Instalar Puerto  ${amarillo}=======${cierre}${rojo}>>${cierre} ${amarillo}BadVpn${cierre} 
+${blanco}[${cierre}${rojo}01${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Agregar  ${amarillo}===============${cierre}${blanco}>>${cierre} ${verde}Usuario${cierre}
+${blanco}[${cierre}${rojo}02${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Eliminar ${amarillo}===============${cierre}${blanco}>>${cierre} ${rojo}Usuario${cierre}
+${blanco}[${cierre}${rojo}03${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Editar   ${amarillo}===============${cierre}${blanco}>>${cierre} ${amarillo}Usuario${cierre}
+${blanco}[${cierre}${rojo}04${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Renovar  ${amarillo}===============${cierre}${blanco}>>${cierre} ${verde}Usuarios${cierre}
+${blanco}[${cierre}${rojo}05${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Informacion de  ${amarillo}========${cierre}${blanco}>>${cierre} ${amarillo}Usuarios${cierre}
+${blanco}[${cierre}${rojo}06${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Usuarios  ${amarillo}==============${cierre}${blanco}>>${cierre} ${azul}Onlines${cierre}
+${blanco}[${cierre}${rojo}07${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Actualizar  ${amarillo}============${cierre}${blanco}>>${cierre} ${verde}script${cierre}
+${blanco}[${cierre}${rojo}08${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Desistalar  ${amarillo}============${cierre}${blanco}>>${cierre} ${rojo}script${cierre}
+${blanco}[${cierre}${rojo}09${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Limpiar memoria  ${amarillo}=======${cierre}${blanco}>>${cierre} ${amarillo}cache${cierre}
+${blanco}[${cierre}${rojo}10${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Detalles de la  ${amarillo}========${cierre}${blanco}>>${cierre} ${azul}maquina${cierre}
+${blanco}[${cierre}${rojo}11${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Crear copia de  ${amarillo}========${cierre}${blanco}>>${cierre} ${verde}usuarios${cierre}
+${blanco}[${cierre}${rojo}12${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Instalar metodo  ${amarillo}=======${cierre}${blanco}>>${cierre} ${melon}SSL+PYT.D${cierre}
+${blanco}[${cierre}${rojo}13${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Añadir banner  ${amarillo}=========${cierre}${blanco}>>${cierre} ${amarillo}ssh${cierre} 
+${blanco}[${cierre}${rojo}14${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Instalar Puerto  ${amarillo}=======${cierre}${blanco}>>${cierre} ${amarillo}BadVpn${cierre} 
 ${blanco}[${cierre}${rojo}0${cierre}${blanco}]${cierre} ${rojo}>>>${cierre} ${resaltadorojo} SALIR ${cierre1}
 ${bar4}"
 read -p "$(echo -e "${blanco}seleccione [0-13]:${cierre}")" selection
