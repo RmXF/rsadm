@@ -813,11 +813,11 @@ clear
 on="\033[1;92m[ON]" && off="\033[1;31m[OFF]"
 [[ $(ps x | grep badvpn | grep -v grep | awk '{print $1}') ]] && badvpn=$on || badvpn=$off
 echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
-echo -e "\e[41;1;37m                              ⇱  REYCODESSH  ⇲                      \e[0m\e[7;32m [ V2.3 ] \e[0m"
+echo -e "\e[41;1;37m                              ⇱  REYCODESSH  ⇲                      \e[0m\e[7;32m [ V2.4 ] \e[0m"
 echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
 echo -e "${verde}CUENTAS SSH - DROPLET - SCRIPT - APK MOD - DISEÑO WEB ( ${rojo}dev:${cierre} ${melon}@ReyRs_ViPro${cierre} )
 ${bar4}
-${blanco}TOTAL DE USUARIOS: ${rojo}>${cierre} ${azul}No: ${blanco}$No_user ${cierre} BADVPN: $badvpn 
+${blanco}TOTAL DE USUARIOS: ${rojo}>${cierre} ${azul}No: ${blanco}$No_user ${cierre}      |          BADVPN: $badvpn 
 ${bar3}
 ${blanco}[${cierre}${rojo}01${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Agregar  ${amarillo}===============${cierre}${blanco}>>${cierre} ${verde}Usuario${cierre}
 ${blanco}[${cierre}${rojo}02${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Eliminar ${amarillo}===============${cierre}${blanco}>>${cierre} ${rojo}Usuario${cierre}
