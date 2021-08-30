@@ -264,8 +264,11 @@ echo $system|awk '{print $1, $2}'
 }
 
 _core=$(printf '%-1s' "$(grep -c cpu[0-9] /proc/stat)")
+
 ram1=$(free -h | grep -i mem | awk {'print $2'})
+
 _usop=$(printf '%-1s' "$(top -bn1 | awk '/Cpu/ { cpu = "" 100 - $7 "%" }; END { print cpu }')")
+
 _usor=$(printf '%-8s' "$(free -m | awk 'NR==2{printf "%.2f%%", $3*100/$2 }')")
 
 meu_ip () {
@@ -278,24 +281,6 @@ MEU_IP2=$(wget -qO- ipv4.icanhazip.com)
 echo "$MEU_IP2" > /etc/MEUIPADM
 fi
 }
-
-function autoinicio () {
-      clear
-      echo -e "${resaltado2}💎 ATIVANDO AUTO EJECUCION - By Fabian 💎${cierre}"
-      autmenu () {
-         grep -v "^usercode;" /etc/profile > /tmp/tmpass && mv /tmp/tmpass /etc/profile
-         echo "usercode;" >> /etc/profile
-      }
-      echo ""
-      fun_bar 'autusercode'
-      echo ""
-      echo -e "${resaltado2}AUTO EJECUCION ATIVADA CON EXITO!${cierre}"
-      sleep 1.5s
-      usercode
-
-}
-
-autm=$(grep "usercode;" /etc/profile > /dev/null && echo -e "\033[1;32m ◉ " || echo -e "\033[1;31m ○ ")
 
 
 monitor () {
@@ -815,7 +800,7 @@ No_user="$(cat /etc/RSdb | wc -l)"
 menu () {
 clear
 echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
-echo -e "\e[41;1;37m                              ⇱  REYCODESSH  ⇲                      \e[0m\e[7;32m [ V2.0 ] \e[0m"
+echo -e "\e[41;1;37m                              ⇱  REYCODESSH  ⇲                      \e[0m\e[7;32m [ V2.1 ] \e[0m"
 echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
 echo -e "${verde}CUENTAS SSH - DROPLET - SCRIPT - APK MOD - DISEÑO WEB ( ${rojo}dev:${cierre} ${melon}@ReyRs_ViPro${cierre} )
 ${bar4}
