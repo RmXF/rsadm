@@ -422,9 +422,17 @@ rm -rf $HOME//etc/usr/bin/usercode; usercode
 nuevo_usuario () {
 usuarios_ativos=($(mostrar_usuarios))
 if [[ -z ${usuarios_ativos[@]} ]]; then
+clear
+echo -e "$bar1"
+⚠️ SE RECOMIENDA HACER LOS USUARIOS  CON 7 LETRAS PARA TENER UN MEJOR ORDEN EN VISUALIZACION ⚠️
+echo -e "$bar1"
 echo -e "${rojo}Ningun usuario registrado${cierre}"
 echo -e "$bar1"
 else
+clear
+echo -e "$bar1"
+⚠️ SE RECOMIENDA HACER LOS USUARIOS  CON 7 LETRAS PARA TENER UN MEJOR ORDEN EN VISUALIZACION ⚠️
+echo -e "$bar1"
 echo -e "${azul}Usuarios actualmente activos en el servidor${cierre}"
 echo -e "$bar1"
 for us in $(echo ${usuarios_ativos[@]}); do
@@ -440,7 +448,7 @@ while true; do
      err_fun 1 && continue
      elif [[ "${#nomeuser}" -lt "4" ]]; then
      err_fun 2 && continue
-     elif [[ "${#nomeuser}" -gt "24" ]]; then
+     elif [[ "${#nomeuser}" -gt "7" ]]; then
      err_fun 3 && continue
      elif [[ "$(echo ${usuarios_ativos[@]}|grep -w "$nomeuser")" ]]; then
      err_fun 14 && continue
@@ -452,9 +460,9 @@ while true; do
      read -p ": " senhauser
      if [[ -z $senhauser ]]; then
      err_fun 4 && continue
-     elif [[ "${#senhauser}" -lt "6" ]]; then
+     elif [[ "${#senhauser}" -lt "4" ]]; then
      err_fun 5 && continue
-     elif [[ "${#senhauser}" -gt "20" ]]; then
+     elif [[ "${#senhauser}" -gt "7" ]]; then
      err_fun 6 && continue
      fi
      break
