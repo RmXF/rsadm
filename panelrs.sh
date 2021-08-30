@@ -298,7 +298,7 @@ monitor () {
 clear
 echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
 echo -e "\E[41;1;37m SISTEMAS      CANTIDAD         USO              IP          \E[0m"
-echo -e "\e[7;35  CPU ➛ \e[0m           \033[1;93m$_core\e[0m             \033[1;32m$_usop\e[0m       \e[33;1;34m  $(meu_ip) \e[0m"
+echo -e "\e[7;35  CPU ➛ \e[0m           \033[1;93m$_core\e[0m               \033[1;32m$_usop\e[0m     \e[33;1;34m  $(meu_ip) \e[0m"
 echo -e "\e[7;35  RAM ➛ \e[0m          \033[1;93m$ram1\e[0m           \033[1;32m$_usor\e[0m"
 echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
 echo -e "\e[7;35m         Su Sistema Operativo es: $(os_system)          \e[0m "
@@ -813,7 +813,7 @@ clear
 on="\033[1;92m[ON]" && off="\033[1;31m[OFF]"
 [[ $(ps x | grep badvpn | grep -v grep | awk '{print $1}') ]] && badvpn=$on || badvpn=$off
 echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
-echo -e "\e[41;1;37m                              ⇱  REYCODESSH  ⇲                      \e[0m\e[7;32m [ V2.4 ] \e[0m"
+echo -e "\e[41;1;37m                              ⇱  REYCODESSH  ⇲                      \e[0m\e[7;32m [ V2.5 ] \e[0m"
 echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
 echo -e "${verde}CUENTAS SSH - DROPLET - SCRIPT - APK MOD - DISEÑO WEB ( ${rojo}dev:${cierre} ${melon}@ReyRs_ViPro${cierre} )
 ${bar4}
