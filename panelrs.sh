@@ -262,18 +262,18 @@ echo ""
 
 #DETALLES DEL SISTEMA
 
+_core=$(printf '%-1s' "$(grep -c cpu[0-9] /proc/stat)")
+_usop=$(printf '%-1s' "$(top -bn1 | awk '/Cpu/ { cpu = "" 100 - $8 "%" }; END { print cpu }')")
+
+ram1=$(free -h | grep -i mem | awk {'print $2'})
+
+_ram=$(printf ' %-9s' "$(free -h | grep -i mem | awk {'print $2'})")
+_usor=$(printf '%-8s' "$(free -m | awk 'NR==2{printf "%.2f%%", $3*100/$2 }')")
+
 os_system () {
 system=$(echo $(cat -n /etc/issue |grep 1 |cut -d' ' -f6,7,8 |sed 's/1//' |sed 's/      //'))
 echo $system|awk '{print $1, $2}'
 }
-
-_core=$(printf '%-1s' "$(grep -c cpu[0-9] /proc/stat)")
-
-ram1=$(free -h | grep -i mem | awk {'print $2'})
-
-_usop=$(printf '%-1s' "$(top -bn1 | awk '/Cpu/ { cpu = "" 100 - $7 "%" }; END { print cpu }')")
-
-_usor=$(printf '%-8s' "$(free -m | awk 'NR==2{printf "%.2f%%", $3*100/$2 }')")
 
 meu_ip () {
 if [[ -e /etc/MEUIPADM ]]; then
@@ -282,6 +282,16 @@ else
 MEU_IP=$(ip addr | grep 'inet' | grep -v inet6 | grep -vE '127\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' | grep -o -E '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' | head -1)
 MEU_IP2=$(wget -qO- ipv4.icanhazip.com)
 [[ "$MEU_IP" != "$MEU_IP2" ]] && echo "$MEU_IP2" || echo "$MEU_IP"
+echo "$MEU_IP2" > /etc/MEUIPADM
+fi
+}
+fun_ip () {
+if [[ -e /etc/MEUIPADM ]]; then
+IP="$(cat /etc/MEUIPADM)"
+else
+MEU_IP=$(ip addr | grep 'inet' | grep -v inet6 | grep -vE '127\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' | grep -o -E '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' | head -1)
+MEU_IP2=$(wget -qO- ipv4.icanhazip.com)
+[[ "$MEU_IP" != "$MEU_IP2" ]] && IP="$MEU_IP2" || IP="$MEU_IP"
 echo "$MEU_IP2" > /etc/MEUIPADM
 fi
 }
