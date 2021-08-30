@@ -173,6 +173,9 @@ read -p " ➢ Presione enter para volver "
 rm -rf /etc/usr/bin/usercode; usercode
 }
 
+on="\033[1;92m[ON]" && off="\033[1;31m[OFF]"
+[[ $(ps x | grep badvpn | grep -v grep | awk '{print $1}') ]] && badvpn=$on || badvpn=$off
+
 
 # BARRAS DE ESPERAS
 espera () {
@@ -819,7 +822,7 @@ ${blanco}[${cierre}${rojo}10${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${bla
 ${blanco}[${cierre}${rojo}11${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Crear copia de  ${amarillo}========${cierre}${blanco}>>${cierre} ${verde}usuarios${cierre}
 ${blanco}[${cierre}${rojo}12${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Instalar metodo  ${amarillo}=======${cierre}${blanco}>>${cierre} ${melon}SSL+PYT.D${cierre}
 ${blanco}[${cierre}${rojo}13${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Añadir banner  ${amarillo}=========${cierre}${blanco}>>${cierre} ${amarillo}ssh${cierre} 
-${blanco}[${cierre}${rojo}14${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Instalar Puerto  ${amarillo}=======${cierre}${blanco}>>${cierre} ${amarillo}BadVpn${cierre} 
+${blanco}[${cierre}${rojo}14${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Instalar Puerto  ${amarillo}=======${cierre}${blanco}>>${cierre} ${amarillo}BadVpn${cierre} $badvpn
 ${blanco}[${cierre}${rojo}0${cierre}${blanco}]${cierre} ${rojo}>>>${cierre} ${resaltadorojo} SALIR ${cierre1}
 ${bar4}"
 read -p "$(echo -e "${blanco}seleccione [0-13]:${cierre}")" selection
