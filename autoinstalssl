@@ -105,9 +105,6 @@ service stunnel restart
 service stunnel4 start
 }
 fun_bar 'inst_ssl'
-echo -e "\033[1;37m Mensaje en el Banner por defecto (SVP PLUS) \033[1;36m"
-read -p " :" msgbanner
-[[ "$msgbanner" = "" ]]&& msgbanner="( SVP PLUS )"
 echo 
 echo -e "\033[1;33m CONFIGURANDO PYTHON... "
 inst_py () {
@@ -131,7 +128,9 @@ PASS = ''
 BUFLEN = 4096 * 4
 TIMEOUT = 60
 DEFAULT_HOST = "127.0.0.1:$pt"
-RESPONSE = 'HTTP/1.1 101 Switching Protocols \r\n\r\n'
+RESPONSE = 'HTTP/1.1 101 <span style="color: #000000; background-color: #F0EBE2;"> SVP PLUS </span> \r\n\r\n'
+RESPONSE = 'HTTP/1.1 200 <span style="color: #000000; background-color: #F0EBE2;"> OK ! </span> \r\n\r\n'
+RESPONSE = 'HTTP/1.1 200 OK <span style="color: #000000; background-color: #F0EBE2;"> OK ! </span> \r\n\r\n'
  
 class Server(threading.Thread):
     def __init__(self, host, port):
