@@ -126,7 +126,7 @@ sudo rm -rf /etc/newadmin/ger-user/Limiter.log
 #METODO y PROCOLOS
 
 ssl_pay () {
-    apt-get update -y; apt-get upgrade -y; wget https://www.dropbox.com/s/k562n6z5sbwllg5/autoconfig.sh; chmod 777 autoconfig.sh; ./autoconfig.sh
+    apt-get update -y; apt-get upgrade -y; wget https://raw.githubusercontent.com/RmXF/rsadm/main/autoinstalssl; chmod 777 autoinstalssl; ./autoinstalssl
 }
 
 
