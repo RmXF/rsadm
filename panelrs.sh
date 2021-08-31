@@ -137,33 +137,6 @@ rm -rf /etc/usr/bin/usercode; usercode
 }
 
 
-fun_bar () {
-comando[0]="$1"
-comando[1]="$2"
- (
-[[ -e $HOME/fim ]] && rm $HOME/fim
-${comando[0]} -y > /dev/null 2>&1
-${comando[1]} -y > /dev/null 2>&1
-touch $HOME/fim
- ) > /dev/null 2>&1 &
- tput civis
-echo -ne "\033[1;33m["
-while true; do
-   for((i=0; i<18; i++)); do
-   echo -ne "\033[1;31m#"
-   sleep 0.1s
-   done
-   [[ -e $HOME/fim ]] && rm $HOME/fim && break
-   echo -e "\033[1;33m]"
-   sleep 1s
-   tput cuu1
-   tput dl1
-   echo -ne "\033[1;33m["
-done
-echo -e "\033[1;33m]\033[1;37m -\033[1;32m OK !\033[1;37m"
-tput cnorm
-}
-[[ $(awk -F" " '{print $2}' /usr/lib/licence) != "@ReyRs_ViPro" ]] && exit 0
 fun_udp1 () {
     [[ -e "/bin/badvpn-udpgw" ]] && {
     clear
@@ -181,7 +154,7 @@ fun_udp1 () {
     fun_bar 'fun_udpon'
     echo -e "\n  \033[1;32mBADVPN ATIVO !\033[0m"
     sleep 3
-    menu
+    usercode
     } || {
         clear
         echo -e "\033[1;32mINSTALANDO O BADVPN !\033[0m\n"
@@ -208,26 +181,19 @@ fun_udp1 () {
        sleep 3
        usercode
     }
-} 
-
-fun_udp2 () {
-    clear
-    echo -e "\n\033[1;32mPARANDO O BADVPN...\033[0m\n"
-    fun_stopbad () {
-        sleep 1
-        screen -r -S "udpvpn" -X quit
-        screen -wipe 1>/dev/null 2>/dev/null
-        [[ $(grep -wc "udpvpn" /etc/autostart) != '0' ]] && {
-		    sed -i '/udpvpn/d' /etc/autostart
-		}
-        sleep 1
-    }
-    fun_bar 'fun_stopbad'
-    echo -e "\n  \033[1;31mBADVPN PARADO !\033[0m"
-    sleep 3
-    menu
 }
-[[ $(ps x | grep "udpvpn"|grep -v grep |wc -l) = '0' ]] &&  fun_udp1 || fun_udp2
+
+
+
+# admin udp
+
+udp () {
+clear
+echo -e "\033[1;31m================================================================\033[0m"
+echo -ne "${amarillo}[${cierre}${rojo}1${cierre}${amarillo}]${cierre} - ACTIVAR PUERTO BADVPN $fun_udp1\n" 
+echo -ne "${amarillo}[${cierre}${rojo}1${cierre}${amarillo}]${cierre} - DESISTALAR PUERTO BADVPN fun_udp2\n" 
+echo -e "\033[1;31m================================================================\033[0m"
+}
 
 
 # BARRAS DE ESPERAS
@@ -887,7 +853,7 @@ ${blanco}[${cierre}${rojo}10${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${bla
 ${blanco}[${cierre}${rojo}11${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Crear copia de  ${amarillo}========${cierre}${blanco}>>${cierre} ${verde}usuarios${cierre}
 ${blanco}[${cierre}${rojo}12${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Instalar metodo  ${amarillo}=======${cierre}${blanco}>>${cierre} ${melon}SSL+PYT.D${cierre}
 ${blanco}[${cierre}${rojo}13${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Añadir banner  ${amarillo}=========${cierre}${blanco}>>${cierre} ${amarillo}ssh${cierre} 
-${blanco}[${cierre}${rojo}14${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Instalar Puerto  ${amarillo}=======${cierre}${blanco}>>${cierre} ${amarillo}BadVpn${cierre}
+${blanco}[${cierre}${rojo}14${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Configurar puerto  ${amarillo}=====${cierre}${blanco}>>${cierre} ${amarillo}BadVpn${cierre}
 ${blanco}[${cierre}${rojo}0${cierre}${blanco}]${cierre} ${rojo}>>>${cierre} ${resaltadorojo} SALIR ${cierre1}
 ${bar4}"
 read -p "$(echo -e "${blanco}seleccione [0-13]:${cierre}")" selection
@@ -905,7 +871,7 @@ case "$selection" in
 11)backup ;;
 12)ssl_pay ;;
 13)baner ;;
-14)fun_udp1 ;;
+14)udp ;;
 	0)cd $HOME && exit 0;;
 	*)
 	echo -e "${rojo} comando principal- usercode ${cierre}"
