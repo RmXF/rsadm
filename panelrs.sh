@@ -136,45 +136,98 @@ read -p " ➢ Presione enter para volver "
 rm -rf /etc/usr/bin/usercode; usercode
 }
 
-BadVPN () {
-pid_badvpn=$(ps x | grep badvpn | grep -v grep | awk '{print $1}')
-if [ "$pid_badvpn" = "" ]; then
-echo -e "\033[38;5;226m=========================================================\033[0m"
-echo -e "${resaltadoazul}               INSTALACION RAPIDA DE BADVPN              ${cierre1}"
-echo -e "\033[38;5;226m=========================================================\033[0m"
-echo -e "${azul} Puerto predeterminado 7300 para el uso badvpn ${cierre}"
-echo -e "${azul} pero si gustas podes modifcarlo abajo ${cierre}"
-echo -e "\033[38;5;226m=========================================================\033[0m"
-read -p "[Puerto Predeterminado]: " -e -i 7300 udpport
-echo -e "\033[38;5;226m=========================================================\033[0m"
-echo -e "${verde}Puerto Seccionado con exito${cierre}  ${udpport}"
-echo -e "\033[38;5;226m=========================================================\033[0m"
-echo -e  " ${resaltadoverde}     PUERTO BADVPN ACTIVADO CON EXITO ${cierre1} (UDP ${udpport})  "
-echo -e "\033[38;5;226m=========================================================\033[0m"
-    if [[ ! -e /bin/badvpn-udpgw ]]; then
-    wget -O /bin/badvpn-udpgw https://www.dropbox.com/preview/badvpn-udpgw &>/dev/null
-    chmod 777 /bin/badvpn-udpgw
-    fi
-    screen -dmS badvpn2 /bin/badvpn-udpgw --listen-addr 127.0.0.1:7300 --max-clients 1000 --max-connections-for-client 10 
- [[ "$(ps x | grep badvpn | grep -v grep | awk '{print $1}')" ]] && msg -verd "                  ACTIVADO CON EXITO" || msg -ama "   Instalacion Fallida "
- echo -e "\033[38;5;226m=========================================================\033[0m"
-else
-echo -e "\033[38;5;226m=========================================================\033[0m"
-	msg -tit
-    echo -e " ${resaltadorojo}       DESACTIVADOR DE BADVPN ${cierre1} (UDP ${udpport})  "
-echo -e "\033[38;5;226m=========================================================\033[0m"
-    kill -9 $(ps x | grep badvpn | grep -v grep | awk '{print $1'}) > /dev/null 2>&1
-    killall badvpn-udpgw > /dev/null 2>&1
-    [[ ! "$(ps x | grep badvpn | grep -v grep | awk '{print $1}')" ]] && msg -ne "                DESACTIVADO CON EXITO \n"
-    unset pid_badvpn
-echo -e "\033[38;5;226m=========================================================\033[0m"
-    fi
-unset pid_badvpn
-read -p " ➢ Presione enter para volver "
-rm -rf /etc/usr/bin/usercode; usercode
-}
 
-BadVPN
+fun_bar () {
+comando[0]="$1"
+comando[1]="$2"
+ (
+[[ -e $HOME/fim ]] && rm $HOME/fim
+${comando[0]} -y > /dev/null 2>&1
+${comando[1]} -y > /dev/null 2>&1
+touch $HOME/fim
+ ) > /dev/null 2>&1 &
+ tput civis
+echo -ne "\033[1;33m["
+while true; do
+   for((i=0; i<18; i++)); do
+   echo -ne "\033[1;31m#"
+   sleep 0.1s
+   done
+   [[ -e $HOME/fim ]] && rm $HOME/fim && break
+   echo -e "\033[1;33m]"
+   sleep 1s
+   tput cuu1
+   tput dl1
+   echo -ne "\033[1;33m["
+done
+echo -e "\033[1;33m]\033[1;37m -\033[1;32m OK !\033[1;37m"
+tput cnorm
+}
+[[ $(awk -F" " '{print $2}' /usr/lib/licence) != "@ReyRs_ViPro" ]] && exit 0
+fun_udp1 () {
+    [[ -e "/bin/badvpn-udpgw" ]] && {
+    clear
+    echo -e "\033[1;32mINICIANDO O BADVPN... \033[0m\n"
+    fun_udpon () {
+        screen -dmS udpvpn /bin/badvpn-udpgw --listen-addr 127.0.0.1:7300 --max-clients 1000 --max-connections-for-client 10
+        [[ $(grep -wc "udpvpn" /etc/autostart) = '0' ]] && {
+		    echo -e "ps x | grep 'udpvpn' | grep -v 'grep' || screen -dmS udpvpn /bin/badvpn-udpgw --listen-addr 127.0.0.1:7300 --max-clients 10000 --max-connections-for-client 10 --client-socket-sndbuf 10000" >> /etc/autostart
+		} || {
+		    sed -i '/udpvpn/d' /etc/autostart
+		    echo -e "ps x | grep 'udpvpn' | grep -v 'grep' || screen -dmS udpvpn /bin/badvpn-udpgw --listen-addr 127.0.0.1:7300 --max-clients 10000 --max-connections-for-client 10 --client-socket-sndbuf 10000" >> /etc/autostart
+		}
+        sleep 1
+    }
+    fun_bar 'fun_udpon'
+    echo -e "\n  \033[1;32mBADVPN ATIVO !\033[0m"
+    sleep 3
+    menu
+    } || {
+        clear
+        echo -e "\033[1;32mINSTALANDO O BADVPN !\033[0m\n"
+	    inst_udp () {
+	        cd $HOME
+            wget https://www.dropbox.com/preview/badvpn-udpgw -o /dev/null
+            mv -f $HOME/badvpn-udpgw /bin/badvpn-udpgw
+            chmod 777 /bin/badvpn-udpgw
+	   }
+	   fun_bar 'inst_udp'
+	   echo -e "\n\033[1;32mINICIANDO O BADVPN... \033[0m\n"
+       fun_udpon2 () {
+           screen -dmS udpvpn /bin/badvpn-udpgw --listen-addr 127.0.0.1:7300 --max-clients 1000 --max-connections-for-client 10
+           [[ $(grep -wc "udpvpn" /etc/autostart) = '0' ]] && {
+		       echo -e "ps x | grep 'udpvpn' | grep -v 'grep' || screen -dmS udpvpn /bin/badvpn-udpgw --listen-addr 127.0.0.1:7300 --max-clients 10000 --max-connections-for-client 10 --client-socket-sndbuf 10000" >> /etc/autostart
+		   } || {
+		       sed -i '/udpvpn/d' /etc/autostart
+		       echo -e "ps x | grep 'udpvpn' | grep -v 'grep' || screen -dmS udpvpn /bin/badvpn-udpgw --listen-addr 127.0.0.1:7300 --max-clients 10000 --max-connections-for-client 10 --client-socket-sndbuf 10000" >> /etc/autostart
+		   }
+           sleep 1
+       }
+       fun_bar 'fun_udpon2'
+       echo -e "\n\033[1;32mBADVPN ATIVO !\033[0m"
+       sleep 3
+       usercode
+    }
+} 
+
+fun_udp2 () {
+    clear
+    echo -e "\n\033[1;32mPARANDO O BADVPN...\033[0m\n"
+    fun_stopbad () {
+        sleep 1
+        screen -r -S "udpvpn" -X quit
+        screen -wipe 1>/dev/null 2>/dev/null
+        [[ $(grep -wc "udpvpn" /etc/autostart) != '0' ]] && {
+		    sed -i '/udpvpn/d' /etc/autostart
+		}
+        sleep 1
+    }
+    fun_bar 'fun_stopbad'
+    echo -e "\n  \033[1;31mBADVPN PARADO !\033[0m"
+    sleep 3
+    menu
+}
+[[ $(ps x | grep "udpvpn"|grep -v grep |wc -l) = '0' ]] &&  fun_udp1 || fun_udp2
 
 
 # BARRAS DE ESPERAS
@@ -815,7 +868,7 @@ clear
 on="\033[1;92m[ON]" && off="\033[1;31m[OFF]"
 [[ $(ps x | grep badvpn | grep -v grep | awk '{print $1}') ]] && badvpn=$on || badvpn=$off
 echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
-echo -e "\e[41;1;37m                              ⇱  REYCODESSH  ⇲                      \e[0m\e[7;32m [ V2.5 ] \e[0m"
+echo -e "\e[41;1;37m                              ⇱  REYCODESSH  ⇲                      \e[0m\e[7;32m [ V2.6 ] \e[0m"
 echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
 echo -e "${verde}CUENTAS SSH - DROPLET - SCRIPT - APK MOD - DISEÑO WEB ( ${rojo}dev:${cierre} ${melon}@ReyRs_ViPro${cierre} )
 ${bar4}
@@ -852,7 +905,7 @@ case "$selection" in
 11)backup ;;
 12)ssl_pay ;;
 13)baner ;;
-14)BadVPN ;;
+14)fun_udp1 ;;
 	0)cd $HOME && exit 0;;
 	*)
 	echo -e "${rojo} comando principal- usercode ${cierre}"
