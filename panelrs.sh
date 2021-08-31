@@ -183,6 +183,25 @@ fun_udp1 () {
     }
 }
 
+fun_udp2 () {
+    clear
+    echo -e "\n\033[1;32mPARANDO O BADVPN...\033[0m\n"
+    fun_stopbad () {
+        sleep 1
+        screen -r -S "udpvpn" -X quit
+        screen -wipe 1>/dev/null 2>/dev/null
+        [[ $(grep -wc "udpvpn" /etc/autostart) != '0' ]] && {
+		    sed -i '/udpvpn/d' /etc/autostart
+		}
+        sleep 1
+    }
+    fun_bar 'fun_stopbad'
+    echo -e "\n  \033[1;31mBADVPN PARADO !\033[0m"
+    sleep 3
+    menu
+}
+[[ $(ps x | grep "udpvpn"|grep -v grep |wc -l) = '0' ]] &&  fun_udp1 || fun_udp2
+
 
 
 # admin udp
