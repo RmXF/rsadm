@@ -174,6 +174,8 @@ read -p " ➢ Presione enter para volver "
 rm -rf /etc/usr/bin/usercode; usercode
 }
 
+BadVPN
+
 
 # BARRAS DE ESPERAS
 espera () {
