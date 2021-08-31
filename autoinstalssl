@@ -73,14 +73,14 @@ echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━�
 echo -e "\e[7;35m  Sistema Operativo:  \e[0m"  "\033[1;37m$(os_system)     "
 echo -e "\e[7;35m  IP del Servidor:    \e[0m"  "\033[1;37m$(meu_ip)        "
 echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
-echo -e "\e[7;32m      |            @ReyRs_ViPro              |    \e[0m"
+echo -e "\e[7;32m      |             @ReyRs_ViPro             |    \e[0m"
 echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
 echo -e "\033[1;32m              SCRIPT AUTOCONFIGURACION                   "
 echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
 echo -e "\033[1;36m                PythonDirect  + SSL                      "
 echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
-echo -e "\033[1;37mEsta instalacion requiere que esten libres los siguientes"
-echo -e "\033[1;37mpuertos 443 y 80"
+echo -e "\033[1;37mEsta instalacion requiere que esten libres "
+echo -e "\033[1;37mlos siguientespuertos 443 y 80"
 echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
 echo
 echo -e "\033[1;33m INSTALADO PUERTO SSL... "
@@ -105,8 +105,7 @@ service stunnel restart
 service stunnel4 start
 }
 fun_bar 'inst_ssl'
-echo 
-echo -e "\033[1;33m CONFIGURANDO PYTHON... "
+echo -e "\033[1;33m INSTALANDO PUERTO PYTHON... "
 inst_py () {
 
 pkill -f 80
@@ -129,7 +128,7 @@ BUFLEN = 4096 * 4
 TIMEOUT = 60
 DEFAULT_HOST = "127.0.0.1:$pt"
 RESPONSE = 'HTTP/1.1 101 Switching Protocols \r\n\r\n'
-
+ 
 class Server(threading.Thread):
     def __init__(self, host, port):
         threading.Thread.__init__(self)
