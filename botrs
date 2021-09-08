@@ -39,3 +39,13 @@ curl -s --max-time 10 -d "chat_id=$IDB2&disable_web_page_preview=1&text=$MSG" $U
 
 echo -e "\033[1;34m            SE ENVIO MENSAJE DE PRUEBA "
 }
+
+msg -bar2
+echo -e "${cor[2]}         DESEAS INSTALAR NOTI-BOT?(Default n)"
+echo -e "\033[1;34m  (Deves tener Telegram y el BOT: @Noti_VPSMX_Bot)"
+msg -bar2
+read -p " [ s | n ]: " NOTIFY
+[[ "$NOTIFY" = "s" || "$NOTIFY" = "S" ]] && NOTIFY
+msg -bar2
+[[ ${byinst} = "true" ]] && install_fim
+rm -rf VPS-MX
