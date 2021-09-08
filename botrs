@@ -1,5 +1,5 @@
 # codificación: utf-8
-bot_token = "<BOT-TOKEN>"
+bot_token = "1210661669:AAF7lIPjGIlWsBIiXDzUyO7qyG1MmvIkY28"
 
 #LIBRERIAS RESPONDER
 de telegrama. ext import Updater #ENVIAR MENSAJES RESPONDIENDO
