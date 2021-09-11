@@ -817,7 +817,7 @@ clear
 on="\033[1;92m[ON]" && off="\033[1;31m[OFF]"
 [[ $(ps x | grep badvpn | grep -v grep | awk '{print $1}') ]] && badvpn=$on || badvpn=$off
 echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
-echo -e "\e[44;1;37m                                       $TITLE                          " \e[7;34m [ V2.6 ]  \e[0m "
+echo -e "\e[44;1;37m                                    $TITLE                     " \e[7;34m "[ V2.6 ]  \e[0m "
 echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
 echo -e "${verde}CUENTAS SSH - DROPLET - SCRIPT - APK MOD - DISEÑO WEB ( ${rojo}dev:${cierre} ${melon}@ReyRs_ViPro${cierre} )
 ${bar4}
