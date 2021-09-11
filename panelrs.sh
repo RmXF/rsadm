@@ -5,9 +5,12 @@ Desarrollador @ReyRs_ViPro
 ## SCRIPT RS CREACIONES POWERED BY FABIAN
 ## GENERADOR DE USUARIOS
 ## LENGUAGE _ BASH SCRIPT
-## OPTIMIZADO EN ESPAÑOL POSIBLE TRADUCCION AUTOMATICA AL PORTUGUES !!!  Salud2s;)
+## OPTIMIZADO AL ESPAÑOL POSIBLE TRADUCCION AUTOMATICA AL PORTUGUES !!!  Salud2s;)
+## PAGINA WEB OFICIAL: www.reycodessh.tk
 
-TITLE=' =•= REYCODESSH =•= ';
+
+# A CONTINUACION COLORES Y VARIABLES 
+
 GRN1='\e[32m [\e[0m1\e[32m]\e[0m';
 GRN2='\e[32m [\e[0m2\e[32m]\e[0m';
 GRN3='\e[32m [\e[0m3\e[32m]\e[0m';
@@ -165,13 +168,13 @@ rm -rf /etc/usr/bin/usercode; usercode
 	
 
 
-# admin udp
+# admin udp ( Funcion no disponible aún )
 
 udp () {
 clear
 echo -e "\033[1;31m================================================================\033[0m"
 echo -ne "${amarillo}[${cierre}${rojo}1${cierre}${amarillo}]${cierre} - ACTIVAR PUERTO BADVPN $fun_udp1\n" 
-echo -ne "${amarillo}[${cierre}${rojo}1${cierre}${amarillo}]${cierre} - DESISTALAR PUERTO BADVPN fun_udp2\n" 
+echo -ne "${amarillo}[${cierre}${rojo}1${cierre}${amarillo}]${cierre} - DESINSTALAR PUERTO BADVPN fun_udp2\n" 
 echo -e "\033[1;31m================================================================\033[0m"
 }
 
@@ -814,7 +817,7 @@ clear
 on="\033[1;92m[ON]" && off="\033[1;31m[OFF]"
 [[ $(ps x | grep badvpn | grep -v grep | awk '{print $1}') ]] && badvpn=$on || badvpn=$off
 echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
-echo -e "                                       $TITLE                            [ V2.6 ]     "
+echo -e "\e[44;1;37m                                       $TITLE                          " \e[7;34m [ V2.6 ]  \e[0m "
 echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
 echo -e "${verde}CUENTAS SSH - DROPLET - SCRIPT - APK MOD - DISEÑO WEB ( ${rojo}dev:${cierre} ${melon}@ReyRs_ViPro${cierre} )
 ${bar4}
