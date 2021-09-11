@@ -32,13 +32,7 @@ GRN22='\e[32m [\e[0m22\e[32m]\e[0m';
 GRN23='\e[32m [\e[0m23\e[32m]\e[0m';
 GRN24='\e[32m [\e[0m24\e[32m]\e[0m';
 GRN25='\e[32m [\e[0m25\e[32m]\e[0m';
-GRN26='\e[32m [\e[0m26\e[32m]\e[0m';
-GRN27='\e[32m [\e[0m27\e[32m]\e[0m';
-GRN28='\e[32m [\e[0m28\e[32m]\e[0m';
-GRN29='\e[32m [\e[0m29\e[32m]\e[0m';
-GRN30='\e[32m [\e[0m30\e[32m]\e[0m';
-GRN31='\e[32m [\e[0m31\e[32m]\e[0m';
-GRN32='\e[32m [\e[0m32\e[32m]\e[0m';
+
 
 ## VARIABLES DE COLORES
 blanco='\033[38;5;231m'
@@ -822,7 +816,7 @@ clear
 on="\033[1;92m[ON]" && off="\033[1;31m[OFF]"
 [[ $(ps x | grep badvpn | grep -v grep | awk '{print $1}') ]] && badvpn=$on || badvpn=$off
 echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
-echo -e "\e[41;1;37m                              ⇱  $TITLE  ⇲                      \e[0m\e[7;32m [ V2.6 ] \e[0m"
+echo -e "                                            $TITLE                               " [ V2.6 ] \e[0m"
 echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
 echo -e "${verde}CUENTAS SSH - DROPLET - SCRIPT - APK MOD - DISEÑO WEB ( ${rojo}dev:${cierre} ${melon}@ReyRs_ViPro${cierre} )
 ${bar4}
