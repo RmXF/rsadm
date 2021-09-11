@@ -32,9 +32,6 @@ GRN22='\e[32m [\e[0m22\e[32m]\e[0m';
 GRN23='\e[32m [\e[0m23\e[32m]\e[0m';
 GRN24='\e[32m [\e[0m24\e[32m]\e[0m';
 GRN25='\e[32m [\e[0m25\e[32m]\e[0m';
-
-
-## VARIABLES DE COLORES
 blanco='\033[38;5;231m'
 amarillo='\033[38;5;228m'
 azul='\033[38;5;14m'
@@ -816,7 +813,7 @@ clear
 on="\033[1;92m[ON]" && off="\033[1;31m[OFF]"
 [[ $(ps x | grep badvpn | grep -v grep | awk '{print $1}') ]] && badvpn=$on || badvpn=$off
 echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
-echo -e "                                            $TITLE                                [ V2.6 ]     "
+echo -e "                                       $TITLE                            [ V2.6 ]     "
 echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
 echo -e "${verde}CUENTAS SSH - DROPLET - SCRIPT - APK MOD - DISEÑO WEB ( ${rojo}dev:${cierre} ${melon}@ReyRs_ViPro${cierre} )
 ${bar4}
