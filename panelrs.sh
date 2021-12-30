@@ -300,6 +300,37 @@ echo "$MEU_IP2" > /etc/MEUIPADM
 fi
 }
 
+BadVPN () {
+pid_badvpn=$(ps x | grep badvpn | grep -v grep | awk '{print $1}')
+if [ "$pid_badvpn" = "" ]; then
+echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+echo -e "\e[7;35             Que puerto desea utilizar?      \e[0m"
+echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+read -p " [Predeterminado]: " -e -i 7300 udpport
+echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+echo -e "\e[7;35  "Puerto seleccionado")  ${udpport}"
+echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+echo -e "\e[7;35             ACTIVADOR DE BADVPN (UDP ${udpport})         \e[0m"
+    echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m" 
+    if [[ ! -e /bin/badvpn-udpgw ]]; then
+    wget -O /bin/badvpn-udpgw https://www.dropbox.com/s/z6hm10p3307un5m/badvpn-udpgw &>/dev/null
+    chmod 777 /bin/badvpn-udpgw
+    fi
+    screen -dmS badvpn2 /bin/badvpn-udpgw --listen-addr 127.0.0.1:7300 --max-clients 1000 --max-connections-for-client 10 
+    [[ "$(ps x | grep badvpn | grep -v grep | awk '{print $1}')" ]] && msg -verd "                  ACTIVADO CON EXITO" ||  "     Fallo al activar badvpn  "
+	echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+else
+echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+    echo -e "\e[7;35         DESACTIVADOR DE BADVPN (UDP 7300)             \e[0m"
+    echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+    kill -9 $(ps x | grep badvpn | grep -v grep | awk '{print $1'}) > /dev/null 2>&1
+    killall badvpn-udpgw > /dev/null 2>&1
+    [[ ! "$(ps x | grep badvpn | grep -v grep | awk '{print $1}')" ]] &&  "                DESACTIVADO CON EXITO \n"
+    unset pid_badvpn
+	echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+    fi
+unset pid_badvpn
+}
 
 monitor () {
 clear
@@ -857,7 +888,7 @@ case "$selection" in
 11)backup ;;
 12)ssl_pay ;;
 13)baner ;;
-14)udp ;;
+14)BadVPN ;;
 	0)cd $HOME && exit 0;;
 	*)
 	echo -e "${rojo} comando principal- usercode ${cierre}"
