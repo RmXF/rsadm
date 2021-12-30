@@ -56,7 +56,7 @@ USRExp="/root/exp"
 
 ## TITULOS / LINK / 
 TITLE='  REYCODESSH  ';
-VERSION='  [ V2.7 ]  ';
+VERSION='  [ V2.8 ]  ';
 ## FUNCION DE ERRORES 
 err_fun () {
      case $1 in
