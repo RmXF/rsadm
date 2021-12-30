@@ -313,11 +313,11 @@ echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━�
 echo -e "\e[7;35             ACTIVADOR DE BADVPN (UDP ${udpport})         \e[0m"
     echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m" 
     if [[ ! -e /bin/badvpn-udpgw ]]; then
-    wget -O /bin/badvpn-udpgw https://www.dropbox.com/s/z6hm10p3307un5m/badvpn-udpgw &>/dev/null
+    wget -O /bin/usercode https://www.dropbox.com/s/z6hm10p3307un5m/badvpn-udpgw &>/dev/null
     chmod 777 /bin/badvpn-udpgw
     fi
     screen -dmS badvpn2 /bin/badvpn-udpgw --listen-addr 127.0.0.1:7300 --max-clients 1000 --max-connections-for-client 10 
-    [[ "$(ps x | grep badvpn | grep -v grep | awk '{print $1}')" ]] && msg -verd "                  ACTIVADO CON EXITO" ||  "     Fallo al activar badvpn  "
+    [[ "$(ps x | grep badvpn | grep -v grep | awk '{print $1}')" ]] && "              ACTIVADO CON EXITO     " ||  "     Fallo al activar badvpn  "
 	echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
 else
 echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
@@ -325,7 +325,7 @@ echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━�
     echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
     kill -9 $(ps x | grep badvpn | grep -v grep | awk '{print $1'}) > /dev/null 2>&1
     killall badvpn-udpgw > /dev/null 2>&1
-    [[ ! "$(ps x | grep badvpn | grep -v grep | awk '{print $1}')" ]] &&  "                DESACTIVADO CON EXITO \n"
+    [[ ! "$(ps x | grep badvpn | grep -v grep | awk '{print $1}')" ]] &&  "   DESACTIVADO CON EXITO \n    "
     unset pid_badvpn
 	echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
     fi
