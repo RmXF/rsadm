@@ -56,7 +56,7 @@ USRExp="/root/exp"
 
 ## TITULOS / LINK / 
 TITLE='  REYCODESSH  ';
-VERSION='  [ V2.8 ]  ';
+VERSION='  [ V2.7 ]  ';
 ## FUNCION DE ERRORES 
 err_fun () {
      case $1 in
@@ -856,6 +856,9 @@ echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━�
 echo -e "${verde}CUENTAS SSH - DROPLET - SCRIPT - APK MOD - DISEÑO WEB ( ${rojo}dev:${cierre} ${melon}@ReyRs_ViPro${cierre} )
 ${bar4}
 ${blanco}TOTAL DE USUARIOS: ${rojo}>${cierre} ${azul}No: ${blanco}$No_user ${cierre}           ${amarillo}|${cerrar}                BADVPN: $badvpn 
+echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+echo -e "${amarillo} CPU: $_core                    ${cierre}                                  ${amarillo}|${cerrar}             ${rojo}  RAM: $ram1 ${cerrar} 
+echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
 ${bar3}
 ${blanco}[${cierre}${rojo}01${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Agregar  ${amarillo}===============${cierre}${blanco}>>${cierre} ${verde}Usuario${cierre}
 ${blanco}[${cierre}${rojo}02${cierre}${blanco}]${cierre} ${rojo}>${cierre} ${blanco}Eliminar ${amarillo}===============${cierre}${blanco}>>${cierre} ${rojo}Usuario${cierre}
