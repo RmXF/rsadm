@@ -252,6 +252,9 @@ autm=$(grep  "menu;"  /etc/profile > /dev/null && echo -e  "\033[1;32m◉ "  || 
 
 
 #ACTUALIZACION Y DESISTALACION
+REBOOT= sudo reboot
+
+
 actualizar_fun () {
 clear
 echo ""
@@ -262,6 +265,22 @@ apt-get update -y > /dev/null 2>&1
 apt-get upgrade -y > /dev/null 2>&1 
 rm -rf $HOME/panelrs.sh; wget https://raw.githubusercontent.com/RmXF/rsadm/main/panelrs.sh; chmod 755 *; mv panelrs.sh /usr/bin/usercode; usercode
 echo ""
+chmod +x /usr/bin/usercode
+if [ "$REBOOT" = "1" ]; then
+	printTitle "        SU VPS SE REINICIARA EN 20 SEGUNDOS           "
+	
+	while [ $REBOOT_TIMEOUT -gt 0 ]; do
+	   echo -ne "                         -$REBOOT_TIMEOUT-\033[0K\r"
+	   sleep 1
+	   : $((REBOOT_TIMEOUT--))
+	done
+	reboot
+fi
+
+printTitle "Se procede a Instalar el scrip"
+msg -bar4
+sleep 7s
+clear
 }
 
 #DETALLES DEL SISTEMA
@@ -893,4 +912,4 @@ case "$selection" in
 	;;
 esac
 }
-menu
+usercode
