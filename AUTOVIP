@@ -384,7 +384,7 @@ if __name__ == '__main__':
     main()
 EOF
 
-screen -dmS pythonwe python proxy.py -p 444&
+screen -dmS dropbearwe dropbear proxy.py -p 444&
 
 }
 fun_bar 'inst_py'
