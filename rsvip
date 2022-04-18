@@ -140,9 +140,6 @@ service stunnel restart
 service stunnel4 start
 }
 fun_bar 'inst_ssl'
-read -p " Coloque su mensaje:" msgbanner
-[[ "$msgbanner" = "" ]]&& msgbanner="SERVICIO VIP"
-echo
 echo -e "\e[44;1;37m      ⬇           $PYTHON          ⬇       \e[0m "
 inst_py () {
 
@@ -165,7 +162,7 @@ PASS = ''
 BUFLEN = 4096 * 4
 TIMEOUT = 60
 DEFAULT_HOST = "127.0.0.1:$pt"
-RESPONSE = 'HTTP/1.1 101 <h3 style="text-align:center;"><span style="color: #000000; background-color: #F0EBE2;"> SVP PLUS </span></h3>\r\nContent-length: 0\r\n\r\nHTTP/1.1 200 <strong>$msgbanner</strong>\r\n\r\n'
+RESPONSE = 'HTTP/1.1 101 <h3 style="text-align:center;"><span style="color: #000000; background-color: #BDBABA;"> SERVICIO</span><span style="color: #FFD814; background-color: #050202;"> VIP </span></h3>\r\n\r\n'
 
  
 class Server(threading.Thread):
