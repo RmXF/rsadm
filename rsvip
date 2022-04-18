@@ -96,7 +96,7 @@ fi
 
 ## TITULOS / LINK / 
 SSL='  CONFIGURANDO SSL  ';
-SSL='  CONFIGURANDO PYTHON  ';
+PYTHON='  CONFIGURANDO PYTHON  ';
 VERSION='  [ V2.8 ]  ';
 
 clear&&clear
@@ -118,7 +118,7 @@ echo -e "\033[1;37mEsta instalacion usara el puerto 443 y el 80 para su"
 echo -e "\033[1;37mNueva configuracion SSL"
 echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
 echo
-echo -e "\e[44;1;37m                            $SSL                     $VERSION \e[0m "
+echo -e "\e[44;1;37m                          $SSL                     \e[0m "
 inst_ssl () {
 pkill -f stunnel4
 pkill -f stunnel
@@ -140,7 +140,7 @@ service stunnel restart
 service stunnel4 start
 }
 fun_bar 'inst_ssl'
-echo -e "\e[44;1;37m                          $PYTHON                    $VERSION \e[0m "
+echo -e "\e[44;1;37m                          $PYTHON                    \e[0m "
 inst_py () {
 
 pkill -f 80
