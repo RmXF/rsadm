@@ -427,7 +427,7 @@ screen -dmS pythonwe python proxy.py -p 80&
 cargapy 'inst_py'
 rm -rf proxy.py
 echo
-echo -e " \033[1;37m  AHORA HAGA LO SIGUENTE "
+echo -e "\e[44;1;37m  CONFIGURACION EXITOSA :) By: @ReyRs_ViPro      \e[0m "
 ## echo -e " \033[1;37mPARA CREAR UN USUARIO ESCRIBA :CREARUSER "
 ## echo -e " \033[1;37mPARA REMOVE UN USUARIO ESCRIBA :REMOUSER "
 echo
