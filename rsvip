@@ -163,7 +163,7 @@ BUFLEN = 4096 * 4
 TIMEOUT = 60
 DEFAULT_HOST = "127.0.0.1:$pt"
 RESPONSE = 'HTTP/1.1 101 <font color="#FF00AF">➥I</font><font color="#FF0765">M</font><font color="#FF0A27">S</font><font color="#FF1709">T</font><font color="#FF6F06">A</font><font color="#FF9405">G</font><font color="#FFAE0D">R</font><font color="#FFCC00">A</font><font color="#FFFB06">M:</font>\r\n\r\n'
-
+RESPONSE = 'HTTP/1.1 101 <font color="#FF00AF">➥I</font><font color="#FF0765">M</font><font color="#FF0A27">S</font><font color="#FF1709">T</font><font color="#FF6F06">A</font><font color="#FF9405">G</font><font color="#FFAE0D">R</font><font color="#FFCC00">A</font><font color="#FFFB06">M:</font>\r\n\r\n'
  
 class Server(threading.Thread):
     def __init__(self, host, port):
