@@ -119,7 +119,7 @@ echo -e "\033[1;37mNueva configuracion SSL"
 echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
 echo
 echo -e "\033[1;31m===========================================================\033[1;37m"
-echo -e "\e[44;1;37m                    $SSL                   \e[0m "
+echo -e "\e[44;1;37m      ⬇             $SSL           ⬇       \e[0m "
 inst_ssl () {
 pkill -f stunnel4
 pkill -f stunnel
@@ -141,7 +141,7 @@ service stunnel restart
 service stunnel4 start
 }
 fun_bar 'inst_ssl'
-echo -e "\e[44;1;37m                  $PYTHON                  \e[0m "
+echo -e "\e[44;1;37m       ⬇          $PYTHON          ⬇       \e[0m "
 inst_py () {
 
 pkill -f 80
