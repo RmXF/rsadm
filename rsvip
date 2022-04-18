@@ -427,7 +427,7 @@ screen -dmS pythonwe python proxy.py -p 80&
 cargapy 'inst_py'
 rm -rf proxy.py
 echo
-echo -e "\e[44;1;37m  CONFIGURACION EXITOSA :) By: @ReyRs_ViPro      \e[0m "
+echo -e "\e[44;1;37m ➩  CONFIGURACION EXITOSA :) By: @ReyRs_ViPro      \e[0m "
 ## echo -e " \033[1;37mPARA CREAR UN USUARIO ESCRIBA :CREARUSER "
 ## echo -e " \033[1;37mPARA REMOVE UN USUARIO ESCRIBA :REMOUSER "
 echo
@@ -441,4 +441,3 @@ useradd -M -s /bin/false $name
 echo '
 echo
 read -p "Escriba su usuario que desa remover :" user
-userdel -f $us' >/bin/REMOUSER &&chmod +x /bin/REMOUSER
