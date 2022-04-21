@@ -97,7 +97,7 @@ fi
 SSL='  CONFIGURANDO SSL  ';
 PYTHON='  CONFIGURANDO PYTHON  ';
 UDP='  CONFIGURANDO UDP  ';
-VERSION='  \e[7;32m[ V3.3 ]\e[0m  ';
+VERSION='  \e[7;32m[ V3.4 ]\e[0m  ';
 
 clear&&clear
 echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
