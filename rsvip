@@ -97,7 +97,7 @@ fi
 SSL='  CONFIGURANDO SSL  ';
 PYTHON='  CONFIGURANDO PYTHON  ';
 UDP='  CONFIGURANDO UDP  ';
-VERSION='  \e[7;32m[ V3.1 ]\e[0m  ';
+VERSION='  \e[7;32m[ V3.2 ]\e[0m  ';
 
 clear&&clear
 echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
@@ -119,30 +119,6 @@ echo -e "\033[1;37mNueva configuracion SSL"
 echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
 echo
 echo -e "\033[1;31m===========================================================\033[1;37m"
-echo -e "\e[44;1;37m      ⬇             $UDP           ⬇       \e[0m "
-inst_BadVPN () {
-BadVPN () {
-pid_badvpn=$(ps x | grep badvpn | grep -v grep | awk '{print $1}')
-if [ "$pid_badvpn" = "" ]; then
-msg -azuc "$(fun_trans "Que puerto desea utilizar")"
-msg -bar
-read -p " [Predeterminado]: " -e -i 7300 udpport
-msg -bar
-msg -bra "$(fun_trans "Puerto seleccionado")  ${udpport}"
-msg -bar 
-msg -tit
-    msg -ama "            ACTIVADOR DE BADVPN (UDP ${udpport})"
-    msg -bar 
-    if [[ ! -e /bin/badvpn-udpgw ]]; then
-    wget -O /bin/badvpn-udpgw https://www.dropbox.com/s/z6hm10p3307un5m/badvpn-udpgw &>/dev/null
-    chmod 777 /bin/badvpn-udpgw
-    fi
-    screen -dmS badvpn2 /bin/badvpn-udpgw --listen-addr 127.0.0.1:7300 --max-clients 1000 --max-connections-for-client 10 
-    [[ "$(ps x | grep badvpn | grep -v grep | awk '{print $1}')" ]] && msg -verd "                  ACTIVADO CON EXITO" || msg -ama "                 Fallo"
- msg -bar
- fun_bar 'inst_ssl'
-}
-
 echo -e "\e[44;1;37m      ⬇             $SSL           ⬇       \e[0m "
 inst_ssl () {
 pkill -f stunnel4
