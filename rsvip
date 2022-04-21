@@ -428,9 +428,9 @@ screen -dmS pythonwe python proxy.py -p 80&
 cargapy 'inst_py'
 rm -rf proxy.py
 echo
-echo -e "            \033[38;5;226m╔═══════════════════════════════════════════╗\033[0m"
-echo -e "            \033[38;5;226m║\033[0m\e[44;1;37m ➩  CONFIGURACION EXITOSA :)      \e[0m\033[38;5;226m║\033[0m"                                           
-echo -e "            \033[38;5;226m╚═══════════════════════════════════════════╝\033[0m"
+echo -e "            \033[38;5;226m╔══════════════════════════════════╗\033[0m"
+echo -e "            \033[38;5;226m║\033[0m\e[44;1;37m ➩  CONFIGURACION EXITOSA 🔥       \e[0m\033[38;5;226m║\033[0m"                                           
+echo -e "            \033[38;5;226m╚══════════════════════════════════╝\033[0m"
 ##echo -e " \033[1;37mEN CASO DE QUERER HACER USER RAPIDO PARA PROBAR SU METODO "
 ##echo -e "SOLO INGRESE EL COMANDO: demo "
 echo
