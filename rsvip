@@ -120,13 +120,7 @@ echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━�
 echo
 echo -e "\033[1;31m===========================================================\033[1;37m"
 echo -e "\e[44;1;37m      ⬇             $UDP           ⬇       \e[0m "
-inst_udp () {
-clear
-clear
-declare -A cor=( [0]="\033[1;37m" [1]="\033[1;34m" [2]="\033[1;31m" [3]="\033[1;33m" [4]="\033[1;32m" )
-SCPdir="/etc/VPS-MX"
-SCPfrm="${SCPdir}/herramientas" && [[ ! -d ${SCPfrm} ]] && exit
-SCPinst="${SCPdir}/protocolos"&& [[ ! -d ${SCPinst} ]] && exit
+inst_BadVPN () {
 BadVPN () {
 pid_badvpn=$(ps x | grep badvpn | grep -v grep | awk '{print $1}')
 if [ "$pid_badvpn" = "" ]; then
@@ -146,22 +140,9 @@ msg -tit
     screen -dmS badvpn2 /bin/badvpn-udpgw --listen-addr 127.0.0.1:7300 --max-clients 1000 --max-connections-for-client 10 
     [[ "$(ps x | grep badvpn | grep -v grep | awk '{print $1}')" ]] && msg -verd "                  ACTIVADO CON EXITO" || msg -ama "                 Fallo"
  msg -bar
-else
-    msg -bar 
- msg -tit
-    msg -ama "          DESACTIVADOR DE BADVPN (UDP 7300)"
-    msg -bar
-    kill -9 $(ps x | grep badvpn | grep -v grep | awk '{print $1'}) > /dev/null 2>&1
-    killall badvpn-udpgw > /dev/null 2>&1
-    [[ ! "$(ps x | grep badvpn | grep -v grep | awk '{print $1}')" ]] && msg -ne "                DESACTIVADO CON EXITO \n"
-    unset pid_badvpn
- msg -bar
-    fi
-unset pid_badvpn
+ fun_bar 'inst_ssl'
 }
 
-BadVPN
-}
 echo -e "\e[44;1;37m      ⬇             $SSL           ⬇       \e[0m "
 inst_ssl () {
 pkill -f stunnel4
