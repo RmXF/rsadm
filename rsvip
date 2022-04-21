@@ -429,15 +429,15 @@ cargapy 'inst_py'
 rm -rf proxy.py
 echo
 echo -e "\e[44;1;37m ➩  CONFIGURACION EXITOSA :) By: @ReyRs_ViPro      \e[0m "
-echo -e " \033[1;37mEN CASO DE QUERER HACER USER RAPIDO PARA PROBAR SU METODO "
-echo -e "SOLO INGRESE EL COMANDO: demo "
+##echo -e " \033[1;37mEN CASO DE QUERER HACER USER RAPIDO PARA PROBAR SU METODO "
+##echo -e "SOLO INGRESE EL COMANDO: demo "
 echo
 echo
 echo '
 echo
 echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
-read -p "- \033[1;96mUsuario :\033[0m" name
-read -p "- \033[1;96mContraseña :\033[0m" pass
+read -p "- Usuario :" name
+read -p "- Contraseña :" pass
 echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
 useradd -M -s /bin/false $name
 (echo $pass; echo $pass)|passwd $name 2>/dev/null' > /bin/demo &&chmod +x /bin/demo
@@ -445,3 +445,6 @@ echo '
 echo
 read -p "Escriba su usuario que desa remover :" user
 userdel -f $us' >/bin/REMOUSER &&chmod +x /bin/REMOUSER
+echo
+read -p "Desarrollador - @ReyRs_ViPro"
+userdel -f $us' >/bin/credito &&chmod +x /bin/credito
