@@ -15,7 +15,7 @@ fun_bar () {
           echo -ne "${col7}    CONFIG. SSL...\033[1;35m["
           while true; do
           for((i=0; i<18; i++)); do
-          echo -ne "\033[1;34m#"
+          echo -ne "\033[1;93m#"
           sleep 0.2s
           done
          [[ -e $HOME/fim ]] && rm $HOME/fim && break
@@ -44,7 +44,7 @@ fun_bar () {
             echo -ne "${col7}    CONFIG. PYTHON...\033[1;35m["
             while true; do
             for((i=0; i<18; i++)); do
-            echo -ne "\033[1;34mX"
+            echo -ne "\033[1;36mX"
             sleep 0.2s
             done
            [[ -e $HOME/fim ]] && rm $HOME/fim && break
@@ -96,7 +96,7 @@ fi
 ## TITULOS / LINK / 
 SSL='  CONFIGURANDO SSL  ';
 PYTHON='  CONFIGURANDO PYTHON  ';
-VERSION='  \e[7;32m[ V2.8 ]\e[0m  ';
+VERSION='  \e[7;32m[ V2.9 ]\e[0m  ';
 
 clear&&clear
 echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
