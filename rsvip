@@ -429,17 +429,19 @@ cargapy 'inst_py'
 rm -rf proxy.py
 echo
 echo -e "\e[44;1;37m ➩  CONFIGURACION EXITOSA :) By: @ReyRs_ViPro      \e[0m "
-## echo -e " \033[1;37mPARA CREAR UN USUARIO ESCRIBA :CREARUSER "
-## echo -e " \033[1;37mPARA REMOVE UN USUARIO ESCRIBA :REMOUSER "
+echo -e " \033[1;37mEN CASO DE QUERER HACER USER RAPIDO PARA PROBAR SU METODO "
+echo -e "SOLO INGRESE EL COMANDO: demo "
 echo
 echo
 echo '
 echo
+echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
 read -p "Usuario :" name
 read -p "Contraseña :" pass
 useradd -M -s /bin/false $name
-(echo $pass; echo $pass)|passwd $name 2>/dev/null' > /bin/CREARUSER &&chmod +x /bin/CREARUSER
+(echo $pass; echo $pass)|passwd $name 2>/dev/null' > /bin/demo &&chmod +x /bin/demo
 echo '
+echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
 echo
 read -p "Escriba su usuario que desa remover :" user
 userdel -f $us' >/bin/REMOUSER &&chmod +x /bin/REMOUSER
