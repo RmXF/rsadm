@@ -446,3 +446,6 @@ echo
 read -p "Escriba su usuario que desa remover :" user
 userdel -f $us' >/bin/REMOUSER &&chmod +x /bin/REMOUSER
 echo
+echo "\033[0;34m╔═══════════════════════════════════════════╗\033[0m"
+echo "\033[0;34m║\033[0m\e[7;32m         |              @ReyRs_ViPro             |         \e[0m                                           ║"
+echo "\033[0;34m╚═══════════════════════════════════════════╝\033[0m"
