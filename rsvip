@@ -96,13 +96,13 @@ fi
 ## TITULOS / LINK / 
 SSL='  CONFIGURANDO SSL  ';
 PYTHON='  CONFIGURANDO PYTHON  ';
-VERSION='  \e[7;32m[ V3.0 ]\e[0m  ';
+VERSION='  \e[7;32m[ V3.1 ]\e[0m  ';
 
 clear&&clear
 echo -e "\033[1;37m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
-echo -e "\e[7;31m▏ SISTEMAS         CANTIDAD         USO           $VERSION  \e[0m"
-echo -e "\e[7;35▏ - CPU ➛ \e[0m             \033[1;93m$_core\e[0m             \033[1;32m$_usop\e[0m   "
-echo -e "\e[7;34▏ - RAM ➛ \e[0m            \033[1;93m$ram1\e[0m          \033[1;32m$_usor\e[0m"
+echo -e "\e[7;31m SISTEMAS         CANTIDAD         USO           $VERSION  \e[0m"
+echo -e "\e[7;35 - CPU ➛ \e[0m             \033[1;93m$_core\e[0m             \033[1;32m$_usop\e[0m   "
+echo -e "\e[7;34 - RAM ➛ \e[0m            \033[1;93m$ram1\e[0m          \033[1;32m$_usor\e[0m"
 echo -e "\033[0;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
 echo -e "\e[7;35m  Sistema Operativo:  \e[0m"  "\033[1;37m$(os_system)     "
 echo -e "\e[7;35m  IP del Servidor:    \e[0m"  "\033[1;37m$(meu_ip)        "
