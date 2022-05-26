@@ -588,7 +588,7 @@ echo -e "\033[1;37m║\033[0m\e[41;1;37m                    ⇱  ADMINITRADOR RE
 echo -e "\033[1;37m╠═════════════════════════════════════════════════════════════════════════════╣\033[0m"
 echo -e "\033[1;37m║\033[0m DISEÑO WEB - APK MOD - CUENTAS SSH -  DROPLET - (${amarillo}Reycode${cierre})                  \033[1;37m ║\033[0m"
 echo -e "\033[1;37m╠═════════════════════════════════════════════════════════════════════════════╣\033[0m"
-echo -e "\033[1;37m║\033[0m" ${blanco}CANTIDAD TOTAL DE DROPLET: ${rojo}>${cierre} ${azul}N°: ${blanco}$No_user  ${cierre}
+${blanco}CANTIDAD TOTAL DE DROPLET: ${rojo}>${cierre} ${azul}N°: ${blanco}$No_user  ${cierre}
 ${bar3}
 echo -e "
 ${azul}[${cierre}${amarillo}01${cierre}${azul}]${cierre} ${rojo}>${cierre} ${blanco}Agregar ${verde}Cliente${cierre}   
