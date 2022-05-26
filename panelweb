@@ -588,13 +588,17 @@ echo -e "\033[1;37m║\033[0m\e[41;1;37m                    ⇱  ADMINITRADOR RE
 echo -e "\033[1;37m╠═════════════════════════════════════════════════════════════════════════════╣\033[0m"
 echo -e "\033[1;37m║\033[0m DISEÑO WEB - APK MOD - CUENTAS SSH -  DROPLET - (${amarillo}Reycode${cierre})                  \033[1;37m ║\033[0m"
 echo -e "\033[1;37m╠═════════════════════════════════════════════════════════════════════════════╣\033[0m"
-echo -e "\033[1;37m║\033[0m" ${blanco}CANTIDAD TOTAL DE DROPLET: ${rojo}>${cierre} ${azul}N°: ${blanco}$No_user  ${cierre}          echo -e "\033[1;37m║\033[0m"
-echo -e "
+echo -e "\033[1;37m║\033[0m" ${blanco}CANTIDAD TOTAL DE DROPLET: ${rojo}>${cierre} ${azul}N°: ${blanco}$No_user  ${cierre}
 ${bar3}
-${azul}[${cierre}${amarillo}01${cierre}${azul}]${cierre} ${rojo}>${cierre} ${blanco}Agregar ${verde}Cliente${cierre}                              ${azul}[${cierre}${amarillo}05${cierre}${azul}]${cierre} ${rojo}>${cierre} ${blanco}Informacion de ${amarillo}Clientes${cierre}
-${azul}[${cierre}${amarillo}02${cierre}${azul}]${cierre} ${rojo}>${cierre} ${blanco}Eliminar ${rojo}Cliente${cierre}                              ${azul}[${cierre}${amarillo}06${cierre}${azul}]${cierre} ${rojo}>${cierre} ${blanco}Actualizacion del ${verde}script${cierre}
-${azul}[${cierre}${amarillo}03${cierre}${azul}]${cierre} ${rojo}>${cierre} ${blanco}Editar ${amarillo}Cliente${cierre}                            ${azul}[${cierre}${amarillo}07${cierre}${azul}]${cierre} ${rojo}>${cierre} ${blanco}Desistalar ${rojo}script${cierre}
-${azul}[${cierre}${amarillo}04${cierre}${azul}]${cierre} ${rojo}>${cierre} ${blanco}Renovar ${verde}Droplet${cierre}                              ${azul}[${cierre}${amarillo}08${cierre}${azul}]${cierre} ${rojo}>${cierre} ${blanco}Limpiar memoria ${verde}Cache${cierre}
+echo -e "
+${azul}[${cierre}${amarillo}01${cierre}${azul}]${cierre} ${rojo}>${cierre} ${blanco}Agregar ${verde}Cliente${cierre}   
+${azul}[${cierre}${amarillo}02${cierre}${azul}]${cierre} ${rojo}>${cierre} ${blanco}Eliminar ${rojo}Cliente${cierre}                    
+${azul}[${cierre}${amarillo}03${cierre}${azul}]${cierre} ${rojo}>${cierre} ${blanco}Editar ${amarillo}Cliente${cierre}                 
+${azul}[${cierre}${amarillo}04${cierre}${azul}]${cierre} ${rojo}>${cierre} ${blanco}Renovar ${verde}Droplet${cierre}   
+${azul}[${cierre}${amarillo}05${cierre}${azul}]${cierre} ${rojo}>${cierre} ${blanco}Informacion de ${amarillo}Clientes${cierre}
+${azul}[${cierre}${amarillo}06${cierre}${azul}]${cierre} ${rojo}>${cierre} ${blanco}Actualizacion del ${verde}script${cierre}
+${azul}[${cierre}${amarillo}07${cierre}${azul}]${cierre} ${rojo}>${cierre} ${blanco}Desistalar ${rojo}script${cierre}
+${azul}[${cierre}${amarillo}08${cierre}${azul}]${cierre} ${rojo}>${cierre} ${blanco}Limpiar memoria ${verde}Cache${cierre}
 ${azul}[${cierre}${amarillo}09${cierre}${azul}]${cierre} ${rojo}>${cierre} ${blanco}Backup de ${verde}Clientes${cierre}
 ${azul}[${cierre}${blanco}0${cierre}${azul}]${cierre} ${rojo}>${cierre} ${rojo}SALIR${cierre}
 ${bar2}"
