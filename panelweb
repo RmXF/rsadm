@@ -124,7 +124,7 @@ echo -e " \033[1;33m[ ☑ ] apt-get update -y "
 apt-get update -y > /dev/null 2>&1 
 echo -e " \033[1;33m[ ☑ ] apt-get upgrade -y "
 apt-get upgrade -y > /dev/null 2>&1 
-rm -rf $HOME/panelweb.sh; https://raw.githubusercontent.com/RmXF/rsadm/main/panelweb; chmod 755 *; mv panelweb.sh /usr/bin/usercode; usercode
+rm -rf $HOME/panelweb.sh; wget https://raw.githubusercontent.com/RmXF/rsadm/main/panelweb; chmod 755 *; mv panelweb.sh /usr/bin/usercode; usercode
 echo ""
 }
 
