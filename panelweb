@@ -142,10 +142,10 @@ if [[ ${yesno} = @(s|S|y|Y) ]]; then
 rm -rf ${SCPdir} &>/dev/null
 rm -rf ${SCPusr} &>/dev/null
 rm -rf ${SCPinst} &>/dev/null
-[[ -e /bin/usercode ]] && rm /bin/usercode
-[[ -e /usr/bin/usercode ]] && rm /usr/bin/usercode
-[[ -e /bin/menu ]] && rm /bin/menu
-[[ -e /usr/bin/menu ]] && rm /usr/bin/menu
+[[ -e /root/usercode ]] && rm /root/usercode
+[[ -e /usr/roo/usercode ]] && rm /usr/bin/usercode
+[[ -e /root/menu ]] && rm /root/menu
+[[ -e /usr/root/menu ]] && rm /usr/root/menu
 cd $HOME
 fi
 sudo apt-get --purge remove squid -y > /dev/null 2>&1
@@ -330,6 +330,7 @@ echo -e "$bar1"
 read -p " ➢ Presione enter para volver "
 rm -rf /etc/usr/bin/usercode; usercode
 }
+
 eliminar_usuario () {
 usuarios_ativos=($(mostrar_usuarios))
 if [[ -z ${usuarios_ativos[@]} ]]; then
@@ -375,6 +376,7 @@ echo -e "$bar1"
 read -p " ➢ Presione enter para volver "
 rm -rf /etc/usr/bin/usercode; usercode
 }
+
 renovar_usuario () {
 usuarios_ativos=($(mostrar_usuarios))
 if [[ -z ${usuarios_ativos[@]} ]]; then
@@ -435,6 +437,7 @@ echo -e "$bar1"
 read -p " ➢ Presione enter para volver "
 rm -rf /etc/usr/bin/usercode; usercode
 }
+
 editar_usuario () {
 usuarios_ativos=($(mostrar_usuarios))
 if [[ -z ${usuarios_ativos[@]} ]]; then
@@ -525,6 +528,7 @@ echo -e "$bar1"
 read -p " ➢ Presione enter para volver "
 rm -rf /etc/usr/bin/usercode; usercode
 }
+
 detalles_de_usuario () {
 red=$(tput setaf 1)
 gren=$(tput setaf 2)
@@ -547,17 +551,17 @@ VPSsec=$(date +%s)
 while read user; do
 unset txtvar
 data_user=$(chage -l "$user" |grep -i co |awk -F ":" '{print $2}')
-txtvar=$(printf '%-21s' "${yellow}$user")
+txtvar=$(printf '%-21s' "${azul}$user")
 if [[ -e "${USRdatabase}" ]]; then
   if [[ $(cat ${USRdatabase}|grep -w "${user}") ]]; then
-    txtvar+="$(printf '%-21s' "${yellow}$(cat ${USRdatabase}|grep -w "${user}"|cut -d'|' -f2)")"
+    txtvar+="$(printf '%-21s' "${verde}$(cat ${USRdatabase}|grep -w "${user}"|cut -d'|' -f2)")"
     DateExp="$(cat ${USRdatabase}|grep -w "${user}"|cut -d'|' -f3)"
     DataSec=$(date +%s --date="$DateExp")
     cpu="$(cat ${USRdatabase}|grep -w "${user}"|cut -d'|' -f5)"
     if [[ " $VPSsec" -gt "$DataSec " ]]; then    
     EXPTIME="${resaltado3}[Expi]${cierre2}"
     else
-    EXPTIME="${verde}[ $(($(($DataSec - $VPSsec)) / 86400)) ]"
+    EXPTIME="${amarillo}[ $(($(($DataSec - $VPSsec)) / 86400)) ]"
     fi
     echo -e "$bar4"
     #txtvar+="$(printf '%-26s' "${yellow}${DateExp}${EXPTIME}")"
@@ -585,24 +589,23 @@ menu () {
 clear
 echo -e "\033[1;37m╔═════════════════════════════════════════════════════════════════════════════╗\033[0m"
 echo -e "\033[1;37m║\033[0m\e[41;1;37m                    ⇱  ADMINITRADOR REYCODE ⇲                     \e[0m\e[7;32m V1.6 \e[0m    \033[1;37m ║\033[0m"
-echo -e "\033[1;37m╠═════════════════════════════════════════════════════════════════════════════╣\033[0m"
-echo -e "\033[1;37m║\033[0m DISEÑO WEB - APK MOD - CUENTAS SSH -  DROPLET - (${amarillo}Reycode${cierre})                  \033[1;37m ║\033[0m"
-echo -e "\033[1;37m╠═════════════════════════════════════════════════════════════════════════════╣\033[0m"
-${blanco}CANTIDAD TOTAL DE DROPLET: ${rojo}>${cierre} ${azul}N°: ${blanco}$No_user  ${cierre}
-${bar3}
-echo -e "
-${azul}[${cierre}${amarillo}01${cierre}${azul}]${cierre} ${rojo}>${cierre} ${blanco}Agregar ${verde}Cliente${cierre}   
-${azul}[${cierre}${amarillo}02${cierre}${azul}]${cierre} ${rojo}>${cierre} ${blanco}Eliminar ${rojo}Cliente${cierre}                    
-${azul}[${cierre}${amarillo}03${cierre}${azul}]${cierre} ${rojo}>${cierre} ${blanco}Editar ${amarillo}Cliente${cierre}                 
-${azul}[${cierre}${amarillo}04${cierre}${azul}]${cierre} ${rojo}>${cierre} ${blanco}Renovar ${verde}Droplet${cierre}   
-${azul}[${cierre}${amarillo}05${cierre}${azul}]${cierre} ${rojo}>${cierre} ${blanco}Informacion de ${amarillo}Clientes${cierre}
-${azul}[${cierre}${amarillo}06${cierre}${azul}]${cierre} ${rojo}>${cierre} ${blanco}Actualizacion del ${verde}script${cierre}
-${azul}[${cierre}${amarillo}07${cierre}${azul}]${cierre} ${rojo}>${cierre} ${blanco}Desistalar ${rojo}script${cierre}
-${azul}[${cierre}${amarillo}08${cierre}${azul}]${cierre} ${rojo}>${cierre} ${blanco}Limpiar memoria ${verde}Cache${cierre}
-${azul}[${cierre}${amarillo}09${cierre}${azul}]${cierre} ${rojo}>${cierre} ${blanco}Backup de ${verde}Clientes${cierre}
-${azul}[${cierre}${blanco}0${cierre}${azul}]${cierre} ${rojo}>${cierre} ${rojo}SALIR${cierre}
-${bar2}"
-read -p "$(echo -e "${blanco}seleccione [0-9]:${cierre}")" selection
+echo -e "\033[1;37m╠════════════════════════════════════════════════════════════╦════════════════╣\033[0m"
+echo -e "\033[1;37m║\033[0m DISEÑO WEB - APK MOD - CUENTAS SSH -  DROPLET - (${amarillo}Reycode${cierre}) \033[1;37m ║\033[0m  ${azul}DROPS RG:${cierre}${amarillo}$No_user${cierre}   \033[1;37m ║\033[0m"
+echo -e "\033[1;37m╠════════════════════════════════════════════════════════════╩════════════════╣\033[0m"
+echo -e " ${bar3}
+ ${azul}[${cierre}${amarillo}01${cierre}${azul}]${cierre} ${rojo}>${cierre} ${blanco}Agregar ${verde}Cliente${cierre}               
+ ${azul}[${cierre}${amarillo}02${cierre}${azul}]${cierre} ${rojo}>${cierre} ${blanco}Eliminar ${rojo}Cliente${cierre}                   
+ ${azul}[${cierre}${amarillo}03${cierre}${azul}]${cierre} ${rojo}>${cierre} ${blanco}Editar ${amarillo}Cliente${cierre}                      
+ ${azul}[${cierre}${amarillo}04${cierre}${azul}]${cierre} ${rojo}>${cierre} ${blanco}Renovar ${verde}Droplet${cierre}   
+ ${azul}[${cierre}${amarillo}05${cierre}${azul}]${cierre} ${rojo}>${cierre} ${blanco}Informacion de ${amarillo}Clientes${cierre}
+ ${azul}[${cierre}${amarillo}06${cierre}${azul}]${cierre} ${rojo}>${cierre} ${blanco}Actualizacion del ${verde}script${cierre}
+ ${azul}[${cierre}${amarillo}07${cierre}${azul}]${cierre} ${rojo}>${cierre} ${blanco}Desistalar ${rojo}script${cierre}
+ ${azul}[${cierre}${amarillo}08${cierre}${azul}]${cierre} ${rojo}>${cierre} ${blanco}Limpiar memoria ${verde}Cache${cierre}
+ ${azul}[${cierre}${amarillo}09${cierre}${azul}]${cierre} ${rojo}>${cierre} ${blanco}Backup de ${verde}Clientes${cierre}
+ ${azul}[${cierre}${amarillo}10${cierre}${azul}]${cierre} ${rojo}>${cierre} ${blanco}Estatus ${verde}Clientes${cierre}
+ ${azul}[${cierre}${blanco}0${cierre}${azul}]${cierre} ${rojo}>${cierre} ${rojo}SALIR${cierre}
+ ${bar2}"
+read -p "$(echo -e "${blanco}seleccione [0-10]:${cierre}")" selection
 case "$selection" in
 1)nuevo_usuario ;;
 2)eliminar_usuario ;;
@@ -613,6 +616,7 @@ case "$selection" in
 7)eliminar_script ;;
 8)caches ;;
 9)backup ;;
+10)verif_fun ;;
 	0)cd $HOME && exit 0;;
 	*)
 	echo -e "${rojo} Porfavor seleccione del [0-9]${cierre}"
