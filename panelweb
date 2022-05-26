@@ -588,9 +588,8 @@ echo -e "\033[1;37m║\033[0m\e[41;1;37m                    ⇱  ADMINITRADOR RE
 echo -e "\033[1;37m╠═════════════════════════════════════════════════════════════════════════════╣\033[0m"
 echo -e "\033[1;37m║\033[0m DISEÑO WEB - APK MOD - CUENTAS SSH -  DROPLET - (${amarillo}Reycode${cierre})                  \033[1;37m ║\033[0m"
 echo -e "\033[1;37m╠═════════════════════════════════════════════════════════════════════════════╣\033[0m"
-echo -e "║${verde}     CUENTAS SSH - DROPLET - SCRIPT - APK MOD - DISEÑO WED (${amarillo}Reycode${cierre}${melon})
-${bar1}
-${blanco}CANTIDAD TOTAL DE DROPLET: ${rojo}>${cierre} ${azul}N°: ${blanco}$No_user  ${cierre}
+echo -e "\033[1;37m║\033[0m" ${blanco}CANTIDAD TOTAL DE DROPLET: ${rojo}>${cierre} ${azul}N°: ${blanco}$No_user  ${cierre}          echo -e "\033[1;37m║\033[0m"
+echo -e "
 ${bar3}
 ${azul}[${cierre}${amarillo}01${cierre}${azul}]${cierre} ${rojo}>${cierre} ${blanco}Agregar ${verde}Cliente${cierre}                              ${azul}[${cierre}${amarillo}05${cierre}${azul}]${cierre} ${rojo}>${cierre} ${blanco}Informacion de ${amarillo}Clientes${cierre}
 ${azul}[${cierre}${amarillo}02${cierre}${azul}]${cierre} ${rojo}>${cierre} ${blanco}Eliminar ${rojo}Cliente${cierre}                              ${azul}[${cierre}${amarillo}06${cierre}${azul}]${cierre} ${rojo}>${cierre} ${blanco}Actualizacion del ${verde}script${cierre}
