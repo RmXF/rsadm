@@ -592,15 +592,11 @@ echo -e "║${verde}     CUENTAS SSH - DROPLET - SCRIPT - APK MOD - DISEÑO WED 
 ${bar1}
 ${blanco}CANTIDAD TOTAL DE DROPLET: ${rojo}>${cierre} ${azul}N°: ${blanco}$No_user  ${cierre}
 ${bar3}
-${azul}[${cierre}${rojo}1${cierre}${azul}]${cierre} ${rojo}>${cierre} ${blanco}Agregar ${verde}Cliente${cierre}
-${azul}[${cierre}${rojo}2${cierre}${azul}]${cierre} ${rojo}>${cierre} ${blanco}Eliminar ${rojo}Cliente${cierre}
-${azul}[${cierre}${rojo}3${cierre}${azul}]${cierre} ${rojo}>${cierre} ${blanco}Editar ${amarillo}Cliente${cierre}
-${azul}[${cierre}${rojo}4${cierre}${azul}]${cierre} ${rojo}>${cierre} ${blanco}Renovar ${verde}Droplet${cierre}
-${azul}[${cierre}${rojo}5${cierre}${azul}]${cierre} ${rojo}>${cierre} ${blanco}Informacion de ${amarillo}Clientes${cierre}
-${azul}[${cierre}${rojo}6${cierre}${azul}]${cierre} ${rojo}>${cierre} ${blanco}Actualizacion del ${verde}script${cierre}
-${azul}[${cierre}${rojo}7${cierre}${azul}]${cierre} ${rojo}>${cierre} ${blanco}Desistalar ${rojo}script${cierre}
-${azul}[${cierre}${rojo}8${cierre}${azul}]${cierre} ${rojo}>${cierre} ${blanco}Limpiar memoria ${verde}Cache${cierre}
-${azul}[${cierre}${rojo}9${cierre}${azul}]${cierre} ${rojo}>${cierre} ${blanco}Backup de ${verde}Clientes${cierre}
+${azul}[${cierre}${amarillo}01${cierre}${azul}]${cierre} ${rojo}>${cierre} ${blanco}Agregar ${verde}Cliente${cierre}                              ${azul}[${cierre}${amarillo}05${cierre}${azul}]${cierre} ${rojo}>${cierre} ${blanco}Informacion de ${amarillo}Clientes${cierre}
+${azul}[${cierre}${amarillo}02${cierre}${azul}]${cierre} ${rojo}>${cierre} ${blanco}Eliminar ${rojo}Cliente${cierre}                              ${azul}[${cierre}${amarillo}06${cierre}${azul}]${cierre} ${rojo}>${cierre} ${blanco}Actualizacion del ${verde}script${cierre}
+${azul}[${cierre}${amarillo}03${cierre}${azul}]${cierre} ${rojo}>${cierre} ${blanco}Editar ${amarillo}Cliente${cierre}                            ${azul}[${cierre}${amarillo}07${cierre}${azul}]${cierre} ${rojo}>${cierre} ${blanco}Desistalar ${rojo}script${cierre}
+${azul}[${cierre}${amarillo}04${cierre}${azul}]${cierre} ${rojo}>${cierre} ${blanco}Renovar ${verde}Droplet${cierre}                              ${azul}[${cierre}${amarillo}08${cierre}${azul}]${cierre} ${rojo}>${cierre} ${blanco}Limpiar memoria ${verde}Cache${cierre}
+${azul}[${cierre}${amarillo}09${cierre}${azul}]${cierre} ${rojo}>${cierre} ${blanco}Backup de ${verde}Clientes${cierre}
 ${azul}[${cierre}${blanco}0${cierre}${azul}]${cierre} ${rojo}>${cierre} ${rojo}SALIR${cierre}
 ${bar2}"
 read -p "$(echo -e "${blanco}seleccione [0-9]:${cierre}")" selection
