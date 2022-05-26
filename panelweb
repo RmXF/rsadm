@@ -94,7 +94,7 @@ chage -E $valid $1 2> /dev/null || return 1
    }
 }
 edit_user_fun () {
-## EDICION DE USUARIOS
+## EDICION DE USUARIOS DROPL
 (echo "$2" ; echo "$2" ) |passwd $1 > /dev/null 2>&1 || return 1
 datexp=$(date "+%F" -d " + $3 days") && valid=$(date '+%C%y-%m-%d' -d " + $3 days")
 chage -E $valid $1 2> /dev/null || return 1
