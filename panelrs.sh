@@ -480,9 +480,9 @@ while true; do
      nomeuser="$(echo $nomeuser|sed -e 's/[^a-z0-9 -]//ig')"
      if [[ -z $nomeuser ]]; then
      err_fun 1 && continue
-     elif [[ "${#nomeuser}" -lt "4" ]]; then
+     elif [[ "${#nomeuser}" -lt "2" ]]; then
      err_fun 2 && continue
-     elif [[ "${#nomeuser}" -gt "7" ]]; then
+     elif [[ "${#nomeuser}" -gt "30" ]]; then
      err_fun 3 && continue
      elif [[ "$(echo ${usuarios_ativos[@]}|grep -w "$nomeuser")" ]]; then
      err_fun 14 && continue
@@ -494,9 +494,9 @@ while true; do
      read -p ": " senhauser
      if [[ -z $senhauser ]]; then
      err_fun 4 && continue
-     elif [[ "${#senhauser}" -lt "4" ]]; then
+     elif [[ "${#senhauser}" -lt "2" ]]; then
      err_fun 5 && continue
-     elif [[ "${#senhauser}" -gt "7" ]]; then
+     elif [[ "${#senhauser}" -gt "30" ]]; then
      err_fun 6 && continue
      fi
      break
@@ -696,9 +696,9 @@ echo -ne "${blanco}Usuario Selecionado: " && echo -e "$useredit"
      read -p ": " senhauser
      if [[ -z "$senhauser" ]]; then
      err_fun 4 && continue
-     elif [[ "${#senhauser}" -lt "6" ]]; then
+     elif [[ "${#senhauser}" -lt "2" ]]; then
      err_fun 5 && continue
-     elif [[ "${#senhauser}" -gt "20" ]]; then
+     elif [[ "${#senhauser}" -gt "30" ]]; then
      err_fun 6 && continue
      fi
      break
