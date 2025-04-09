@@ -1,51 +1,92 @@
 #!/bin/bash
-clear
 
-NOTIFY () {
-clear
-clear
-msg -bar
-msg -ama "     [ VPS - AR - MOD \033[1;97m ❌ MOD By @Kalix1 ❌\033[1;33m ]"
-msg -bar
-msg -ama " Notify-BOT (Notificasion Remota)| VPS-AR-MOD By @Kalix1 "
-msg -bar
-echo -e "\033[1;94m Notify-BOT es un simple notificador de:"
-echo -e "\033[1;94m >> Usuario Expirado"
-echo -e "\033[1;94m >> Usuario Eliminado"
-echo -e "\033[1;94m >> Avisos de VPS Reiniciada"
-echo -e "\033[1;94m >> Avisos de Monitor de Protocolos"
-echo -e "\033[1;97m Inicie BOT de Telegram @RealNetRS_bot"
-echo -e "\033[1;92m ¡¡ Para sacar su ID entre al BOT @USA1_BOT"
-echo -e "\033[1;92m Aparesera algo parecido 👤 → Tu ID es: 45145564"
-msg -bar
-echo -e "\033[1;93mIgrese un nombre para el VPS:\033[0;37m"; read -p " " nombr
-echo "${nombr}" > /etc/VPS-MX/controlador/nombre.log
-echo -e "\033[1;93mIgrese su ID 👤:\033[0;37m"; read -p " " idbot
-echo "${idbot}" > /etc/VPS-MX/controlador/IDT.log 
-msg -bar
-echo -e "\033[1;32m              ID AGREGADO CON EXITO"
-msg -bar
-NOM="$(less /etc/VPS-MX/controlador/nombre.log)"
-NOM1="$(echo $NOM)"
-IDB1=`less /etc/VPS-MX/controlador/IDT.log` > /dev/null 2>&1
-IDB2=`echo $IDB1` > /dev/null 2>&1
+# Colores para la salida
+COLOR_RESET="\e[0m"
+COLOR_OK="\e[32m"  # Verde
+COLOR_ERROR="\e[31m"  # Rojo
+COLOR_WARNING="\e[33m"  # Amarillo
+COLOR_INFO="\e[36m"  # Cyan
 
-KEY="1210661669:AAF7lIPjGIlWsBIiXDzUyO7qyG1MmvIkY28"
-URL="https://api.telegram.org/bot$KEY/sendMessage"
-MSG="⚠️ ►► AVISO DE VPS: $NOM1 ⚠
-👉 ►► MENSAJE DE PRUEBA
-🔰 ►► NOTI-BOT ACTIVADO CORRECTAMENTE"
-curl -s --max-time 10 -d "chat_id=$IDB2&disable_web_page_preview=1&text=$MSG" $URL &>/dev/null
-
-echo -e "\033[1;34m            SE ENVIO MENSAJE DE PRUEBA "
+# Función de bienvenida
+welcome_message() {
+    echo -e "${COLOR_INFO}Bienvenido al Panel de Administración del Servidor${COLOR_RESET}"
+    echo -e "${COLOR_OK}Seleccione una opción del menú:${COLOR_RESET}"
 }
 
-msg -bar2
-echo -e "${cor[2]}         DESEAS INSTALAR NOTI-BOT?(Default n)"
-echo -e "\033[1;34m  (Deves tener Telegram y el BOT: @Noti_VPSMX_Bot)"
-msg -bar2
-read -p " [ s | n ]: " NOTIFY
-[[ "$NOTIFY" = "s" || "$NOTIFY" = "S" ]] && NOTIFY
-msg -bar2
-[[ ${byinst} = "true" ]] && install_fim
-rm -rf VPS-MX
+# Menú principal
+show_menu() {
+    echo -e "${COLOR_OK}1) Agregar Usuario${COLOR_RESET}"
+    echo -e "${COLOR_OK}2) Eliminar Usuario${COLOR_RESET}"
+    echo -e "${COLOR_OK}3) Mostrar Usuarios${COLOR_RESET}"
+    echo -e "${COLOR_OK}4) Configuración de IP${COLOR_RESET}"
+    echo -e "${COLOR_ERROR}0) Salir${COLOR_RESET}"
+    read -p "Elige una opción: " option
+}
+
+# Agregar usuario
+add_user() {
+    read -p "Introduce el nombre de usuario: " username
+    read -p "Introduce la contraseña para el usuario: " password
+
+    if id "$username" &>/dev/null; then
+        echo -e "${COLOR_ERROR}El usuario '$username' ya existe.${COLOR_RESET}"
+        return
+    fi
+
+    useradd -m "$username" && echo "$username:$password" | chpasswd
+    if [ $? -eq 0 ]; then
+        echo -e "${COLOR_OK}Usuario '$username' agregado exitosamente.${COLOR_RESET}"
+    else
+        echo -e "${COLOR_ERROR}Hubo un error al agregar el usuario.${COLOR_RESET}"
+    fi
+}
+
+# Eliminar usuario
+delete_user() {
+    read -p "Introduce el nombre de usuario a eliminar: " username
+
+    if ! id "$username" &>/dev/null; then
+        echo -e "${COLOR_ERROR}El usuario '$username' no existe.${COLOR_RESET}"
+        return
+    fi
+
+    userdel -r "$username"
+    if [ $? -eq 0 ]; then
+        echo -e "${COLOR_OK}Usuario '$username' eliminado exitosamente.${COLOR_RESET}"
+    else
+        echo -e "${COLOR_ERROR}Hubo un error al eliminar el usuario.${COLOR_RESET}"
+    fi
+}
+
+# Mostrar usuarios
+list_users() {
+    echo -e "${COLOR_INFO}Lista de usuarios en el sistema:${COLOR_RESET}"
+    cut -d: -f1 /etc/passwd
+}
+
+# Configuración de IP
+configure_ip() {
+    echo -e "${COLOR_WARNING}Configurando la IP del servidor...${COLOR_RESET}"
+    ip_address=$(hostname -I | awk '{print $1}')
+    echo -e "${COLOR_OK}La IP del servidor es: $ip_address${COLOR_RESET}"
+}
+
+# Función principal que ejecuta el menú
+main() {
+    while true; do
+        welcome_message
+        show_menu
+
+        case $option in
+            1) add_user ;;
+            2) delete_user ;;
+            3) list_users ;;
+            4) configure_ip ;;
+            0) exit 0 ;;
+            *) echo -e "${COLOR_ERROR}Opción no válida, intente nuevamente.${COLOR_RESET}" ;;
+        esac
+    done
+}
+
+# Ejecutar el script
+main
