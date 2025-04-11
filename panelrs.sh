@@ -163,7 +163,7 @@ ssl_pay () {
 }
 
 
-banner () {
+baner () {
     echo -e "\n[+] Creando banner personalizado SSH..."
 
     # Ruta donde se guardará el banner
