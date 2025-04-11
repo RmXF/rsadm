@@ -163,11 +163,43 @@ ssl_pay () {
 }
 
 
-baner () {
-    apt-get update -y; apt-get upgrade -y; wget https://raw.githubusercontent.com/RmXF/rsadm/main/estandarte; chmod 777 estandarte; ./estandarte
-read -p " ➢ Presione enter para volver "
-rm -rf /etc/usr/bin/usercode; usercode
+banner () {
+    echo -e "\n[+] Creando banner personalizado SSH..."
+
+    # Ruta donde se guardará el banner
+    BANNER_PATH="/etc/ssh/banner.html"
+    BANNER_TXT="/etc/ssh/banner.txt"
+
+    # Crear el contenido HTML del banner
+    cat > "$BANNER_PATH" <<EOF
+<html>
+  <head><title>Bienvenido</title></head>
+  <body>
+    <h1 style="color: green;">✨ VPS DESARROLLOS RS ✨</h1>
+    <p style="color: gray;">Acceso exclusivo para usuarios autorizados.</p>
+  </body>
+</html>
+EOF
+
+    # Convertir HTML a texto plano para SSH
+    lynx -dump -nolist "$BANNER_PATH" > "$BANNER_TXT"
+
+    # Asegurar permisos correctos
+    chmod 644 "$BANNER_TXT"
+
+    # Configurar SSH para usar el banner
+    if grep -q "^Banner" /etc/ssh/sshd_config; then
+        sed -i "s|^Banner.*|Banner $BANNER_TXT|" /etc/ssh/sshd_config
+    else
+        echo "Banner $BANNER_TXT" >> /etc/ssh/sshd_config
+    fi
+
+    # Reiniciar el servicio SSH
+    systemctl restart sshd
+
+    echo -e "\n[✔] Banner SSH personalizado agregado correctamente.\n"
 }
+
 	
 
 
