@@ -99,30 +99,36 @@ mostrar_usuarios () {
     printf "%-12s %-12s %-12s %-12s %-8s\n" "USUARIO" "CONTRASEÑA" "FECHA" "T/RESTANTE" "LIMITE"
     echo -e "\e[1;34m────────────────────────────────────────────────────\e[0m"
 
-    if [ -f "${USRdatabase}/usuarios_creados.txt" ]; then
+    archivo_usuarios="${USRdatabase}/usuarios_creados.txt"
+
+    if [ -f "$archivo_usuarios" ] && [ -s "$archivo_usuarios" ]; then
         while IFS= read -r user; do
-            if grep -qw "$user" "${USRdatabase}"; then
-                datos=$(grep -w "$user" "${USRdatabase}")
+            if id "$user" &>/dev/null && grep -qw "$user" "$USRdatabase"; then
+                datos=$(grep -w "$user" "$USRdatabase")
                 usuario=$(echo "$datos" | cut -d'|' -f1)
-                contrasena="***"  # Si no querés mostrarla
+                contrasena="***"  # por seguridad
                 fecha=$(echo "$datos" | cut -d'|' -f3)
                 limite=$(echo "$datos" | cut -d'|' -f4)
 
-                # Calcular días restantes
+                # Cálculo de días restantes
                 hoy=$(date +%s)
-                fecha_objetivo=$(date -d "$fecha" +%s)
-                dias_restantes=$(( (fecha_objetivo - hoy) / 86400 ))
-                [[ $dias_restantes -lt 0 ]] && dias_restantes=0
+                fecha_objetivo=$(date -d "$fecha" +%s 2>/dev/null)
+                if [ $? -eq 0 ]; then
+                    dias_restantes=$(( (fecha_objetivo - hoy) / 86400 ))
+                    [ $dias_restantes -lt 0 ] && dias_restantes=0
+                else
+                    dias_restantes="?"
+                fi
 
                 printf "%-12s %-12s %-12s %-12s %-8s\n" "$usuario" "$contrasena" "$fecha" "[$dias_restantes]" "$limite"
             fi
-        done < "${USRdatabase}/usuarios_creados.txt"
+        done < "$archivo_usuarios"
     else
         echo -e "\e[1;31mNo hay usuarios registrados por este script aún.\e[0m"
     fi
 
     echo ""
-    read -p "➤ Presione enter para volver"
+    read -p "➤ Presione ENTER para volver"
 }
 
 add_user () {
