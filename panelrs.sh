@@ -52,6 +52,7 @@ bar4="\033[38;5;14m━━━━━━━━━━━━━━━━━━━━�
 
 ## VARIABLES DE ENTORNO Y SYSTEMA 
 USRdatabase="/etc/RSdb"
+echo "$usuario" >> /etc/RSdb/usuarios_creados.txt
 USRExp="/root/exp"
 
 ## TITULOS / LINK / 
@@ -97,22 +98,30 @@ done
 }
 
 add_user () {
-## FUNCION QUE AGRGA ALOS USUARIOS
-[[ $(cat /etc/passwd |grep $1: |grep -vi [a-z]$1 |grep -v [0-9]$1 > /dev/null) ]] && return 1
-valid=$(date '+%C%y-%m-%d' -d " +$3 days") && datexp=$(date "+%F" -d " + $3 days")
-useradd -M -s /bin/false $1 -e ${valid} > /dev/null 2>&1 || return 1
-(echo $2; echo $2)|passwd $1 2>/dev/null || {
-    userdel --force $1
-    return 1
+    ## FUNCIÓN QUE AGREGA A LOS USUARIOS
+    [[ $(cat /etc/passwd | grep $1: | grep -vi [a-z]$1 | grep -v [0-9]$1 > /dev/null) ]] && return 1
+
+    valid=$(date '+%C%y-%m-%d' -d " +$3 days") && datexp=$(date "+%F" -d " + $3 days")
+    useradd -M -s /bin/false $1 -e ${valid} > /dev/null 2>&1 || return 1
+
+    (echo $2; echo $2) | passwd $1 2>/dev/null || {
+        userdel --force $1
+        return 1
     }
-[[ -e ${USRdatabase} ]] && {
-   newbase=$(cat ${USRdatabase}|grep -w -v "$1")
-   echo "$1|$2|${datexp}|$4" > ${USRdatabase}
-   for value in `echo ${newbase}`; do
-   echo $value >> ${USRdatabase}
-   done
-   } || echo "$1|$2|${datexp}|$4" > ${USRdatabase}
+
+    # Actualiza base principal
+    [[ -e ${USRdatabase} ]] && {
+        newbase=$(cat ${USRdatabase} | grep -w -v "$1")
+        echo "$1|$2|${datexp}|$4" > ${USRdatabase}
+        for value in `echo ${newbase}`; do
+            echo $value >> ${USRdatabase}
+        done
+    } || echo "$1|$2|${datexp}|$4" > ${USRdatabase}
+
+    # ✅ Agrega el usuario creado al listado personalizado
+    echo "$1" >> "${USRdatabase}/usuarios_creados.txt"
 }
+
 renew_user_fun () {
 ## RENOVACION DE USUARIOS
 datexp=$(date "+%F" -d " + $2 days") && valid=$(date '+%C%y-%m-%d' -d " + $2 days")
