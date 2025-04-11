@@ -92,9 +92,37 @@ fi
 }
 
 mostrar_usuarios () {
-for u in `awk -F : '$3 > 900 { print $1 }' /etc/passwd | grep -v "nobody" |grep -vi polkitd |grep -vi system-`; do
-echo "$u"
-done
+    clear
+    echo -e "\e[1;36m════════════════════════════════════════════════════"
+    echo -e "           USUARIOS CREADOS DESDE ESTE SCRIPT"
+    echo -e "════════════════════════════════════════════════════\e[0m"
+    printf "%-12s %-12s %-12s %-12s %-8s\n" "USUARIO" "CONTRASEÑA" "FECHA" "T/RESTANTE" "LIMITE"
+    echo -e "\e[1;34m────────────────────────────────────────────────────\e[0m"
+
+    if [ -f "${USRdatabase}/usuarios_creados.txt" ]; then
+        while IFS= read -r user; do
+            if grep -qw "$user" "${USRdatabase}"; then
+                datos=$(grep -w "$user" "${USRdatabase}")
+                usuario=$(echo "$datos" | cut -d'|' -f1)
+                contrasena="***"  # Si no querés mostrarla
+                fecha=$(echo "$datos" | cut -d'|' -f3)
+                limite=$(echo "$datos" | cut -d'|' -f4)
+
+                # Calcular días restantes
+                hoy=$(date +%s)
+                fecha_objetivo=$(date -d "$fecha" +%s)
+                dias_restantes=$(( (fecha_objetivo - hoy) / 86400 ))
+                [[ $dias_restantes -lt 0 ]] && dias_restantes=0
+
+                printf "%-12s %-12s %-12s %-12s %-8s\n" "$usuario" "$contrasena" "$fecha" "[$dias_restantes]" "$limite"
+            fi
+        done < "${USRdatabase}/usuarios_creados.txt"
+    else
+        echo -e "\e[1;31mNo hay usuarios registrados por este script aún.\e[0m"
+    fi
+
+    echo ""
+    read -p "➤ Presione enter para volver"
 }
 
 add_user () {
