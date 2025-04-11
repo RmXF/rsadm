@@ -56,7 +56,7 @@ USRExp="/root/exp"
 
 ## TITULOS / LINK / 
 TITLE='  REYCODESSH  ';
-VERSION='  [ V2.7 ]  ';
+VERSION='  [ V2.9 ]  ';
 ## FUNCION DE ERRORES 
 err_fun () {
      case $1 in
@@ -163,41 +163,36 @@ ssl_pay () {
 }
 
 
-baner () {
-    echo -e "\n[+] Creando banner personalizado SSH..."
+bannerssh_rs() {
+    clear
+    echo -e "\033[1;32m═══════════════════════════════════════════════"
+    echo -e "          CONFIGURADOR DE BANNER SSH"
+    echo -e "═══════════════════════════════════════════════\033[0m"
 
-    # Ruta donde se guardará el banner
-    BANNER_PATH="/etc/ssh/banner.html"
-    BANNER_TXT="/etc/ssh/banner.txt"
+    read -p "Texto del banner (se mostrará al iniciar sesión): " texto_banner
 
-    # Crear el contenido HTML del banner
-    cat > "$BANNER_PATH" <<EOF
-<html>
-  <head><title>Bienvenido</title></head>
-  <body>
-    <h1 style="color: green;">✨ VPS DESARROLLOS RS ✨</h1>
-    <p style="color: gray;">Acceso exclusivo para usuarios autorizados.</p>
-  </body>
-</html>
-EOF
+    # Ruta del archivo de banner
+    BANNER_TXT="/etc/ssh/banner_rs.txt"
 
-    # Convertir HTML a texto plano para SSH
-    lynx -dump -nolist "$BANNER_PATH" > "$BANNER_TXT"
+    # Crear el banner
+    echo -e "\n$texto_banner\n" > "$BANNER_TXT"
 
-    # Asegurar permisos correctos
+    # Asegurar permisos
     chmod 644 "$BANNER_TXT"
 
-    # Configurar SSH para usar el banner
+    # Aplicar en sshd_config
     if grep -q "^Banner" /etc/ssh/sshd_config; then
         sed -i "s|^Banner.*|Banner $BANNER_TXT|" /etc/ssh/sshd_config
     else
         echo "Banner $BANNER_TXT" >> /etc/ssh/sshd_config
     fi
 
-    # Reiniciar el servicio SSH
-    systemctl restart sshd
+    # Reiniciar servicio SSH
+    systemctl restart sshd &>/dev/null && \
+    echo -e "\n\033[1;32m✔ Banner aplicado y SSH reiniciado correctamente.\033[0m" || \
+    echo -e "\n\033[1;31m✖ Error al reiniciar SSH. Verifica manualmente.\033[0m"
 
-    echo -e "\n[✔] Banner SSH personalizado agregado correctamente.\n"
+    read -p "Presiona ENTER para volver al menú..."
 }
 
 	
@@ -917,7 +912,8 @@ case "$selection" in
 10)monitor ;;
 11)backup ;;
 12)ssl_pay ;;
-13)baner ;;
+13)bannerssh_rs ;;
+
 14)BadVPN ;;
 	0)cd $HOME && exit 0;;
 	*)
