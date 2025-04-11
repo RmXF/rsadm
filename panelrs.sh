@@ -50,12 +50,12 @@ bar2="\033[38;5;226m---------------------------------------------------------\03
 bar3="\033[38;5;226m-------------------------------- ${blanco}=/${cierre}${rojo} ADMIN ${cierre}${blanco}\=${cierre} ${amarillo}-------------------------------${cierre}"
 bar4="\033[38;5;14m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\e[0m"
 
-## VARIABLES DE ENTORNO Y SYSTEMA 
+## VARIABLES DE ENTORNO Y SISTEMA
 USRdatabase="/etc/RSdb"
-echo "$1" >> "${USRdatabase}/usuarios_creados.txt"
 USRfile="${USRdatabase}/usuarios.db"
 mkdir -p "${USRdatabase}"
-USRExp="/root/exp"
+touch "${USRdatabase}/usuarios_creados.txt"
+USREXP="/root/exp"
 
 ## TITULOS / LINK / 
 TITLE='  REYCODESSH  ';
@@ -105,14 +105,13 @@ mostrar_usuarios () {
 
     if [ -f "$archivo_usuarios" ] && [ -s "$archivo_usuarios" ]; then
         while IFS= read -r user; do
-            if id "$user" &>/dev/null && grep -qw "$user" "$USRdatabase"; then
-                datos=$(grep -w "$user" "$USRdatabase")
+            if id "$user" &>/dev/null && grep -qw "$user" "$USRfile"; then
+                datos=$(grep -w "$user" "$USRfile")
                 usuario=$(echo "$datos" | cut -d'|' -f1)
-                contrasena="***"  # por seguridad
+                contrasena="***"
                 fecha=$(echo "$datos" | cut -d'|' -f3)
                 limite=$(echo "$datos" | cut -d'|' -f4)
 
-                # Cálculo de días restantes
                 hoy=$(date +%s)
                 fecha_objetivo=$(date -d "$fecha" +%s 2>/dev/null)
                 if [ $? -eq 0 ]; then
@@ -133,8 +132,8 @@ mostrar_usuarios () {
     read -p "➤ Presione ENTER para volver"
 }
 
+
 add_user () {
-    ## FUNCIÓN QUE AGREGA A LOS USUARIOS
     [[ $(cat /etc/passwd | grep $1: | grep -vi [a-z]$1 | grep -v [0-9]$1 > /dev/null) ]] && return 1
 
     valid=$(date '+%C%y-%m-%d' -d " +$3 days") && datexp=$(date "+%F" -d " + $3 days")
@@ -145,19 +144,18 @@ add_user () {
         return 1
     }
 
-    # Actualiza base principal
-    [[ -e ${USRdatabase} ]] && {
-        newbase=$(cat ${USRdatabase} | grep -w -v "$1")
-        echo "$1|$2|${datexp}|$4" > ${USRdatabase}
+    [[ -e ${USRfile} ]] && {
+        newbase=$(cat ${USRfile} | grep -w -v "$1")
+        echo "$1|$2|${datexp}|$4" > ${USRfile}
         for value in `echo ${newbase}`; do
-            echo $value >> ${USRdatabase}
+            echo $value >> ${USRfile}
         done
-    } || echo "$1|$2|${datexp}|$4" > ${USRdatabase}
+    } || echo "$1|$2|${datexp}|$4" > ${USRfile}
 
-    # ✅ Agrega el usuario creado al listado personalizado
+    # REGISTRAR EL USUARIO EN LA LISTA DE CREADOS SI NO ESTÁ
     grep -qxF "$1" "${USRdatabase}/usuarios_creados.txt" || echo "$1" >> "${USRdatabase}/usuarios_creados.txt"
-
 }
+
 
 renew_user_fun () {
 ## RENOVACION DE USUARIOS
