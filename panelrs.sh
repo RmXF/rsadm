@@ -52,7 +52,8 @@ bar4="\033[38;5;14m━━━━━━━━━━━━━━━━━━━━�
 
 ## VARIABLES DE ENTORNO Y SYSTEMA 
 USRdatabase="/etc/RSdb"
-echo "$usuario" >> /etc/RSdb/usuarios_creados.txt
+USRfile="${USRdatabase}/usuarios.db"
+mkdir -p "${USRdatabase}"
 USRExp="/root/exp"
 
 ## TITULOS / LINK / 
