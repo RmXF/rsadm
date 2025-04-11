@@ -154,7 +154,8 @@ add_user () {
     } || echo "$1|$2|${datexp}|$4" > ${USRdatabase}
 
     # ✅ Agrega el usuario creado al listado personalizado
-    echo "$1" >> "${USRdatabase}/usuarios_creados.txt"
+    grep -qxF "$1" "${USRdatabase}/usuarios_creados.txt" || echo "$1" >> "${USRdatabase}/usuarios_creados.txt"
+
 }
 
 renew_user_fun () {
