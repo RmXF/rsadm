@@ -92,7 +92,7 @@ descargar_banners_remotos() {
 }
 
 rotar_banner_por_dia() {
-    dia=$(date +%u)  # 1=lunes, ..., 7=domingo
+    dia=$(date +%u)  # 1=lunes ... 7=domingo
     case $dia in
         1) banner="banner_lunes" ;;
         2) banner="banner_martes" ;;
@@ -103,10 +103,18 @@ rotar_banner_por_dia() {
         7) banner="banner_domingo" ;;
     esac
 
+    echo -e "
+${CYAN}Día detectado: $(date +%A)${RESET}"
     if [[ -f "$TEMPLATE_DIR/$banner" ]]; then
-        cp "$TEMPLATE_DIR/$banner" "$BANNER_FILE"
-        log_change "Banner diario rotado automáticamente: $banner"
+        aplicar_banner "$TEMPLATE_DIR/$banner"
+        echo -e "${GREEN}Banner del día '$banner' aplicado correctamente.${RESET}"
+        log_change "Rotación manual: $banner"
+    else
+        echo -e "${RED}No se encontró el banner para hoy: $banner${RESET}"
     fi
+
+    echo -e "${CYAN}Presiona ENTER para volver al menú...${RESET}"
+    read
 }
 
 menu_plantillas() {
