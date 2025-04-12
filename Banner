@@ -1,7 +1,10 @@
 #!/bin/bash
 
+# Archivo de configuración
 BANNER_FILE="/etc/issue.net"
 BACKUP_FILE="/etc/issue.net.bak"
+LOG_FILE="/var/log/banner_rs.log"
+TEMPLATE_DIR="/etc/banner_rs_templates"
 
 # Colores
 RED="\e[91m"
@@ -10,6 +13,7 @@ YELLOW="\e[93m"
 BLUE="\e[94m"
 MAGENTA="\e[95m"
 CYAN="\e[96m"
+WHITE="\e[97m"
 RESET="\e[0m"
 
 # Verifica permisos root
@@ -18,19 +22,35 @@ if [[ $EUID -ne 0 ]]; then
   exit 1
 fi
 
-barra_carga() {
-    echo -ne "\n ${CYAN}Guardando banner${RESET} ["
-    for i in {1..10}; do echo -ne "🟩"; sleep 0.05; done
-    for i in {1..10}; do echo -ne "⬜"; sleep 0.03; done
-    echo -e "] ${GREEN}¡Listo!${RESET}"
+# Crear backup si no existe
+[[ ! -f $BACKUP_FILE ]] && cp "$BANNER_FILE" "$BACKUP_FILE"
+mkdir -p "$TEMPLATE_DIR"
+
+# Logs
+log_change() {
+  echo "[$(date '+%Y-%m-%d %H:%M:%S')] Usuario: $SUDO_USER - Acción: $1" >> "$LOG_FILE"
 }
 
-guardar_banner() {
+barra_carga() {
+    echo -ne "\n ${CYAN}Aplicando cambios${RESET} ["
+    for i in {1..10}; do echo -ne "🟩"; sleep 0.05; done
+    for i in {1..10}; do echo -ne "⬜"; sleep 0.03; done
+    echo -e "] ${GREEN}¡Hecho!${RESET}"
+}
+
+aplicar_banner() {
+    cp "$1" "$BANNER_FILE"
+    barra_carga
+    log_change "Banner aplicado desde plantilla $1"
+}
+
+crear_banner() {
     echo -e "${BLUE}Escribí tu nuevo banner (Ctrl+D para terminar):${RESET}"
     cat > /tmp/banner_rs
     barra_carga
     cp /tmp/banner_rs "$BANNER_FILE"
     echo -e "${GREEN}Banner actualizado correctamente.${RESET}"
+    log_change "Banner personalizado creado manualmente"
 }
 
 ver_banner() {
@@ -40,47 +60,71 @@ ver_banner() {
     read
 }
 
-editar_banner() {
-    nano "$BANNER_FILE"
-}
-
 eliminar_banner() {
-    rm -f "$BANNER_FILE"
-    touch "$BANNER_FILE"
-    echo -e "${GREEN}Banner eliminado y archivo limpio.${RESET}"
+    rm -f "$BANNER_FILE" && touch "$BANNER_FILE"
+    echo -e "${GREEN}Banner eliminado.${RESET}"
+    log_change "Banner eliminado"
 }
 
 restaurar_banner() {
-    if [[ -f $BACKUP_FILE ]]; then
-        cp "$BACKUP_FILE" "$BANNER_FILE"
-        echo -e "${GREEN}Banner restaurado desde backup.${RESET}"
-    else
-        echo -e "${RED}No hay backup disponible.${RESET}"
-    fi
+    cp "$BACKUP_FILE" "$BANNER_FILE"
+    echo -e "${GREEN}Banner original restaurado.${RESET}"
+    log_change "Banner restaurado desde backup"
 }
 
-# Crear backup si no existe
-[[ ! -f $BACKUP_FILE ]] && cp "$BANNER_FILE" "$BACKUP_FILE"
+ver_logs() {
+    echo -e "\n${MAGENTA}Historial de cambios:${RESET}"
+    cat "$LOG_FILE"
+    echo -e "\n${CYAN}Presiona ENTER para continuar...${RESET}"
+    read
+}
+
+menu_plantillas() {
+    echo -e "\n${CYAN}Plantillas disponibles:${RESET}"
+    ls "$TEMPLATE_DIR"
+    echo -ne "\nNombre de la plantilla a aplicar: "
+    read plantilla
+    if [[ -f "$TEMPLATE_DIR/$plantilla" ]]; then
+        aplicar_banner "$TEMPLATE_DIR/$plantilla"
+    else
+        echo -e "${RED}Plantilla no encontrada.${RESET}"
+    fi
+    sleep 1
+}
+
+crear_plantilla() {
+    echo -ne "\nNombre para la nueva plantilla: "
+    read nombre
+    echo -e "${YELLOW}Escribí el contenido (Ctrl+D para guardar):${RESET}"
+    cat > "$TEMPLATE_DIR/$nombre"
+    echo -e "${GREEN}Plantilla '$nombre' guardada.${RESET}"
+    log_change "Plantilla creada: $nombre"
+    sleep 1
+}
 
 menu() {
   clear
   echo -e "${MAGENTA}=================================================="
-  echo -e "         ${YELLOW}GESTOR DE BANNERS SSH - DESARROLLOS RS${MAGENTA}"
+  echo -e "        ${YELLOW}GESTOR AVANZADO DE BANNERS SSH RS${MAGENTA}"
   echo -e "==================================================${RESET}"
-  echo -e "${CYAN}1)${RESET} Agregar nuevo banner"
+  echo -e "${CYAN}1)${RESET} Crear nuevo banner personalizado"
   echo -e "${CYAN}2)${RESET} Ver banner actual"
-  echo -e "${CYAN}3)${RESET} Editar banner en Nano"
-  echo -e "${CYAN}4)${RESET} Restaurar banner original"
-  echo -e "${CYAN}5)${RESET} Eliminar banner actual"
+  echo -e "${CYAN}3)${RESET} Aplicar banner desde plantilla"
+  echo -e "${CYAN}4)${RESET} Crear nueva plantilla"
+  echo -e "${CYAN}5)${RESET} Restaurar banner original"
+  echo -e "${CYAN}6)${RESET} Eliminar banner actual"
+  echo -e "${CYAN}7)${RESET} Ver historial de cambios"
   echo -e "${CYAN}0)${RESET} Salir"
   echo -ne "\nSelecciona una opción: "
   read opc
   case $opc in
-    1) guardar_banner ;;
+    1) crear_banner ;;
     2) ver_banner ;;
-    3) editar_banner ;;
-    4) restaurar_banner ;;
-    5) eliminar_banner ;;
+    3) menu_plantillas ;;
+    4) crear_plantilla ;;
+    5) restaurar_banner ;;
+    6) eliminar_banner ;;
+    7) ver_logs ;;
     0) exit 0 ;;
     *) echo -e "${RED}Opción inválida...${RESET}"; sleep 1 ;;
   esac
