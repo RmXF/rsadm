@@ -103,8 +103,7 @@ rotar_banner_por_dia() {
         7) banner="banner_domingo" ;;
     esac
 
-    echo -e "
-${CYAN}Día detectado: $(date +%A)${RESET}"
+    echo -e "\n${CYAN}Día detectado: $(date +%A)${RESET}"
     if [[ -f "$TEMPLATE_DIR/$banner" ]]; then
         aplicar_banner "$TEMPLATE_DIR/$banner"
         echo -e "${GREEN}Banner del día '$banner' aplicado correctamente.${RESET}"
@@ -113,6 +112,22 @@ ${CYAN}Día detectado: $(date +%A)${RESET}"
         echo -e "${RED}No se encontró el banner para hoy: $banner${RESET}"
     fi
 
+    echo -e "${CYAN}Presiona ENTER para volver al menú...${RESET}"
+    read
+}
+
+ver_banners_por_dia() {
+    echo -e "\n${CYAN}Vista previa de banners diarios:${RESET}\n"
+    for dia in lunes martes miercoles jueves viernes sabado domingo; do
+        archivo="$TEMPLATE_DIR/banner_${dia}"
+        echo -e "${MAGENTA}== Banner del ${dia^} ==${RESET}"
+        if [[ -f "$archivo" ]]; then
+            cat "$archivo"
+        else
+            echo -e "${RED}[No existe]${RESET}"
+        fi
+        echo -e "\n---------------------------------------\n"
+    done
     echo -e "${CYAN}Presiona ENTER para volver al menú...${RESET}"
     read
 }
@@ -154,6 +169,7 @@ menu() {
   echo -e "${CYAN}7)${RESET} Ver historial de cambios"
   echo -e "${CYAN}8)${RESET} Descargar banners remotos"
   echo -e "${CYAN}9)${RESET} Rotar banner automáticamente según el día"
+  echo -e "${CYAN}10)${RESET} Vista previa de banners diarios"
   echo -e "${CYAN}0)${RESET} Salir"
   echo -ne "\nSelecciona una opción: "
   read opc
@@ -167,6 +183,7 @@ menu() {
     7) ver_logs ;;
     8) descargar_banners_remotos ;;
     9) rotar_banner_por_dia ;;
+    10) ver_banners_por_dia ;;
     0) exit 0 ;;
     *) echo -e "${RED}Opción inválida...${RESET}"; sleep 1 ;;
   esac
