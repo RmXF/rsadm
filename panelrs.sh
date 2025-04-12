@@ -265,12 +265,15 @@ espera () {
           ) > /dev/null 2>&1 &
           tput civis
 		  echo -e "\033[1;31m===========================================================\033[1;37m"
-          echo -ne "${col7}    AGUARDE...\033[1;35m["
-          while true; do
-          for((i=0; i<18; i++)); do
-          echo -ne "\033[1;34m#"
-          sleep 0.2s
-          done
+          echo -ne "\n AGUARDE... ["
+for i in {1..10}; do
+    echo -ne "🟩"
+    sleep 0.1
+done
+for i in {1..10}; do
+    echo -ne "⬜"
+    sleep 0.05
+done
          [[ -e $HOME/fim ]] && rm $HOME/fim && break
          echo -e "${col5}"
          sleep 1s
