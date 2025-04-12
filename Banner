@@ -1,0 +1,91 @@
+#!/bin/bash
+
+BANNER_FILE="/etc/issue.net"
+BACKUP_FILE="/etc/issue.net.bak"
+
+# Colores
+RED="\e[91m"
+GREEN="\e[92m"
+YELLOW="\e[93m"
+BLUE="\e[94m"
+MAGENTA="\e[95m"
+CYAN="\e[96m"
+RESET="\e[0m"
+
+# Verifica permisos root
+if [[ $EUID -ne 0 ]]; then
+  echo -e "${RED}Este script requiere privilegios de superusuario.${RESET}"
+  exit 1
+fi
+
+barra_carga() {
+    echo -ne "\n ${CYAN}Guardando banner${RESET} ["
+    for i in {1..10}; do echo -ne "🟩"; sleep 0.05; done
+    for i in {1..10}; do echo -ne "⬜"; sleep 0.03; done
+    echo -e "] ${GREEN}¡Listo!${RESET}"
+}
+
+guardar_banner() {
+    echo -e "${BLUE}Escribí tu nuevo banner (Ctrl+D para terminar):${RESET}"
+    cat > /tmp/banner_rs
+    barra_carga
+    cp /tmp/banner_rs "$BANNER_FILE"
+    echo -e "${GREEN}Banner actualizado correctamente.${RESET}"
+}
+
+ver_banner() {
+    echo -e "\n${YELLOW}Contenido actual del banner:${RESET}\n"
+    cat "$BANNER_FILE"
+    echo -e "\n${CYAN}Presiona ENTER para volver al menú...${RESET}"
+    read
+}
+
+editar_banner() {
+    nano "$BANNER_FILE"
+}
+
+eliminar_banner() {
+    rm -f "$BANNER_FILE"
+    touch "$BANNER_FILE"
+    echo -e "${GREEN}Banner eliminado y archivo limpio.${RESET}"
+}
+
+restaurar_banner() {
+    if [[ -f $BACKUP_FILE ]]; then
+        cp "$BACKUP_FILE" "$BANNER_FILE"
+        echo -e "${GREEN}Banner restaurado desde backup.${RESET}"
+    else
+        echo -e "${RED}No hay backup disponible.${RESET}"
+    fi
+}
+
+# Crear backup si no existe
+[[ ! -f $BACKUP_FILE ]] && cp "$BANNER_FILE" "$BACKUP_FILE"
+
+menu() {
+  clear
+  echo -e "${MAGENTA}=================================================="
+  echo -e "         ${YELLOW}GESTOR DE BANNERS SSH - DESARROLLOS RS${MAGENTA}"
+  echo -e "==================================================${RESET}"
+  echo -e "${CYAN}1)${RESET} Agregar nuevo banner"
+  echo -e "${CYAN}2)${RESET} Ver banner actual"
+  echo -e "${CYAN}3)${RESET} Editar banner en Nano"
+  echo -e "${CYAN}4)${RESET} Restaurar banner original"
+  echo -e "${CYAN}5)${RESET} Eliminar banner actual"
+  echo -e "${CYAN}0)${RESET} Salir"
+  echo -ne "\nSelecciona una opción: "
+  read opc
+  case $opc in
+    1) guardar_banner ;;
+    2) ver_banner ;;
+    3) editar_banner ;;
+    4) restaurar_banner ;;
+    5) eliminar_banner ;;
+    0) exit 0 ;;
+    *) echo -e "${RED}Opción inválida...${RESET}"; sleep 1 ;;
+  esac
+}
+
+while true; do
+    menu
+done
