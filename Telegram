@@ -29,6 +29,19 @@ if [[ $EUID -ne 0 ]]; then
 fi
 
 # Crear estructuras
+
+# Solicitar configuraciÃ³n si no existe
+if [[ ! -f "$CONFIG_FILE" ]]; then
+  echo -e "${YELLOW}ðŸ” ConfiguraciÃ³n inicial del Bot de Telegram:${RESET}"
+  read -p "ðŸ”‘ Token del Bot: " TOKEN
+  read -p "ðŸ‘¤ ID de Administrador (Telegram): " ADMIN_ID
+  echo "TOKEN=$TOKEN" > "$CONFIG_FILE"
+  echo "ADMIN_ID=$ADMIN_ID" >> "$CONFIG_FILE"
+fi
+
+# Cargar configuraciÃ³n
+source "$CONFIG_FILE"
+
 mkdir -p "$TEMPLATE_DIR"
 [[ ! -f "$BACKUP_FILE" ]] && cp "$BANNER_FILE" "$BACKUP_FILE"
 
