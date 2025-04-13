@@ -1,5 +1,5 @@
 #!/bin/bash
-# SCRIPT COMPLETO: banner_rs.sh + BOT Telegram + IntegraciÃ³n total
+# SCRIPT COMPLETO: banner_rs.sh + BOT Telegram + Integración total
 # Autor: Desarrollos RS
 
 ### CONFIGURACIONES GENERALES ###
@@ -29,23 +29,20 @@ if [[ $EUID -ne 0 ]]; then
 fi
 
 # Crear estructuras
-
-# Solicitar configuraciÃ³n si no existe
-if [[ ! -f "$CONFIG_FILE" ]]; then
-  echo -e "${YELLOW}ðŸ” ConfiguraciÃ³n inicial del Bot de Telegram:${RESET}"
-  read -p "ðŸ”‘ Token del Bot: " TOKEN
-  read -p "ðŸ‘¤ ID de Administrador (Telegram): " ADMIN_ID
-  echo "TOKEN=$TOKEN" > "$CONFIG_FILE"
-  echo "ADMIN_ID=$ADMIN_ID" >> "$CONFIG_FILE"
-fi
-
-# Cargar configuraciÃ³n
-source "$CONFIG_FILE"
-
 mkdir -p "$TEMPLATE_DIR"
 [[ ! -f "$BACKUP_FILE" ]] && cp "$BANNER_FILE" "$BACKUP_FILE"
 
-# Cargar configuraciÃ³n del bot
+# Función para configurar el bot manualmente
+configurar_bot() {
+  echo -e "${YELLOW}🔐 Configuración del Bot de Telegram:${RESET}"
+  read -p "🔑 Token del Bot: " TOKEN
+  read -p "👤 ID de Administrador (Telegram): " ADMIN_ID
+  echo "TOKEN=$TOKEN" > "$CONFIG_FILE"
+  echo "ADMIN_ID=$ADMIN_ID" >> "$CONFIG_FILE"
+  echo -e "${GREEN}✅ Bot configurado correctamente.${RESET}"
+}
+
+# Cargar configuración del bot si existe
 [[ -f "$CONFIG_FILE" ]] && source "$CONFIG_FILE"
 
 ### FUNCIONES BOT TELEGRAM ###
@@ -60,21 +57,21 @@ send_file() {
 }
 
 log_change() {
-  echo "[$(date '+%Y-%m-%d %H:%M:%S')] Usuario: $SUDO_USER - AcciÃ³n: $1" >> "$LOG_FILE"
+  echo "[$(date '+%Y-%m-%d %H:%M:%S')] Usuario: $SUDO_USER - Acción: $1" >> "$LOG_FILE"
 }
 
 barra_carga() {
   echo -ne "\n ${CYAN}Aplicando cambios${RESET} ["
-  for i in {1..10}; do echo -ne "ðŸŸ©"; sleep 0.05; done
-  for i in {1..10}; do echo -ne "â¬œ"; sleep 0.03; done
-  echo -e "] ${GREEN}Â¡Hecho!${RESET}"
+  for i in {1..10}; do echo -ne "🟩"; sleep 0.05; done
+  for i in {1..10}; do echo -ne "⬜"; sleep 0.03; done
+  echo -e "] ${GREEN}¡Hecho!${RESET}"
 }
 
 aplicar_banner() {
   cp "$1" "$BANNER_FILE"
   barra_carga
   log_change "Banner aplicado desde plantilla $1"
-  send_message "âœ… Banner aplicado desde plantilla: <b>$(basename "$1")</b>"
+  send_message "✅ Banner aplicado desde plantilla: <b>$(basename "$1")</b>"
 }
 
 rotar_banner_por_dia() {
@@ -89,15 +86,15 @@ rotar_banner_por_dia() {
     7) banner="banner_domingo" ;;
   esac
 
-  echo -e "\n${CYAN}DÃ­a detectado: $(date +%A)${RESET}"
+  echo -e "\n${CYAN}Día detectado: $(date +%A)${RESET}"
   if [[ -f "$TEMPLATE_DIR/$banner" ]]; then
     aplicar_banner "$TEMPLATE_DIR/$banner"
-    echo -e "${GREEN}Banner del dÃ­a '$banner' aplicado correctamente.${RESET}"
-    log_change "RotaciÃ³n manual: $banner"
-    send_message "ðŸ“… RotaciÃ³n automÃ¡tica aplicada: <b>$banner</b>"
+    echo -e "${GREEN}Banner del día '$banner' aplicado correctamente.${RESET}"
+    log_change "Rotación manual: $banner"
+    send_message "📅 Rotación automática aplicada: <b>$banner</b>"
   else
-    echo -e "${RED}No se encontrÃ³ el banner para hoy: $banner${RESET}"
-    send_message "âš ï¸ No se encontrÃ³ el banner del dÃ­a: <b>$banner</b>"
+    echo -e "${RED}No se encontró el banner para hoy: $banner${RESET}"
+    send_message "⚠️ No se encontró el banner del día: <b>$banner</b>"
   fi
 
   [[ "$1" != "--rotate" ]] && {
@@ -117,42 +114,42 @@ generar_estado_vps() {
   df -h / >> "$STATUS_FILE"
   echo -e "\nUsuarios conectados:" >> "$STATUS_FILE"
   who >> "$STATUS_FILE"
-  echo -e "\nIP PÃºblica: $(curl -s ifconfig.me)" >> "$STATUS_FILE"
+  echo -e "\nIP Pública: $(curl -s ifconfig.me)" >> "$STATUS_FILE"
   echo -e "\nProcesos activos: $(ps aux --no-heading | wc -l)" >> "$STATUS_FILE"
   echo -e "\n===== FIN DEL REPORTE =====" >> "$STATUS_FILE"
   send_file "$STATUS_FILE"
 }
 
 programar_reporte_diario() {
-  echo "âŒš Escribe la hora (0-23) para el reporte automÃ¡tico:"
+  echo "⌚ Escribe la hora (0-23) para el reporte automático:"
   read -r HORA
   if [[ "$HORA" =~ ^[0-9]{1,2}$ && $HORA -ge 0 && $HORA -le 23 ]]; then
     echo "0 $HORA * * * root /bin/bash $0 --reporte-auto" > "$CRON_FILE"
-    send_message "â° Reporte automÃ¡tico diario programado a las $HORA:00 hs"
+    send_message "⏰ Reporte automático diario programado a las $HORA:00 hs"
   else
-    send_message "âŒ Hora invÃ¡lida."
+    send_message "❌ Hora inválida."
   fi
 }
 
 cancelar_reporte_diario() {
   if [[ -f "$CRON_FILE" ]]; then
     rm -f "$CRON_FILE"
-    send_message "ðŸš« ProgramaciÃ³n automÃ¡tica eliminada."
+    send_message "🚫 Programación automática eliminada."
   else
-    send_message "âš ï¸ No hay reporte programado."
+    send_message "⚠️ No hay reporte programado."
   fi
 }
 
 ver_programacion() {
   if [[ -f "$CRON_FILE" ]]; then
     LINEA=$(cat "$CRON_FILE")
-    send_message "ðŸ“‹ ProgramaciÃ³n actual:\n<pre>$LINEA</pre>"
+    send_message "📋 Programación actual:\n<pre>$LINEA</pre>"
   else
-    send_message "âš ï¸ No hay programaciÃ³n configurada."
+    send_message "⚠️ No hay programación configurada."
   fi
 }
 
-### EJECUCIÃ“N DIRECTA ###
+### EJECUCIÓN DIRECTA ###
 if [[ "$1" == "--rotate" ]]; then
   rotar_banner_por_dia --rotate
   exit 0
@@ -166,13 +163,14 @@ clear
 echo -e "${MAGENTA}=============================="
 echo -e "   GESTOR AVANZADO DE BANNERS RS"
 echo -e "==============================${RESET}"
-echo -e "${CYAN}1)${RESET} Rotar banner por dÃ­a"
+echo -e "${CYAN}1)${RESET} Rotar banner por día"
 echo -e "${CYAN}2)${RESET} Ver estado y enviar .txt"
 echo -e "${CYAN}3)${RESET} Programar reporte diario"
-echo -e "${CYAN}4)${RESET} Cancelar programaciÃ³n"
-echo -e "${CYAN}5)${RESET} Ver programaciÃ³n actual"
+echo -e "${CYAN}4)${RESET} Cancelar programación"
+echo -e "${CYAN}5)${RESET} Ver programación actual"
+echo -e "${CYAN}6)${RESET} Configurar Bot de Telegram"
 echo -e "${CYAN}0)${RESET} Salir"
-echo -ne "\nSelecciona una opciÃ³n: "
+echo -ne "\nSelecciona una opción: "
 read opc
 case $opc in
   1) rotar_banner_por_dia ;;
@@ -180,6 +178,7 @@ case $opc in
   3) programar_reporte_diario ;;
   4) cancelar_reporte_diario ;;
   5) ver_programacion ;;
+  6) configurar_bot ;;
   0) exit 0 ;;
-  *) echo -e "${RED}OpciÃ³n invÃ¡lida${RESET}" ;;
+  *) echo -e "${RED}Opción inválida${RESET}" ;;
 esac
