@@ -1,6 +1,6 @@
 #!/bin/bash
 
-Desarrollador @ReyRs_ViPro
+## Desarrollador @ReyRs_ViPro
 
 ## SCRIPT RS CREACIONES POWERED BY FABIAN
 ## GENERADOR DE USUARIOS
