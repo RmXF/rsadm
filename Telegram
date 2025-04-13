@@ -36,11 +36,14 @@ mkdir -p "$TEMPLATE_DIR"
 configurar_bot() {
   echo -e "${YELLOW}🔐 Configuración del Bot de Telegram:${RESET}"
   read -p "🔑 Token del Bot: " TOKEN
-  read -p "👤 ID de Administrador (Telegram): " ADMIN_ID
+  read -p "👤 ID de Administrador (Telegram ID): " ADMIN_ID
+  read -p "🔗 Enlace del Grupo de Soporte (opcional): " TG_GROUP
   echo "TOKEN=$TOKEN" > "$CONFIG_FILE"
   echo "ADMIN_ID=$ADMIN_ID" >> "$CONFIG_FILE"
+  echo "TG_GROUP=$TG_GROUP" >> "$CONFIG_FILE"
   echo -e "${GREEN}✅ Bot configurado correctamente.${RESET}"
 }
+
 
 # Cargar configuración del bot si existe
 [[ -f "$CONFIG_FILE" ]] && source "$CONFIG_FILE"
