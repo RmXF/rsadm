@@ -51,12 +51,25 @@ configurar_bot() {
 ### FUNCIONES BOT TELEGRAM ###
 send_message() {
   local MSG="$1"
-  [[ -n "$TOKEN" && -n "$ADMIN_ID" ]] && curl -s -X POST "https://api.telegram.org/bot$TOKEN/sendMessage" -d chat_id="$ADMIN_ID" -d text="$MSG" -d parse_mode="HTML" > /dev/null
+  curl -s -X POST "https://api.telegram.org/bot$TOKEN/sendMessage"     -d chat_id="$ADMIN_ID"     -d text="$MSG"     -d parse_mode="HTML" > /dev/null
 }
 
 send_file() {
   local FILE="$1"
-  [[ -n "$TOKEN" && -n "$ADMIN_ID" ]] && curl -s -X POST "https://api.telegram.org/bot$TOKEN/sendDocument" -F chat_id="$ADMIN_ID" -F document=@"$FILE" > /dev/null
+  curl -s -X POST "https://api.telegram.org/bot$TOKEN/sendDocument"     -F chat_id="$ADMIN_ID"     -F document=@"$FILE" > /dev/null
+}
+
+send_menu() {
+  curl -s -X POST "https://api.telegram.org/bot$TOKEN/sendMessage"     -d chat_id="$ADMIN_ID"     -d text="ðŸ¤– <b>Panel de Control VPS</b>\nSelecciona una opciÃ³n:"     -d parse_mode="HTML"     -d reply_markup='{
+      "inline_keyboard": [
+        [{"text": "ðŸ“Š Estado", "callback_data": "/estatus"}],
+        [{"text": "âš™ï¸ Programar", "callback_data": "/programar"}],
+        [{"text": "âŒ Cancelar", "callback_data": "/cancelar"}],
+        [{"text": "ðŸ“… Ver programaciÃ³n", "callback_data": "/verprogramacion"}],
+        [{"text": "ðŸ“¦ Descargar Logs", "callback_data": "/logmenu"}],
+        [{"text": "ðŸ†˜ Soporte", "callback_data": "/soporte"}]
+      ]
+    }'
 }
 
 log_change() {
@@ -117,71 +130,152 @@ generar_estado_vps() {
   df -h / >> "$STATUS_FILE"
   echo -e "\nUsuarios conectados:" >> "$STATUS_FILE"
   who >> "$STATUS_FILE"
-  echo -e "\nIP Pública: $(curl -s ifconfig.me)" >> "$STATUS_FILE"
+  echo -e "\nIP PÃºblica: $(curl -s ifconfig.me)" >> "$STATUS_FILE"
   echo -e "\nProcesos activos: $(ps aux --no-heading | wc -l)" >> "$STATUS_FILE"
   echo -e "\n===== FIN DEL REPORTE =====" >> "$STATUS_FILE"
   send_file "$STATUS_FILE"
 }
 
 programar_reporte_diario() {
-  echo "⌚ Escribe la hora (0-23) para el reporte automático:"
+  send_message "âŒš IngresÃ¡ la hora (0-23) para recibir el reporte automÃ¡tico:"
   read -r HORA
   if [[ "$HORA" =~ ^[0-9]{1,2}$ && $HORA -ge 0 && $HORA -le 23 ]]; then
     echo "0 $HORA * * * root /bin/bash $0 --reporte-auto" > "$CRON_FILE"
-    send_message "⏰ Reporte automático diario programado a las $HORA:00 hs"
+    send_message "â° Reporte automÃ¡tico diario programado a las $HORA:00 hs"
   else
-    send_message "❌ Hora inválida."
+    send_message "âŒ Hora invÃ¡lida."
   fi
 }
 
 cancelar_reporte_diario() {
   if [[ -f "$CRON_FILE" ]]; then
     rm -f "$CRON_FILE"
-    send_message "🚫 Programación automática eliminada."
+    send_message "ðŸš« ProgramaciÃ³n eliminada."
   else
-    send_message "⚠️ No hay reporte programado."
+    send_message "âš ï¸ No hay programaciÃ³n activa."
   fi
 }
 
 ver_programacion() {
   if [[ -f "$CRON_FILE" ]]; then
     LINEA=$(cat "$CRON_FILE")
-    send_message "📋 Programación actual:\n<pre>$LINEA</pre>"
+    send_message "ðŸ“‹ ProgramaciÃ³n actual:\n<pre>$LINEA</pre>"
   else
-    send_message "⚠️ No hay programación configurada."
+    send_message "âš ï¸ No hay programaciÃ³n configurada."
   fi
 }
 
-### EJECUCIÓN DIRECTA ###
-if [[ "$1" == "--rotate" ]]; then
-  rotar_banner_por_dia --rotate
-  exit 0
-elif [[ "$1" == "--reporte-auto" ]]; then
+logmenu() {
+  curl -s -X POST "https://api.telegram.org/bot$TOKEN/sendMessage"     -d chat_id="$ADMIN_ID"     -d text="ðŸ“‚ Â¿En quÃ© formato deseas recibir el log?"     -d parse_mode="HTML"     -d reply_markup='{
+      "inline_keyboard": [
+        [
+          {"text": "ðŸ“ TXT", "callback_data": "/logtxt"},
+          {"text": "ðŸ“Š CSV", "callback_data": "/logcsv"},
+          {"text": "ðŸ”™ Volver", "callback_data": "/start"}
+        ]
+      ]
+    }'
+}
+
+configurar_bot() {
+  echo "ðŸ”§ CONFIGURACIÃ“N DEL BOT"
+  read -p "Token del Bot: " TOKEN
+  read -p "ID del Administrador (Telegram): " ADMIN_ID
+  read -p "Enlace del Grupo de Soporte (opcional): " TG_GROUP
+  echo "TOKEN=$TOKEN" > "$CONFIG_FILE"
+  echo "ADMIN_ID=$ADMIN_ID" >> "$CONFIG_FILE"
+  echo "TG_GROUP=$TG_GROUP" >> "$CONFIG_FILE"
+  echo "âœ… ConfiguraciÃ³n guardada en $CONFIG_FILE"
+}
+
+if [[ "$1" == "--reporte-auto" ]]; then
   generar_estado_vps
   exit 0
 fi
 
-### INTERFAZ ###
+LAST_UPDATE_ID=0
+while true; do
+  UPDATES=$(curl -s "https://api.telegram.org/bot$TOKEN/getUpdates?offset=$((LAST_UPDATE_ID + 1))")
+  echo "$UPDATES" | jq -c '.result[]' | while read -r UPDATE; do
+    ID=$(echo "$UPDATE" | jq '.update_id')
+    TEXT=$(echo "$UPDATE" | jq -r '.message.text // .callback_query.data')
+    CHAT_ID=$(echo "$UPDATE" | jq -r '.message.chat.id // .callback_query.message.chat.id')
+    USER_ID=$(echo "$UPDATE" | jq -r '.message.from.id // .callback_query.from.id')
+
+    if [[ "$USER_ID" == "$ADMIN_ID" ]]; then
+      case "$TEXT" in
+        /start) send_menu ;;
+        /estatus) generar_estado_vps ;;
+        /programar) programar_reporte_diario ;;
+        /cancelar) cancelar_reporte_diario ;;
+        /verprogramacion) ver_programacion ;;
+        /logmenu) logmenu ;;
+        /logtxt) send_file "$LOG_FILE" ;;
+        /logcsv)
+          csv_file="/tmp/banner_rs_log.csv"
+          awk 'BEGIN { FS="|"; OFS=","; print "Fecha y Hora","Usuario","AcciÃ³n" } NR>2 { gsub(/^ +| +$/, "", $1); gsub(/^ +| +$/, "", $2); gsub(/^ +| +$/, "", $3); print $1, $2, $3 }' "$LOG_FILE" > "$csv_file"
+          send_file "$csv_file"
+          rm -f "$csv_file"
+          ;;
+        /soporte)
+          if [[ -n "$TG_GROUP" ]]; then
+            send_message "ðŸ†˜ <b>Soporte TÃ©cnico</b>
+Unite al grupo oficial:
+<a href='$TG_GROUP'>ðŸ“£ Grupo de Soporte</a>"
+          else
+            send_message "ðŸ†˜ No hay grupo de soporte configurado aÃºn. UsÃ¡ la opciÃ³n 'Configurar Bot' desde el VPS para agregarlo."
+          fi
+          ;;
+        *) send_message "â“ Comando no reconocido. Usa /start" ;;
+      esac
+    fi
+    LAST_UPDATE_ID=$ID
+  done
+  sleep 5
+done
 clear
+while true; do
 echo -e "${MAGENTA}=============================="
+  UPDATES=$(curl -s "https://api.telegram.org/bot$TOKEN/getUpdates?offset=$((LAST_UPDATE_ID + 1))")
 echo -e "   GESTOR AVANZADO DE BANNERS RS"
+  echo "$UPDATES" | jq -c '.result[]' | while read -r UPDATE; do
 echo -e "==============================${RESET}"
+    ID=$(echo "$UPDATE" | jq '.update_id')
 echo -e "${CYAN}1)${RESET} Rotar banner por día"
+    TEXT=$(echo "$UPDATE" | jq -r '.message.text // .callback_query.data')
 echo -e "${CYAN}2)${RESET} Ver estado y enviar .txt"
+    CHAT_ID=$(echo "$UPDATE" | jq -r '.message.chat.id // .callback_query.message.chat.id')
 echo -e "${CYAN}3)${RESET} Programar reporte diario"
+    USER_ID=$(echo "$UPDATE" | jq -r '.message.from.id // .callback_query.from.id')
 echo -e "${CYAN}4)${RESET} Cancelar programación"
+
 echo -e "${CYAN}5)${RESET} Ver programación actual"
+    if [[ "$USER_ID" == "$ADMIN_ID" ]]; then
 echo -e "${CYAN}6)${RESET} Configurar Bot de Telegram"
+      case "$TEXT" in
 echo -e "${CYAN}0)${RESET} Salir"
+        /start) send_menu ;;
 echo -ne "\nSelecciona una opción: "
+        /estatus) generar_estado_vps ;;
 read opc
+        /programar) programar_reporte_diario ;;
 case $opc in
+        /cancelar) cancelar_reporte_diario ;;
   1) rotar_banner_por_dia ;;
+        /verprogramacion) ver_programacion ;;
   2) generar_estado_vps ;;
+        /logmenu) logmenu ;;
   3) programar_reporte_diario ;;
+        /logtxt) send_file "$LOG_FILE" ;;
   4) cancelar_reporte_diario ;;
+        /logcsv)
   5) ver_programacion ;;
+          csv_file="/tmp/banner_rs_log.csv"
   6) configurar_bot ;;
+          awk 'BEGIN { FS="|"; OFS=","; print "Fecha y Hora","Usuario","AcciÃ³n" } NR>2 { gsub(/^ +| +$/, "", $1); gsub(/^ +| +$/, "", $2); gsub(/^ +| +$/, "", $3); print $1, $2, $3 }' "$LOG_FILE" > "$csv_file"
   0) exit 0 ;;
+          send_file "$csv_file"
   *) echo -e "${RED}Opción inválida${RESET}" ;;
+          rm -f "$csv_file"
 esac
+
