@@ -56,6 +56,8 @@ USRfile="${USRdatabase}/usuarios.db"
 mkdir -p "${USRdatabase}"
 touch "${USRdatabase}/usuarios_creados.txt"
 USREXP="/root/exp"
+BANNER_DIR="/etc/rs-banners"
+mkdir -p "$BANNER_DIR"
 
 ## TITULOS / LINK / 
 TITLE='  REYCODESSH  ';
@@ -238,6 +240,61 @@ bannerssh_rs() {
 
     read -p "Presiona ENTER para volver al menú..."
 }
+editar_banner_dia() {
+  local dia=$1
+  local archivo="$BANNER_DIR/banner_${dia,,}" # minúsculas
+  echo -e "\n📝 Escribe tu banner para el día $dia (Ctrl+O para guardar, Ctrl+X para salir):"
+  nano "$archivo"
+}
+
+submenu_banners_dia() {
+  while true; do
+    clear
+    echo -e "🔧 Configuración de Banners SSH por Día de la Semana\n"
+    echo "1) Editar banner para Lunes"
+    echo "2) Editar banner para Martes"
+    echo "3) Editar banner para Miércoles"
+    echo "4) Editar banner para Jueves"
+    echo "5) Editar banner para Viernes"
+    echo "6) Editar banner para Sábado"
+    echo "7) Editar banner para Domingo"
+    echo "8) Ver banners actuales"
+    echo "9) Salir"
+    read -p "Selecciona una opción: " op
+    case $op in
+      1) editar_banner_dia "lunes" ;;
+      2) editar_banner_dia "martes" ;;
+      3) editar_banner_dia "miercoles" ;;
+      4) editar_banner_dia "jueves" ;;
+      5) editar_banner_dia "viernes" ;;
+      6) editar_banner_dia "sabado" ;;
+      7) editar_banner_dia "domingo" ;;
+      8) ls -1 "$BANNER_DIR"; read -p "Presiona ENTER para continuar..." ;;
+      9) break ;;
+      *) echo "❌ Opción inválida"; sleep 1 ;;
+    esac
+  done
+}
+
+# 🔁 Script para aplicar el banner correcto según el día
+echo '#!/bin/bash
+BANNER_DIR="/etc/rs-banners"
+DIA=$(date +"%A" | tr "[:upper:]" "[:lower:]")
+BANNER_FILE="$BANNER_DIR/banner_$DIA"
+if [[ -f "$BANNER_FILE" ]]; then
+  cp "$BANNER_FILE" /etc/banner_actual
+  sed -i "/^Banner /d" /etc/ssh/sshd_config
+  echo "Banner /etc/banner_actual" >> /etc/ssh/sshd_config
+  systemctl reload sshd
+fi' > /usr/local/bin/aplicar_banner_ssh
+chmod +x /usr/local/bin/aplicar_banner_ssh
+
+# 🕘 Agregar cron para ejecutar el script cada día a las 00:01
+(crontab -l 2>/dev/null; echo "1 0 * * * /usr/local/bin/aplicar_banner_ssh") | crontab -
+
+
+
+
 
 	
 
@@ -955,7 +1012,7 @@ case "$selection" in
 10)monitor ;;
 11)backup ;;
 12)ssl_pay ;;
-13)bannerssh_rs ;;
+13)submenu_banners_dia ;;
 
 14)BadVPN ;;
 	0)cd $HOME && exit 0;;
