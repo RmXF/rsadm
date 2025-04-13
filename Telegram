@@ -1,0 +1,172 @@
+#!/bin/bash
+# SCRIPT COMPLETO: banner_rs.sh + BOT Telegram + IntegraciÃ³n total
+# Autor: Desarrollos RS
+
+### CONFIGURACIONES GENERALES ###
+CONFIG_FILE="/etc/botrs.conf"
+LOG_FILE="/var/log/banner_rs.log"
+BANNER_FILE="/etc/issue.net"
+BACKUP_FILE="/etc/issue.net.bak"
+TEMPLATE_DIR="/etc/banner_rs_templates"
+STATUS_FILE="/var/log/vps_status.txt"
+CRON_FILE="/etc/cron.d/botrs_auto_reporte"
+REMOTE_URL="https://raw.githubusercontent.com/RmXF/rsadm/refs/heads/main/banners"
+
+# Colores
+RED="\e[91m"
+GREEN="\e[92m"
+YELLOW="\e[93m"
+BLUE="\e[94m"
+MAGENTA="\e[95m"
+CYAN="\e[96m"
+WHITE="\e[97m"
+RESET="\e[0m"
+
+# Verifica root
+if [[ $EUID -ne 0 ]]; then
+  echo -e "${RED}Este script requiere privilegios de superusuario.${RESET}"
+  exit 1
+fi
+
+# Crear estructuras
+mkdir -p "$TEMPLATE_DIR"
+[[ ! -f "$BACKUP_FILE" ]] && cp "$BANNER_FILE" "$BACKUP_FILE"
+
+# Cargar configuraciÃ³n del bot
+[[ -f "$CONFIG_FILE" ]] && source "$CONFIG_FILE"
+
+### FUNCIONES BOT TELEGRAM ###
+send_message() {
+  local MSG="$1"
+  [[ -n "$TOKEN" && -n "$ADMIN_ID" ]] && curl -s -X POST "https://api.telegram.org/bot$TOKEN/sendMessage" -d chat_id="$ADMIN_ID" -d text="$MSG" -d parse_mode="HTML" > /dev/null
+}
+
+send_file() {
+  local FILE="$1"
+  [[ -n "$TOKEN" && -n "$ADMIN_ID" ]] && curl -s -X POST "https://api.telegram.org/bot$TOKEN/sendDocument" -F chat_id="$ADMIN_ID" -F document=@"$FILE" > /dev/null
+}
+
+log_change() {
+  echo "[$(date '+%Y-%m-%d %H:%M:%S')] Usuario: $SUDO_USER - AcciÃ³n: $1" >> "$LOG_FILE"
+}
+
+barra_carga() {
+  echo -ne "\n ${CYAN}Aplicando cambios${RESET} ["
+  for i in {1..10}; do echo -ne "ðŸŸ©"; sleep 0.05; done
+  for i in {1..10}; do echo -ne "â¬œ"; sleep 0.03; done
+  echo -e "] ${GREEN}Â¡Hecho!${RESET}"
+}
+
+aplicar_banner() {
+  cp "$1" "$BANNER_FILE"
+  barra_carga
+  log_change "Banner aplicado desde plantilla $1"
+  send_message "âœ… Banner aplicado desde plantilla: <b>$(basename "$1")</b>"
+}
+
+rotar_banner_por_dia() {
+  dia=$(date +%u)
+  case $dia in
+    1) banner="banner_lunes" ;;
+    2) banner="banner_martes" ;;
+    3) banner="banner_miercoles" ;;
+    4) banner="banner_jueves" ;;
+    5) banner="banner_viernes" ;;
+    6) banner="banner_sabado" ;;
+    7) banner="banner_domingo" ;;
+  esac
+
+  echo -e "\n${CYAN}DÃ­a detectado: $(date +%A)${RESET}"
+  if [[ -f "$TEMPLATE_DIR/$banner" ]]; then
+    aplicar_banner "$TEMPLATE_DIR/$banner"
+    echo -e "${GREEN}Banner del dÃ­a '$banner' aplicado correctamente.${RESET}"
+    log_change "RotaciÃ³n manual: $banner"
+    send_message "ðŸ“… RotaciÃ³n automÃ¡tica aplicada: <b>$banner</b>"
+  else
+    echo -e "${RED}No se encontrÃ³ el banner para hoy: $banner${RESET}"
+    send_message "âš ï¸ No se encontrÃ³ el banner del dÃ­a: <b>$banner</b>"
+  fi
+
+  [[ "$1" != "--rotate" ]] && {
+    echo -e "${CYAN}Presiona ENTER para volver...${RESET}"
+    read
+  }
+}
+
+generar_estado_vps() {
+  echo "===== ESTADO DE LA VPS - $(date) =====" > "$STATUS_FILE"
+  echo "Hostname: $(hostname)" >> "$STATUS_FILE"
+  echo "Uptime: $(uptime -p)" >> "$STATUS_FILE"
+  echo "CPU: $(lscpu | grep 'Model name' | awk -F ':' '{print $2}')" >> "$STATUS_FILE"
+  echo "Memoria RAM libre:" >> "$STATUS_FILE"
+  free -h >> "$STATUS_FILE"
+  echo -e "\nEspacio en disco:" >> "$STATUS_FILE"
+  df -h / >> "$STATUS_FILE"
+  echo -e "\nUsuarios conectados:" >> "$STATUS_FILE"
+  who >> "$STATUS_FILE"
+  echo -e "\nIP PÃºblica: $(curl -s ifconfig.me)" >> "$STATUS_FILE"
+  echo -e "\nProcesos activos: $(ps aux --no-heading | wc -l)" >> "$STATUS_FILE"
+  echo -e "\n===== FIN DEL REPORTE =====" >> "$STATUS_FILE"
+  send_file "$STATUS_FILE"
+}
+
+programar_reporte_diario() {
+  echo "âŒš Escribe la hora (0-23) para el reporte automÃ¡tico:"
+  read -r HORA
+  if [[ "$HORA" =~ ^[0-9]{1,2}$ && $HORA -ge 0 && $HORA -le 23 ]]; then
+    echo "0 $HORA * * * root /bin/bash $0 --reporte-auto" > "$CRON_FILE"
+    send_message "â° Reporte automÃ¡tico diario programado a las $HORA:00 hs"
+  else
+    send_message "âŒ Hora invÃ¡lida."
+  fi
+}
+
+cancelar_reporte_diario() {
+  if [[ -f "$CRON_FILE" ]]; then
+    rm -f "$CRON_FILE"
+    send_message "ðŸš« ProgramaciÃ³n automÃ¡tica eliminada."
+  else
+    send_message "âš ï¸ No hay reporte programado."
+  fi
+}
+
+ver_programacion() {
+  if [[ -f "$CRON_FILE" ]]; then
+    LINEA=$(cat "$CRON_FILE")
+    send_message "ðŸ“‹ ProgramaciÃ³n actual:\n<pre>$LINEA</pre>"
+  else
+    send_message "âš ï¸ No hay programaciÃ³n configurada."
+  fi
+}
+
+### EJECUCIÃ“N DIRECTA ###
+if [[ "$1" == "--rotate" ]]; then
+  rotar_banner_por_dia --rotate
+  exit 0
+elif [[ "$1" == "--reporte-auto" ]]; then
+  generar_estado_vps
+  exit 0
+fi
+
+### INTERFAZ ###
+clear
+echo -e "${MAGENTA}=============================="
+echo -e "   GESTOR AVANZADO DE BANNERS RS"
+echo -e "==============================${RESET}"
+echo -e "${CYAN}1)${RESET} Rotar banner por dÃ­a"
+echo -e "${CYAN}2)${RESET} Ver estado y enviar .txt"
+echo -e "${CYAN}3)${RESET} Programar reporte diario"
+echo -e "${CYAN}4)${RESET} Cancelar programaciÃ³n"
+echo -e "${CYAN}5)${RESET} Ver programaciÃ³n actual"
+echo -e "${CYAN}0)${RESET} Salir"
+echo -ne "\nSelecciona una opciÃ³n: "
+read opc
+case $opc in
+  1) rotar_banner_por_dia ;;
+  2) generar_estado_vps ;;
+  3) programar_reporte_diario ;;
+  4) cancelar_reporte_diario ;;
+  5) ver_programacion ;;
+  0) exit 0 ;;
+  *) echo -e "${RED}OpciÃ³n invÃ¡lida${RESET}" ;;
+esac
