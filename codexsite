@@ -1,0 +1,126 @@
+#!/bin/bash
+
+PANEL_DIR="/var/www/html"
+ZIP_URL="https://raw.githubusercontent.com/RmXF/rsadm/main/internet_ilimitado_full.zip"
+USER_FILE="/etc/rspanel_user"
+PASS_FILE="/etc/rspanel_pass"
+
+log() {
+    echo -e "\e[92m[RS PANEL]\e[0m $1"
+}
+
+pause() {
+    read -rp "Presione ENTER para continuar..."
+}
+
+install_site() {
+    clear
+    log "Instalando sitio web y panel..."
+
+    apt-get update -y
+    apt-get install -y apache2 unzip
+
+    systemctl enable apache2
+    systemctl start apache2
+
+    log "Descargando ZIP del panel..."
+    wget -O site.zip "$ZIP_URL"
+
+    if [[ ! -f "site.zip" ]]; then
+        echo "Error al descargar el ZIP. Abortando."
+        exit 1
+    fi
+
+    rm -rf $PANEL_DIR/*
+    unzip site.zip -d $PANEL_DIR
+
+    rm site.zip
+
+    echo
+    read -rp "Ingrese el usuario del panel: " usr
+    read -rp "Ingrese la contraseña del panel: " pass
+
+    echo "$usr" > $USER_FILE
+    echo "$pass" > $PASS_FILE
+
+    chmod 600 $USER_FILE
+    chmod 600 $PASS_FILE
+
+    log "Instalación completa."
+    log "Acceda al sitio web: http://$(hostname -I | awk '{print $1}')/"
+    log "Acceda al panel web: http://$(hostname -I | awk '{print $1}')/panel/"
+    pause
+}
+
+change_credentials() {
+    clear
+    log "Cambiar usuario y contraseña del panel"
+
+    if [[ ! -f $USER_FILE ]] || [[ ! -f $PASS_FILE ]]; then
+        echo "No se encontraron credenciales previas."
+        pause
+        return
+    fi
+
+    echo "Usuario actual: $(cat $USER_FILE)"
+    echo "Contraseña actual: $(cat $PASS_FILE)"
+    echo
+
+    echo "¿Qué desea cambiar?"
+    echo "1) Cambiar usuario"
+    echo "2) Cambiar contraseña"
+    read -rp "Seleccione: " opt
+
+    case $opt in
+        1)
+            read -rp "Nuevo usuario: " nu
+            echo "$nu" > $USER_FILE
+            log "Usuario actualizado correctamente."
+            ;;
+        2)
+            read -rp "Nueva contraseña: " np
+            echo "$np" > $PASS_FILE
+            log "Contraseña actualizada correctamente."
+            ;;
+        *)
+            echo "Opción inválida."
+            ;;
+    esac
+
+    pause
+}
+
+remove_site() {
+    clear
+    log "Eliminando sitio web y panel completamente..."
+
+    rm -rf $PANEL_DIR/*
+    rm -f $USER_FILE
+    rm -f $PASS_FILE
+
+    log "Sitio web y credenciales eliminados sin dejar rastro."
+    pause
+}
+
+menu() {
+    while true; do
+        clear
+        echo "============== RS PANEL =============="
+        echo "1) Instalar sitio web y panel"
+        echo "2) Cambiar usuario y contraseña"
+        echo "3) Eliminar sitio web y panel"
+        echo "0) Salir"
+        echo "======================================="
+        read -rp "Seleccione una opción: " option
+
+        case $option in
+            1) install_site ;;
+            2) change_credentials ;;
+            3) remove_site ;;
+            0) exit ;;
+            *) echo "Opción inválida." ; sleep 1 ;;
+        esac
+    done
+}
+
+menu
