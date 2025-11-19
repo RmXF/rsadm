@@ -1,0 +1,105 @@
+#!/usr/bin/env bash
+set -euo pipefail
+# Automated installer for SSHNET PHP panel (Debian/Ubuntu)
+# Run as root or with sudo.
+
+ZIP_URL="https://github.com/RmXF/rsadm/raw/main/sshnet_php_full.zip"
+ZIP_LOCAL="/tmp/sshnet_php_full.zip"
+
+WWW_DIR="/var/www/sshnet"
+SITE_NAME="sshnet"
+SITE_CONF="/etc/nginx/sites-available/${SITE_NAME}"
+DB_NAME="sshnet"
+DB_USER="sshnet_user"
+DB_PASS="ChangeMe123!"
+
+echo "[+] Installing required packages..."
+apt-get update -y
+apt-get install -y nginx php php-fpm php-mysql unzip wget rsync mariadb-server
+
+echo "[+] Downloading ZIP from repository..."
+rm -f "$ZIP_LOCAL"
+wget -O "$ZIP_LOCAL" "$ZIP_URL"
+
+if [ ! -f "$ZIP_LOCAL" ]; then
+    echo "[ERROR] The ZIP file could not be downloaded."
+    exit 1
+fi
+
+echo "[+] Deploying panel to $WWW_DIR..."
+rm -rf "$WWW_DIR"
+mkdir -p "$WWW_DIR"
+unzip -o "$ZIP_LOCAL" -d "$WWW_DIR"
+
+# Move public content up if exists
+if [ -d "$WWW_DIR/public" ]; then
+    rsync -a "$WWW_DIR/public/" "$WWW_DIR/"
+    rm -rf "$WWW_DIR/public"
+fi
+
+# Create .env if not exists
+if [ ! -f "$WWW_DIR/.env" ]; then
+  cat > "$WWW_DIR/.env" <<EOF
+DB_HOST=127.0.0.1
+DB_NAME=${DB_NAME}
+DB_USER=${DB_USER}
+DB_PASS=${DB_PASS}
+APP_URL=http://$(hostname -I | awk '{print $1}')
+EOF
+fi
+
+echo "[+] Configuring Nginx..."
+cat > "$SITE_CONF" <<'NGINX'
+server {
+    listen 80;
+    server_name _;
+    root /var/www/sshnet;
+    index index.php index.html;
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/run/php/php-fpm.sock;
+    }
+
+    location ~ /\.ht {
+        deny all;
+    }
+}
+NGINX
+
+ln -sf "$SITE_CONF" /etc/nginx/sites-enabled/${SITE_NAME}
+rm -f /etc/nginx/sites-enabled/default
+
+nginx -t
+systemctl restart nginx
+
+echo "[+] Configuring MariaDB..."
+mysql -e "CREATE DATABASE IF NOT EXISTS \`${DB_NAME}\` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"
+mysql -e "CREATE USER IF NOT EXISTS '${DB_USER}'@'localhost' IDENTIFIED BY '${DB_PASS}';"
+mysql -e "GRANT ALL PRIVILEGES ON \`${DB_NAME}\`.* TO '${DB_USER}'@'localhost';"
+mysql -e "FLUSH PRIVILEGES;"
+
+echo "[+] Importing database migration..."
+if [ -f "$WWW_DIR/sql/migration.sql" ]; then
+    PHP_HASH=$(php -r 'echo password_hash("password123", PASSWORD_DEFAULT);')
+    sed "s|{hash}|$PHP_HASH|g" "$WWW_DIR/sql/migration.sql" > /tmp/migration_ready.sql
+    mysql "$DB_NAME" < /tmp/migration_ready.sql
+fi
+
+echo "[+] Setting permissions..."
+chown -R www-data:www-data "$WWW_DIR"
+chmod -R 755 "$WWW_DIR"
+
+echo
+echo "========================================="
+echo " SSHNET panel installed successfully!"
+echo " URL: http://$(hostname -I | awk '{print $1}')/"
+echo " DB NAME: ${DB_NAME}"
+echo " DB USER: ${DB_USER}"
+echo " DB PASS: ${DB_PASS}"
+echo " Admin login: admin / password123"
+echo "========================================="
