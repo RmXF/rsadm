@@ -1,0 +1,119 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# ============================================
+# Instalador automático del panel SSHNET
+# Compatible con: Debian 9/10/11/12 y Ubuntu
+# ============================================
+
+echo "[+] Preparando sistema..."
+apt-get update -y
+apt-get install -y nginx php php-fpm php-mysql unzip mariadb-server wget rsync
+
+# ---------------------------
+# CONFIGURACIÓN DEL ZIP
+# ---------------------------
+ZIP_URL="https://github.com/RmXF/rsadm/blob/main/internet_ilimitado_full.zip?raw=1"
+ZIP_PATH="/tmp/panel_rs_5.0.zip"
+
+echo "[+] Descargando ZIP del panel..."
+wget -O "$ZIP_PATH" "$ZIP_URL"
+
+# ---------------------------
+# CONFIGURACIÓN DEL SITIO
+# ---------------------------
+WWW_DIR="/var/www/sshnet"
+SITE_CONF="/etc/nginx/sites-available/sshnet"
+
+DB_NAME="panel_rs"
+DB_USER="panel_user"
+DB_PASS="panel_pass"
+
+echo "[+] Creando directorio web..."
+rm -rf "$WWW_DIR"
+mkdir -p "$WWW_DIR"
+
+echo "[+] Descomprimiendo panel..."
+unzip -o "$ZIP_PATH" -d "$WWW_DIR"
+
+# Si existe carpeta 'public', la movemos como raíz
+if [ -d "$WWW_DIR/public" ]; then
+  rsync -a "$WWW_DIR/public/" "$WWW_DIR/"
+  rm -rf "$WWW_DIR/public"
+fi
+
+# ---------------------------
+# CONFIGURACIÓN DE NGINX
+# ---------------------------
+echo "[+] Configurando servidor web..."
+
+cat > "$SITE_CONF" << 'EOF'
+server {
+    listen 80;
+    server_name _;
+
+    root /var/www/sshnet;
+    index index.php index.html;
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/run/php/php-fpm.sock;
+    }
+
+    location ~ /\.ht {
+        deny all;
+    }
+}
+EOF
+
+ln -sf "$SITE_CONF" /etc/nginx/sites-enabled/sshnet
+rm -f /etc/nginx/sites-enabled/default
+
+nginx -t && systemctl restart nginx
+
+# ---------------------------
+# BASE DE DATOS
+# ---------------------------
+echo "[+] Configurando base de datos..."
+mysql -e "CREATE DATABASE IF NOT EXISTS \`${DB_NAME}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"
+mysql -e "CREATE USER IF NOT EXISTS '${DB_USER}'@'localhost' IDENTIFIED BY '${DB_PASS}';"
+mysql -e "GRANT ALL PRIVILEGES ON \`${DB_NAME}\`.* TO '${DB_USER}'@'localhost';"
+mysql -e "FLUSH PRIVILEGES;"
+
+# Importación automática del SQL
+if [ -f "$WWW_DIR/sql/panel_rs_init.sql" ]; then
+    echo "[+] Importando base de datos inicial..."
+    HASH=$(php -r 'echo password_hash("password123", PASSWORD_DEFAULT);')
+    sed -i "s|{hash}|$HASH|g" "$WWW_DIR/sql/panel_rs_init.sql"
+    mysql "$DB_NAME" < "$WWW_DIR/sql/panel_rs_init.sql"
+fi
+
+# ---------------------------
+# PERMISOS
+# ---------------------------
+echo "[+] Ajustando permisos..."
+chown -R www-data:www-data "$WWW_DIR"
+chmod -R 755 "$WWW_DIR"
+
+# ---------------------------
+# FINAL
+# ---------------------------
+IP=$(hostname -I | awk '{print $1}')
+
+echo
+echo "==============================================="
+echo "  ✔ INSTALACIÓN COMPLETA DEL PANEL SSHNET"
+echo "==============================================="
+echo "URL Panel: http://$IP/"
+echo "Base de datos: $DB_NAME"
+echo "Usuario DB: $DB_USER"
+echo "Pass DB: $DB_PASS"
+echo "Usuario panel inicial: admin"
+echo "Contraseña: password123"
+echo "==============================================="
+echo "Edita 'app/config.php' si deseas cambiar parámetros."
+echo
