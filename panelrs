@@ -1,80 +1,181 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-PANEL_NAME="Reycodessh 2.0"
-ZIP_URL="https://github.com/RmXF/rsadm/blob/main/reycodessh_v2.zip"
-INSTALL_DIR="/var/www/depaneles"
+# ==============================
+# CONFIGURACIÓN GENERAL
+# ==============================
 DB_NAME="reycodessh"
 DB_USER="reyuser"
 DB_PASS="reypasswd"
-NGINX_CONF="/etc/nginx/sites-available/reycodessh"
 
-echo "=========================================="
-echo "     INSTALADOR AUTOMÁTICO $PANEL_NAME"
-echo "=========================================="
+PANEL_DIR="/var/www/paneles/reycodessh"
+ZIP_URL="https://raw.githubusercontent.com/RmXF/rsadm/main/reycodessh_v2.zip"
+BACKUP_DIR="/root/reycodessh_backups"
 
-echo "[1/8] Actualizando paquetes..."
-apt update -y
+# ==============================
+# COLORES
+# ==============================
+G="\e[92m"
+R="\e[91m"
+Y="\e[93m"
+B="\e[94m"
+W="\e[97m"
+N="\e[0m"
 
-echo "[2/8] Instalando dependencias..."
-apt install -y nginx php php-fpm php-mysql php-zip php-cli unzip wget mysql-server
+# ==============================
+install_panel() {
+    echo -e "${G}=== Instalando Panel Reycodessh ===${N}"
 
-echo "[3/8] Creando directorio del panel..."
-mkdir -p "$INSTALL_DIR"
-cd "$INSTALL_DIR"
+    apt update -y
+    apt install -y apache2 php php-cli php-mysql php-zip php-curl php-json php-mbstring unzip wget curl mysql-server
 
-echo "[4/8] Descargando ZIP del panel..."
-wget -O reycodessh.zip "$ZIP_URL"
+    systemctl enable apache2
+    systemctl stop apache2 || true
+    fuser -k 80/tcp || true
+    fuser -k 443/tcp || true
+    systemctl start apache2
 
-echo "[5/8] Descomprimiendo..."
-unzip -o reycodessh.zip
-rm reycodessh.zip
+    echo -e "${B}→ Creando directorio...${N}"
+    mkdir -p "$PANEL_DIR"
 
-echo "[6/8] Configurando permisos..."
-chown -R www-data:www-data "$INSTALL_DIR"
-chmod -R 755 "$INSTALL_DIR"
+    echo -e "${B}→ Descargando ZIP...${N}"
+    wget -O "$PANEL_DIR/panel.zip" "$ZIP_URL"
 
-echo "[7/8] Configurando base de datos..."
-mysql -e "CREATE DATABASE IF NOT EXISTS $DB_NAME;"
-mysql -e "CREATE USER IF NOT EXISTS '$DB_USER'@'localhost' IDENTIFIED BY '$DB_PASS';"
-mysql -e "GRANT ALL PRIVILEGES ON $DB_NAME.* TO '$DB_USER'@'localhost';"
-mysql -e "FLUSH PRIVILEGES;"
+    echo -e "${B}→ Descomprimiendo...${N}"
+    unzip -o "$PANEL_DIR/panel.zip" -d "$PANEL_DIR"
+    rm -f "$PANEL_DIR/panel.zip"
 
-echo "[+] Importando estructura SQL..."
-mysql $DB_NAME < "$INSTALL_DIR/database.sql"
+    chown -R www-data:www-data "$PANEL_DIR"
+    chmod -R 755 "$PANEL_DIR"
 
-echo "[8/8] Configurando Nginx..."
-cat > "$NGINX_CONF" <<EOF
-server {
-    listen 80;
-    server_name _;
+    echo -e "${B}→ Creando Base de Datos...${N}"
+    mysql -e "CREATE DATABASE IF NOT EXISTS ${DB_NAME};"
+    mysql -e "CREATE USER IF NOT EXISTS '${DB_USER}'@'localhost' IDENTIFIED BY '${DB_PASS}';"
+    mysql -e "GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DB_USER}'@'localhost';"
+    mysql -e "FLUSH PRIVILEGES;"
 
-    root $INSTALL_DIR;
-    index index.html index.php;
+    if [ -f "$PANEL_DIR/database.sql" ]; then
+        mysql "$DB_NAME" < "$PANEL_DIR/database.sql"
+    fi
 
-    location / {
-        try_files \$uri \$uri/ /index.php;
-    }
+    echo -e "${B}→ Configurando Apache...${N}"
 
-    location ~ \.php$ {
-        include snippets/fastcgi-php.conf;
-        fastcgi_pass unix:/run/php/php-fpm.sock;
-    }
-}
+    CONF="/etc/apache2/sites-available/reycodessh.conf"
+    cat > "$CONF" <<EOF
+<VirtualHost *:80>
+    DocumentRoot $PANEL_DIR
+    <Directory $PANEL_DIR>
+        AllowOverride All
+        Require all granted
+    </Directory>
+</VirtualHost>
 EOF
 
-ln -sf "$NGINX_CONF" /etc/nginx/sites-enabled/reycodessh
-nginx -t
-systemctl restart nginx
+    a2dissite 000-default.conf || true
+    a2ensite reycodessh.conf
+    a2enmod rewrite
+    systemctl restart apache2
 
-IP=$(hostname -I | awk '{print $1}')
+    IP=$(hostname -I | awk '{print $1}')
 
-echo "=========================================="
-echo "       INSTALACIÓN COMPLETADA 🎉"
-echo "=========================================="
-echo " PANEL INSTALADO EN:"
-echo " 👉 http://$IP/"
-echo ""
-echo " Usuario: admin"
-echo " Contraseña: admin"
-echo "=========================================="
+    echo -e "\n${G}✔ Instalación completada!${N}"
+    echo -e "${Y}URL:${N} http://$IP/"
+}
+
+# ==============================
+update_panel() {
+    echo -e "${Y}→ Actualizando panel...${N}"
+
+    wget -O "$PANEL_DIR/panel.zip" "$ZIP_URL"
+    unzip -o "$PANEL_DIR/panel.zip" -d "$PANEL_DIR"
+    rm -f "$PANEL_DIR/panel.zip"
+
+    chown -R www-data:www-data "$PANEL_DIR"
+    systemctl restart apache2
+
+    echo -e "${G}✔ Panel actualizado!${N}"
+}
+
+# ==============================
+backup_panel() {
+    echo -e "${B}→ Creando backup...${N}"
+    mkdir -p "$BACKUP_DIR"
+
+    TAR="$BACKUP_DIR/backup_$(date +%F_%H-%M-%S).tar.gz"
+
+    tar -czf "$TAR" "$PANEL_DIR"
+
+    echo -e "${G}✔ Backup creado en:${N} $TAR"
+}
+
+# ==============================
+restore_backup() {
+    echo -e "${Y}Backups disponibles:${N}"
+    ls -1 "$BACKUP_DIR"
+
+    echo -ne "\n${W}Nombre del archivo a restaurar:${N} "
+    read FILE
+
+    tar -xzf "$BACKUP_DIR/$FILE" -C /
+
+    echo -e "${G}✔ Backup restaurado!${N}"
+}
+
+# ==============================
+uninstall_panel() {
+    echo -e "${R}¿Seguro que quieres desinstalar el panel? (s/n)${N}"
+    read conf
+    [ "$conf" != "s" ] && return
+
+    rm -rf "$PANEL_DIR"
+    rm -f /etc/apache2/sites-available/reycodessh.conf
+    a2dissite reycodessh.conf
+    systemctl restart apache2
+
+    mysql -e "DROP DATABASE IF EXISTS ${DB_NAME};"
+    mysql -e "DROP USER IF EXISTS '${DB_USER}'@'localhost';"
+
+    echo -e "${G}✔ Panel eliminado completamente.${N}"
+}
+
+# ==============================
+info_system() {
+    echo -e "${B}=== Información del servidor ===${N}"
+    echo -e "${Y}IP Pública:${N} $(curl -s ifconfig.me)"
+    echo -e "${Y}IP Local:${N} $(hostname -I)"
+    echo -e "${Y}RAM:${N}"
+    free -h
+}
+
+# ==============================
+# MENÚ INTERACTIVO
+# ==============================
+while true; do
+    clear
+    echo -e "${G}========== PANEL REYCODESSH ==========${N}"
+    echo ""
+    echo -e "${B}1) Instalar Panel${N}"
+    echo -e "${B}2) Actualizar Panel${N}"
+    echo -e "${B}3) Crear Backup${N}"
+    echo -e "${B}4) Restaurar Backup${N}"
+    echo -e "${B}5) Desinstalar Panel${N}"
+    echo -e "${B}6) Información del Sistema${N}"
+    echo -e "${R}0) Salir${N}"
+    echo ""
+    echo -ne "${W}Seleccione una opción:${N} "
+    read opt
+
+    case $opt in
+        1) install_panel ;;
+        2) update_panel ;;
+        3) backup_panel ;;
+        4) restore_backup ;;
+        5) uninstall_panel ;;
+        6) info_system ;;
+        0) exit ;;
+        *) echo -e "${R}Opción incorrecta${N}" ;;
+    esac
+
+    echo -e "\n${Y}Presiona ENTER para continuar...${N}"
+    read
+done
