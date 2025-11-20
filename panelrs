@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+set -e
+
+PANEL_NAME="Reycodessh"
+ZIP_URL="https://sandbox:/mnt/data/reycodessh_panel.zip"
+INSTALL_DIR="/var/www/depaneles"
+DB_NAME="reycodessh"
+DB_USER="reyuser"
+DB_PASS="reypasswd"
+
+echo "====== Instalador $PANEL_NAME ======"
+
+apt update -y
+apt install -y nginx mysql-server php php-fpm php-mysql unzip wget
+
+mkdir -p $INSTALL_DIR
+cd $INSTALL_DIR
+
+echo "[*] Descargando panel..."
+wget -O panel.zip "$ZIP_URL"
+
+echo "[*] Descomprimiendo..."
+unzip -o panel.zip
+rm panel.zip
+
+echo "[*] Configurando permisos..."
+chown -R www-data:www-data $INSTALL_DIR
+chmod -R 755 $INSTALL_DIR
+
+echo "[*] Creando base de datos..."
+mysql -e "CREATE DATABASE IF NOT EXISTS $DB_NAME;"
+mysql -e "CREATE USER IF NOT EXISTS '$DB_USER'@'localhost' IDENTIFIED BY '$DB_PASS';"
+mysql -e "GRANT ALL PRIVILEGES ON $DB_NAME.* TO '$DB_USER'@'localhost';"
+mysql -e "FLUSH PRIVILEGES;"
+
+echo "[*] Importando estructura SQL..."
+mysql $DB_NAME < $INSTALL_DIR/database.sql
+
+echo "[*] Configurando Nginx..."
+cat > /etc/nginx/sites-available/reycodessh <<EOF
+server {
+    listen 80;
+    server_name _;
+
+    root $INSTALL_DIR;
+    index index.html index.php;
+
+    location / {
+        try_files \$uri \$uri/ /index.php;
+    }
+
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/var/run/php/php-fpm.sock;
+    }
+}
+EOF
+
+ln -sf /etc/nginx/sites-available/reycodessh /etc/nginx/sites-enabled/
+nginx -t
+systemctl restart nginx
+
+echo "=================================="
+echo " INSTALACIÓN COMPLETA 🎉"
+echo " Accede a tu panel en:"
+echo " 👉 http://$(hostname -I | awk '{print $1}')/"
+echo "=================================="
