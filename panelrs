@@ -1,43 +1,50 @@
 #!/usr/bin/env bash
-set -e
+set -euo pipefail
 
-PANEL_NAME="Reycodessh"
-ZIP_URL="https://github.com/RmXF/rsadm/raw/main/reycodessh_panel.zip"
+PANEL_NAME="Reycodessh 2.0"
+ZIP_URL="https://chat.openai.com/sandbox:/mnt/data/reycodessh_v2.zip"
 INSTALL_DIR="/var/www/depaneles"
 DB_NAME="reycodessh"
 DB_USER="reyuser"
 DB_PASS="reypasswd"
+NGINX_CONF="/etc/nginx/sites-available/reycodessh"
 
-echo "====== Instalador $PANEL_NAME ======"
+echo "=========================================="
+echo "     INSTALADOR AUTOMÁTICO $PANEL_NAME"
+echo "=========================================="
 
+echo "[1/8] Actualizando paquetes..."
 apt update -y
-apt install -y nginx mysql-server php php-fpm php-mysql unzip wget
 
-mkdir -p $INSTALL_DIR
-cd $INSTALL_DIR
+echo "[2/8] Instalando dependencias..."
+apt install -y nginx php php-fpm php-mysql php-zip php-cli unzip wget mysql-server
 
-echo "[*] Descargando panel..."
-wget -O panel.zip "$ZIP_URL"
+echo "[3/8] Creando directorio del panel..."
+mkdir -p "$INSTALL_DIR"
+cd "$INSTALL_DIR"
 
-echo "[*] Descomprimiendo..."
-unzip -o panel.zip
-rm panel.zip
+echo "[4/8] Descargando ZIP del panel..."
+wget -O reycodessh.zip "$ZIP_URL"
 
-echo "[*] Configurando permisos..."
-chown -R www-data:www-data $INSTALL_DIR
-chmod -R 755 $INSTALL_DIR
+echo "[5/8] Descomprimiendo..."
+unzip -o reycodessh.zip
+rm reycodessh.zip
 
-echo "[*] Creando base de datos..."
+echo "[6/8] Configurando permisos..."
+chown -R www-data:www-data "$INSTALL_DIR"
+chmod -R 755 "$INSTALL_DIR"
+
+echo "[7/8] Configurando base de datos..."
 mysql -e "CREATE DATABASE IF NOT EXISTS $DB_NAME;"
 mysql -e "CREATE USER IF NOT EXISTS '$DB_USER'@'localhost' IDENTIFIED BY '$DB_PASS';"
 mysql -e "GRANT ALL PRIVILEGES ON $DB_NAME.* TO '$DB_USER'@'localhost';"
 mysql -e "FLUSH PRIVILEGES;"
 
-echo "[*] Importando estructura SQL..."
-mysql $DB_NAME < $INSTALL_DIR/database.sql
+echo "[+] Importando estructura SQL..."
+mysql $DB_NAME < "$INSTALL_DIR/database.sql"
 
-echo "[*] Configurando Nginx..."
-cat > /etc/nginx/sites-available/reycodessh <<EOF
+echo "[8/8] Configurando Nginx..."
+cat > "$NGINX_CONF" <<EOF
 server {
     listen 80;
     server_name _;
@@ -51,17 +58,23 @@ server {
 
     location ~ \.php$ {
         include snippets/fastcgi-php.conf;
-        fastcgi_pass unix:/var/run/php/php-fpm.sock;
+        fastcgi_pass unix:/run/php/php-fpm.sock;
     }
 }
 EOF
 
-ln -sf /etc/nginx/sites-available/reycodessh /etc/nginx/sites-enabled/
+ln -sf "$NGINX_CONF" /etc/nginx/sites-enabled/reycodessh
 nginx -t
 systemctl restart nginx
 
-echo "=================================="
-echo " INSTALACIÓN COMPLETA 🎉"
-echo " Accede a tu panel en:"
-echo " 👉 http://$(hostname -I | awk '{print $1}')/"
-echo "=================================="
+IP=$(hostname -I | awk '{print $1}')
+
+echo "=========================================="
+echo "       INSTALACIÓN COMPLETADA 🎉"
+echo "=========================================="
+echo " PANEL INSTALADO EN:"
+echo " 👉 http://$IP/"
+echo ""
+echo " Usuario: admin"
+echo " Contraseña: admin"
+echo "=========================================="
