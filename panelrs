@@ -2,7 +2,7 @@
 set -euo pipefail
 
 PANEL_NAME="Reycodessh 2.0"
-ZIP_URL="https://chat.openai.com/sandbox:/mnt/data/reycodessh_v2.zip"
+ZIP_URL="https://github.com/RmXF/rsadm/blob/main/reycodessh_v2.zip"
 INSTALL_DIR="/var/www/depaneles"
 DB_NAME="reycodessh"
 DB_USER="reyuser"
