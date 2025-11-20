@@ -2,7 +2,7 @@
 set -e
 
 PANEL_NAME="Reycodessh"
-ZIP_URL="https://sandbox:/mnt/data/reycodessh_panel.zip"
+ZIP_URL="https://github.com/RmXF/rsadm/raw/main/reycodessh_panel.zip"
 INSTALL_DIR="/var/www/depaneles"
 DB_NAME="reycodessh"
 DB_USER="reyuser"
