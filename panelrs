@@ -11,6 +11,11 @@ DB_PASS="reypasswd"
 PANEL_DIR="/var/www/paneles/reycodessh"
 ZIP_URL="https://raw.githubusercontent.com/RmXF/rsadm/main/reycodessh_v2.zip"
 BACKUP_DIR="/root/reycodessh_backups"
+SSL_DIR="/etc/ssl/reycodessh"
+LOG_FILE="/var/log/reycodessh/reycodessh.log"
+
+mkdir -p "$(dirname "$LOG_FILE")"
+touch "$LOG_FILE"
 
 # ==============================
 # COLORES
@@ -23,32 +28,71 @@ W="\e[97m"
 N="\e[0m"
 
 # ==============================
+log() {
+    echo -e "[$(date '+%Y-%m-%d %H:%M:%S')] [$1] $2" | tee -a "$LOG_FILE"
+}
+
+error() {
+    log "ERROR" "$1"
+    echo -e "${R}[ERROR] $1${N}"
+    exit 1
+}
+
+ok() {
+    log "OK" "$1"
+    echo -e "${G}$1${N}"
+}
+
+# ==============================
+# GENERAR SSL AUTOFIRMADO
+# ==============================
+generate_ssl() {
+    log "INFO" "Generando certificado SSL autofirmado"
+
+    mkdir -p "$SSL_DIR"
+
+    openssl req -x509 -nodes -days 3650 \
+        -newkey rsa:4096 \
+        -keyout "$SSL_DIR/reycodessh.key" \
+        -out "$SSL_DIR/reycodessh.crt" \
+        -subj "/C=AR/ST=Argentina/L=Buenos Aires/O=Reycodessh/OU=IT/CN=$(hostname -I | awk '{print $1}')" \
+        || error "Error generando certificado SSL"
+
+    chmod 600 "$SSL_DIR/reycodessh.key"
+    ok "Certificado SSL creado"
+}
+
+# ==============================
 install_panel() {
-    echo -e "${G}=== Instalando Panel Reycodessh ===${N}"
+    log "INFO" "Instalando panel Reycodessh"
 
     apt update -y
-    apt install -y apache2 php php-cli php-mysql php-zip php-curl php-json php-mbstring unzip wget curl mysql-server
+    apt install -y apache2 php php-cli php-mysql php-zip php-curl php-json php-mbstring unzip wget curl mysql-server openssl
 
     systemctl enable apache2
-    systemctl stop apache2 || true
+
+    # Liberar puertos 80 y 443
     fuser -k 80/tcp || true
     fuser -k 443/tcp || true
-    systemctl start apache2
 
-    echo -e "${B}→ Creando directorio...${N}"
+    ok "Servicios preparados"
+
     mkdir -p "$PANEL_DIR"
 
-    echo -e "${B}→ Descargando ZIP...${N}"
-    wget -O "$PANEL_DIR/panel.zip" "$ZIP_URL"
+    log "INFO" "Descargando ZIP..."
+    if ! wget -O "$PANEL_DIR/panel.zip" "$ZIP_URL"; then
+        error "No se pudo descargar el ZIP desde GitHub"
+    fi
 
-    echo -e "${B}→ Descomprimiendo...${N}"
+    log "INFO" "Descomprimiendo"
     unzip -o "$PANEL_DIR/panel.zip" -d "$PANEL_DIR"
-    rm -f "$PANEL_DIR/panel.zip"
+    rm "$PANEL_DIR/panel.zip"
 
     chown -R www-data:www-data "$PANEL_DIR"
     chmod -R 755 "$PANEL_DIR"
 
-    echo -e "${B}→ Creando Base de Datos...${N}"
+    # BASE DE DATOS
+    log "INFO" "Configurando base de datos"
     mysql -e "CREATE DATABASE IF NOT EXISTS ${DB_NAME};"
     mysql -e "CREATE USER IF NOT EXISTS '${DB_USER}'@'localhost' IDENTIFIED BY '${DB_PASS}';"
     mysql -e "GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DB_USER}'@'localhost';"
@@ -58,101 +102,110 @@ install_panel() {
         mysql "$DB_NAME" < "$PANEL_DIR/database.sql"
     fi
 
-    echo -e "${B}→ Configurando Apache...${N}"
+    # SSL
+    generate_ssl
+
+    # APACHE CONF SOLO HTTPS
+    log "INFO" "Configurando Apache solo HTTPS"
 
     CONF="/etc/apache2/sites-available/reycodessh.conf"
     cat > "$CONF" <<EOF
-<VirtualHost *:80>
+<VirtualHost *:443>
     DocumentRoot $PANEL_DIR
+    SSLEngine on
+    SSLCertificateFile $SSL_DIR/reycodessh.crt
+    SSLCertificateKeyFile $SSL_DIR/reycodessh.key
+
     <Directory $PANEL_DIR>
         AllowOverride All
         Require all granted
     </Directory>
 </VirtualHost>
+
+# BLOQUEAR HTTP
+<VirtualHost *:80>
+    RewriteEngine On
+    RewriteRule ^(.*)$ https://%{HTTP_HOST}\$1 [R=301,L]
+</VirtualHost>
 EOF
 
+    a2enmod rewrite ssl
     a2dissite 000-default.conf || true
     a2ensite reycodessh.conf
-    a2enmod rewrite
     systemctl restart apache2
 
     IP=$(hostname -I | awk '{print $1}')
 
-    echo -e "\n${G}✔ Instalación completada!${N}"
-    echo -e "${Y}URL:${N} http://$IP/"
+    ok "Instalación completada"
+    echo -e "${Y}➡ Accede al panel en:${N} https://$IP/"
 }
 
 # ==============================
 update_panel() {
-    echo -e "${Y}→ Actualizando panel...${N}"
+    log "INFO" "Actualizando panel..."
 
     wget -O "$PANEL_DIR/panel.zip" "$ZIP_URL"
     unzip -o "$PANEL_DIR/panel.zip" -d "$PANEL_DIR"
-    rm -f "$PANEL_DIR/panel.zip"
+    rm "$PANEL_DIR/panel.zip"
 
     chown -R www-data:www-data "$PANEL_DIR"
     systemctl restart apache2
 
-    echo -e "${G}✔ Panel actualizado!${N}"
+    ok "Panel actualizado correctamente"
 }
 
-# ==============================
 backup_panel() {
-    echo -e "${B}→ Creando backup...${N}"
     mkdir -p "$BACKUP_DIR"
-
     TAR="$BACKUP_DIR/backup_$(date +%F_%H-%M-%S).tar.gz"
-
     tar -czf "$TAR" "$PANEL_DIR"
 
-    echo -e "${G}✔ Backup creado en:${N} $TAR"
+    ok "Backup creado: $TAR"
 }
 
-# ==============================
 restore_backup() {
-    echo -e "${Y}Backups disponibles:${N}"
+    echo -e "${B}Backups disponibles:${N}"
     ls -1 "$BACKUP_DIR"
-
-    echo -ne "\n${W}Nombre del archivo a restaurar:${N} "
+    echo -ne "${W}Archivo a restaurar: ${N}"
     read FILE
 
     tar -xzf "$BACKUP_DIR/$FILE" -C /
 
-    echo -e "${G}✔ Backup restaurado!${N}"
+    ok "Restauración completada"
 }
 
-# ==============================
 uninstall_panel() {
-    echo -e "${R}¿Seguro que quieres desinstalar el panel? (s/n)${N}"
-    read conf
-    [ "$conf" != "s" ] && return
+    echo -ne "${R}¿Eliminar TODO? (s/n): ${N}"
+    read s
+    [[ "$s" != "s" ]] && return
 
     rm -rf "$PANEL_DIR"
+    rm -rf "$SSL_DIR"
     rm -f /etc/apache2/sites-available/reycodessh.conf
-    a2dissite reycodessh.conf
-    systemctl restart apache2
 
     mysql -e "DROP DATABASE IF EXISTS ${DB_NAME};"
     mysql -e "DROP USER IF EXISTS '${DB_USER}'@'localhost';"
 
-    echo -e "${G}✔ Panel eliminado completamente.${N}"
+    systemctl restart apache2
+
+    ok "Panel eliminado por completo"
 }
 
-# ==============================
 info_system() {
-    echo -e "${B}=== Información del servidor ===${N}"
-    echo -e "${Y}IP Pública:${N} $(curl -s ifconfig.me)"
-    echo -e "${Y}IP Local:${N} $(hostname -I)"
-    echo -e "${Y}RAM:${N}"
+    echo -e "${B}=== SISTEMA ===${N}"
+    echo "IP Pública: $(curl -s ifconfig.me)"
+    echo "IP Local: $(hostname -I)"
+    echo "RAM:"
     free -h
 }
 
 # ==============================
-# MENÚ INTERACTIVO
+# MENÚ ESTILO 3D
 # ==============================
 while true; do
     clear
-    echo -e "${G}========== PANEL REYCODESSH ==========${N}"
+    echo -e "${G}╔══════════════════════════════════════╗${N}"
+    echo -e "${G}║        INSTALADOR REYCODESSH         ║${N}"
+    echo -e "${G}╚══════════════════════════════════════╝${N}"
     echo ""
     echo -e "${B}1) Instalar Panel${N}"
     echo -e "${B}2) Actualizar Panel${N}"
@@ -162,7 +215,7 @@ while true; do
     echo -e "${B}6) Información del Sistema${N}"
     echo -e "${R}0) Salir${N}"
     echo ""
-    echo -ne "${W}Seleccione una opción:${N} "
+    echo -ne "${W}Selecciona una opción:${N} "
     read opt
 
     case $opt in
@@ -173,7 +226,7 @@ while true; do
         5) uninstall_panel ;;
         6) info_system ;;
         0) exit ;;
-        *) echo -e "${R}Opción incorrecta${N}" ;;
+        *) echo -e "${R}Opción inválida${N}" ;;
     esac
 
     echo -e "\n${Y}Presiona ENTER para continuar...${N}"
