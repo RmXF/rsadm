@@ -1,105 +1,219 @@
-#!/usr/bin/env bash
-set -euo pipefail
-# Automated installer for SSHNET PHP panel (Debian/Ubuntu)
-# Run as root or with sudo.
+#!/bin/bash
 
-ZIP_URL="https://github.com/RmXF/rsadm/raw/main/sshnet_php_full.zip"
-ZIP_LOCAL="/tmp/sshnet_php_full.zip"
+# Script de Instalación y Gestión para Panel Super Administrativo
+# Compatible con Ubuntu/Debian VPS
+# Autor: Grok (basado en solicitud del usuario)
+# Descripción: Instala servidor web, configura panel desde un zip, y proporciona menú 'ceo' con opciones avanzadas.
 
-WWW_DIR="/var/www/sshnet"
-SITE_NAME="sshnet"
-SITE_CONF="/etc/nginx/sites-available/${SITE_NAME}"
-DB_NAME="sshnet"
-DB_USER="sshnet_user"
-DB_PASS="ChangeMe123!"
+# Variables globales
+INSTALL_DIR="/opt/super-admin-panel"
+MENU_SCRIPT="$INSTALL_DIR/menu.sh"
+CEO_ALIAS="alias ceo='bash $MENU_SCRIPT'"
+BASHRC_FILE="$HOME/.bashrc"
+WEB_ROOT="/var/www/html"
+PANEL_FILES="$WEB_ROOT/panel"
+ZIP_URL="https://example.com/panel.zip"  # Link base del zip (reemplaza con el real una vez creado)
+DB_NAME="super_admin_db"
+DB_USER_DEFAULT="ceo123"
+DB_PASS_DEFAULT="ceo123"
+DB_USER_FILE="$INSTALL_DIR/db_user.txt"
+DB_PASS_FILE="$INSTALL_DIR/db_pass.txt"
 
-echo "[+] Installing required packages..."
-apt-get update -y
-apt-get install -y nginx php php-fpm php-mysql unzip wget rsync mariadb-server
+# Función para mostrar progreso en tiempo real
+show_progress() {
+    echo -e "\n[INFO] $1"
+    sleep 1  # Simula tiempo de instalación
+}
 
-echo "[+] Downloading ZIP from repository..."
-rm -f "$ZIP_LOCAL"
-wget -O "$ZIP_LOCAL" "$ZIP_URL"
+# Función para verificar si ya está instalado
+check_installation() {
+    if [ -f "$MENU_SCRIPT" ]; then
+        echo "[INFO] El script ya está instalado. Usa 'ceo' para acceder al menú."
+        exit 0
+    fi
+}
 
-if [ ! -f "$ZIP_LOCAL" ]; then
-    echo "[ERROR] The ZIP file could not be downloaded."
-    exit 1
-fi
+# Función para descargar y extraer zip
+download_and_extract_zip() {
+    local url="$1"
+    show_progress "Descargando y extrayendo el zip del panel..."
+    wget -O /tmp/panel.zip "$url"
+    sudo mkdir -p "$PANEL_FILES"
+    sudo unzip -o /tmp/panel.zip -d "$PANEL_FILES"
+    rm /tmp/panel.zip
+}
 
-echo "[+] Deploying panel to $WWW_DIR..."
-rm -rf "$WWW_DIR"
-mkdir -p "$WWW_DIR"
-unzip -o "$ZIP_LOCAL" -d "$WWW_DIR"
+# Función para configurar base de datos
+setup_database() {
+    show_progress "Configurando base de datos MySQL..."
+    sudo mysql -u root -p -e "CREATE DATABASE IF NOT EXISTS $DB_NAME;"
+    sudo mysql -u root -p -e "CREATE USER IF NOT EXISTS '$DB_USER_DEFAULT'@'localhost' IDENTIFIED BY '$DB_PASS_DEFAULT';"
+    sudo mysql -u root -p -e "GRANT ALL PRIVILEGES ON $DB_NAME.* TO '$DB_USER_DEFAULT'@'localhost';"
+    sudo mysql -u root -p -e "FLUSH PRIVILEGES;"
+    echo "$DB_USER_DEFAULT" > "$DB_USER_FILE"
+    echo "$DB_PASS_DEFAULT" > "$DB_PASS_FILE"
+}
 
-# Move public content up if exists
-if [ -d "$WWW_DIR/public" ]; then
-    rsync -a "$WWW_DIR/public/" "$WWW_DIR/"
-    rm -rf "$WWW_DIR/public"
-fi
+# Función de instalación
+install_components() {
+    show_progress "Actualizando el sistema..."
+    sudo apt update && sudo apt upgrade -y
 
-# Create .env if not exists
-if [ ! -f "$WWW_DIR/.env" ]; then
-  cat > "$WWW_DIR/.env" <<EOF
-DB_HOST=127.0.0.1
-DB_NAME=${DB_NAME}
-DB_USER=${DB_USER}
-DB_PASS=${DB_PASS}
-APP_URL=http://$(hostname -I | awk '{print $1}')
-EOF
-fi
+    show_progress "Instalando Nginx..."
+    sudo apt install -y nginx
 
-echo "[+] Configuring Nginx..."
-cat > "$SITE_CONF" <<'NGINX'
+    show_progress "Instalando PHP y extensiones..."
+    sudo apt install -y php php-fpm php-mysql php-cli php-json php-xml php-mbstring
+
+    show_progress "Instalando MySQL..."
+    sudo apt install -y mysql-server
+    sudo mysql_secure_installation
+
+    setup_database
+
+    download_and_extract_zip "$ZIP_URL"
+
+    show_progress "Configurando Nginx..."
+    sudo tee /etc/nginx/sites-available/super-admin << EOF
 server {
     listen 80;
     server_name _;
-    root /var/www/sshnet;
-    index index.php index.html;
-
+    root $PANEL_FILES;
+    index index.html index.php;
     location / {
-        try_files $uri $uri/ /index.php?$query_string;
+        try_files \$uri \$uri/ =404;
     }
-
     location ~ \.php$ {
         include snippets/fastcgi-php.conf;
-        fastcgi_pass unix:/run/php/php-fpm.sock;
-    }
-
-    location ~ /\.ht {
-        deny all;
+        fastcgi_pass unix:/var/run/php/php8.1-fpm.sock;
     }
 }
-NGINX
+EOF
+    sudo ln -s /etc/nginx/sites-available/super-admin /etc/nginx/sites-enabled/
+    sudo nginx -t && sudo systemctl reload nginx
 
-ln -sf "$SITE_CONF" /etc/nginx/sites-enabled/${SITE_NAME}
-rm -f /etc/nginx/sites-enabled/default
+    show_progress "Instalando dependencias adicionales..."
+    sudo apt install -y curl wget git unzip net-tools
 
-nginx -t
-systemctl restart nginx
+    show_progress "Creando directorio de instalación y scripts..."
+    sudo mkdir -p "$INSTALL_DIR"
+    sudo chown $USER:$USER "$INSTALL_DIR"
 
-echo "[+] Configuring MariaDB..."
-mysql -e "CREATE DATABASE IF NOT EXISTS \`${DB_NAME}\` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"
-mysql -e "CREATE USER IF NOT EXISTS '${DB_USER}'@'localhost' IDENTIFIED BY '${DB_PASS}';"
-mysql -e "GRANT ALL PRIVILEGES ON \`${DB_NAME}\`.* TO '${DB_USER}'@'localhost';"
-mysql -e "FLUSH PRIVILEGES;"
+    # Crear el script del menú
+    cat > "$MENU_SCRIPT" << 'EOF'
+#!/bin/bash
+# Menú de Gestión del Panel Super Administrativo
 
-echo "[+] Importing database migration..."
-if [ -f "$WWW_DIR/sql/migration.sql" ]; then
-    PHP_HASH=$(php -r 'echo password_hash("password123", PASSWORD_DEFAULT);')
-    sed "s|{hash}|$PHP_HASH|g" "$WWW_DIR/sql/migration.sql" > /tmp/migration_ready.sql
-    mysql "$DB_NAME" < /tmp/migration_ready.sql
-fi
+DB_NAME="super_admin_db"
+DB_USER_FILE="/opt/super-admin-panel/db_user.txt"
+DB_PASS_FILE="/opt/super-admin-panel/db_pass.txt"
+PANEL_FILES="/var/www/html/panel"
 
-echo "[+] Setting permissions..."
-chown -R www-data:www-data "$WWW_DIR"
-chmod -R 755 "$WWW_DIR"
+while true; do
+    echo -e "\n=== Menú Super Administrativo ==="
+    echo "1. Desinstalar script"
+    echo "2. Actualizar zip"
+    echo "3. Agregar base de datos"
+    echo "4. Puertos activos"
+    echo "5. Salir"
+    read -p "Selecciona una opción: " choice
 
-echo
-echo "========================================="
-echo " SSHNET panel installed successfully!"
-echo " URL: http://$(hostname -I | awk '{print $1}')/"
-echo " DB NAME: ${DB_NAME}"
-echo " DB USER: ${DB_USER}"
-echo " DB PASS: ${DB_PASS}"
-echo " Admin login: admin / password123"
-echo "========================================="
+    case $choice in
+        1)
+            read -p "¿Estás seguro de desinstalar todo? (sí/no): " confirm
+            if [ "$confirm" == "sí" ]; then
+                echo "[INFO] Desinstalando..."
+                sudo systemctl stop nginx php8.1-fpm mysql
+                sudo apt purge -y nginx php* mysql-server unzip net-tools
+                sudo apt autoremove -y && sudo apt autoclean
+                sudo rm -rf /opt/super-admin-panel /var/www/html/panel /etc/nginx/sites-enabled/super-admin /etc/nginx/sites-available/super-admin
+                sudo mysql -u root -p -e "DROP DATABASE IF EXISTS $DB_NAME; DROP USER IF EXISTS '$(cat $DB_USER_FILE)'@'localhost';"
+                sed -i "/alias ceo=/d" ~/.bashrc
+                echo "[SUCCESS] Todo desinstalado."
+                exit 0
+            fi
+            ;;
+        2)
+            read -p "Ingresa el link del nuevo zip: " new_zip
+            if [ -n "$new_zip" ]; then
+                wget -O /tmp/new_panel.zip "$new_zip"
+                sudo unzip -o /tmp/new_panel.zip -d "$PANEL_FILES"
+                rm /tmp/new_panel.zip
+                sudo systemctl reload nginx
+                echo "[SUCCESS] Zip actualizado."
+            fi
+            ;;
+        3)
+            read -p "Ingresa nuevo usuario (actual: $(cat $DB_USER_FILE)): " new_user
+            read -s -p "Ingresa nueva contraseña: " new_pass
+            echo
+            if [ -n "$new_user" ] && [ -n "$new_pass" ]; then
+                old_user=$(cat $DB_USER_FILE)
+                sudo mysql -u root -p -e "RENAME USER '$old_user'@'localhost' TO '$new_user'@'localhost'; SET PASSWORD FOR '$new_user'@'localhost' = PASSWORD('$new_pass');"
+                echo "$new_user" > "$DB_USER_FILE"
+                echo "$new_pass" > "$DB_PASS_FILE"
+                echo "[SUCCESS] Base de datos actualizada."
+            fi
+            ;;
+        4)
+            echo "[INFO] Puertos activos:"
+            netstat -tlnp | awk 'NR>2 {print $4, $7}' | column -t
+            echo -e "\nSubopciones:"
+            echo "a. Reiniciar puertos"
+            echo "b. Apagar todos los puertos (excepto SSH 22)"
+            echo "c. Desinstalar puerto"
+            read -p "Selecciona subopción: " subchoice
+            case $subchoice in
+                a)
+                    sudo systemctl restart nginx php8.1-fpm mysql
+                    echo "[SUCCESS] Puertos reiniciados."
+                    ;;
+                b)
+                    sudo ufw --force reset
+                    sudo ufw allow 22/tcp
+                    sudo ufw --force enable
+                    echo "[SUCCESS] Todos los puertos apagados excepto SSH 22."
+                    ;;
+                c)
+                    echo "Puertos activos creados por el script:"
+                    ps aux | grep -E "(nginx|php|mysql)" | grep -v grep | awk '{print $2, $11}' | nl
+                    read -p "Ingresa el número del proceso a desinstalar: " pid
+                    if [ -n "$pid" ]; then
+                        sudo kill -9 $(ps aux | grep -E "(nginx|php|mysql)" | sed -n "${pid}p" | awk '{print $2}')
+                        echo "[SUCCESS] Puerto desinstalado."
+                    fi
+                    ;;
+            esac
+            ;;
+        5)
+            echo "[INFO] Saliendo..."
+            break
+            ;;
+        *)
+            echo "[ERROR] Opción inválida."
+            ;;
+    esac
+done
+EOF
+    chmod +x "$MENU_SCRIPT"
+
+    # Agregar alias 'ceo' al .bashrc
+    if ! grep -q "alias ceo=" "$BASHRC_FILE"; then
+        echo "$CEO_ALIAS" >> "$BASHRC_FILE"
+    fi
+    source "$BASHRC_FILE"
+
+    show_progress "Instalación completada. Reinicia la terminal o ejecuta 'source ~/.bashrc' para usar 'ceo'."
+    echo "[SUCCESS] El panel está disponible en http://TU_IP_VPS"
+}
+
+# Función principal
+main() {
+    check_installation
+    echo "[INFO] Iniciando instalación del Panel Super Administrativo..."
+    install_components
+    echo "[INFO] Usa 'ceo' para acceder al menú de gestión."
+}
+
+# Ejecutar el script
+main
