@@ -1,0 +1,353 @@
+#!/bin/bash
+
+# Panel SSH - Script de instalación automática
+# Autor: Generado para panel SSH
+# Versión: 1.0
+
+# Colores para output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+# Configuración
+GITHUB_REPO="https://github.com/TU_USUARIO/TU_REPO/archive/refs/heads/main.zip"
+PANEL_DIR="/var/www/sshpanel"
+APACHE_CONF="/etc/apache2/sites-available/sshpanel.conf"
+SSH_PORT=8022
+PANEL_PORT=8080
+
+# Función para imprimir mensajes
+print_message() {
+    echo -e "${BLUE}[INFO]${NC} $1"
+}
+
+print_success() {
+    echo -e "${GREEN}[OK]${NC} $1"
+}
+
+print_error() {
+    echo -e "${RED}[ERROR]${NC} $1"
+}
+
+print_warning() {
+    echo -e "${YELLOW}[WARNING]${NC} $1"
+}
+
+# Verificar que se ejecuta como root
+if [ "$EUID" -ne 0 ]; then 
+    print_error "Por favor ejecuta el script como root (sudo)"
+    exit 1
+fi
+
+# Función para detectar el sistema operativo
+detect_os() {
+    print_message "Detectando sistema operativo..."
+    
+    if [ -f /etc/os-release ]; then
+        . /etc/os-release
+        OS=$ID
+        VERSION=$VERSION_ID
+    else
+        print_error "No se pudo detectar el sistema operativo"
+        exit 1
+    fi
+    
+    print_success "Sistema detectado: $OS $VERSION"
+}
+
+# Función para instalar dependencias según el OS
+install_dependencies() {
+    print_message "Instalando dependencias necesarias..."
+    
+    case $OS in
+        ubuntu|debian)
+            apt-get update
+            apt-get install -y apache2 php php-mysql php-curl php-json php-xml php-mbstring \
+                               php-zip php-gd libapache2-mod-php sshpass openssh-server \
+                               curl wget unzip git ufw
+            ;;
+        centos|rhel|fedora)
+            yum update -y
+            yum install -y httpd php php-mysqlnd php-json php-xml php-mbstring php-zip php-gd \
+                           sshpass openssh-server curl wget unzip git
+            # Cambiar nombres de servicios
+            systemctl enable httpd
+            systemctl start httpd
+            APACHE_SERVICE="httpd"
+            ;;
+        *)
+            print_error "Sistema operativo no soportado: $OS"
+            exit 1
+            ;;
+    esac
+    
+    print_success "Dependencias instaladas correctamente"
+}
+
+# Función para instalar sshpass (si no está disponible)
+install_sshpass() {
+    if ! command -v sshpass &> /dev/null; then
+        print_message "Instalando sshpass..."
+        
+        case $OS in
+            ubuntu|debian)
+                apt-get install -y sshpass
+                ;;
+            centos|rhel|fedora)
+                # Compilar sshpass desde fuente para CentOS
+                cd /tmp
+                wget http://downloads.sourceforge.net/project/sshpass/sshpass/1.06/sshpass-1.06.tar.gz
+                tar -xzf sshpass-1.06.tar.gz
+                cd sshpass-1.06
+                ./configure
+                make
+                make install
+                ;;
+        esac
+        
+        print_success "sshpass instalado correctamente"
+    fi
+}
+
+# Función para configurar el servidor web
+configure_webserver() {
+    print_message "Configurando servidor web..."
+    
+    # Crear directorio del panel
+    mkdir -p $PANEL_DIR
+    mkdir -p $PANEL_DIR/js
+    mkdir -p $PANEL_DIR/php
+    
+    # Configurar Apache/Nginx para escuchar en puerto personalizado
+    if [ -f /etc/apache2/ports.conf ]; then
+        # Añadir puerto personalizado a Apache
+        echo "Listen $PANEL_PORT" >> /etc/apache2/ports.conf
+    fi
+    
+    # Crear configuración de sitio virtual
+    cat > $APACHE_CONF <<EOF
+<VirtualHost *:$PANEL_PORT>
+    ServerAdmin webmaster@localhost
+    DocumentRoot $PANEL_DIR
+    
+    <Directory $PANEL_DIR>
+        Options Indexes FollowSymLinks
+        AllowOverride All
+        Require all granted
+    </Directory>
+    
+    ErrorLog \${APACHE_LOG_DIR}/sshpanel_error.log
+    CustomLog \${APACHE_LOG_DIR}/sshpanel_access.log combined
+</VirtualHost>
+EOF
+    
+    # Habilitar el sitio
+    if [ -f /etc/apache2/sites-available/sshpanel.conf ]; then
+        a2ensite sshpanel.conf
+        a2enmod rewrite
+        systemctl restart apache2
+    fi
+    
+    print_success "Servidor web configurado en puerto $PANEL_PORT"
+}
+
+# Función para configurar SSH
+configure_ssh() {
+    print_message "Configurando servidor SSH..."
+    
+    # Respaldo de configuración SSH
+    cp /etc/ssh/sshd_config /etc/ssh/sshd_config.backup
+    
+    # Configurar SSH en puerto personalizado
+    sed -i "s/^#Port 22/Port $SSH_PORT/" /etc/ssh/sshd_config
+    sed -i "s/^Port 22/Port $SSH_PORT/" /etc/ssh/sshd_config
+    
+    # Habilitar autenticación por contraseña
+    sed -i "s/^#PasswordAuthentication yes/PasswordAuthentication yes/" /etc/ssh/sshd_config
+    sed -i "s/^PasswordAuthentication no/PasswordAuthentication yes/" /etc/ssh/sshd_config
+    
+    # Permitir root login (opcional, pero útil para gestión)
+    sed -i "s/^#PermitRootLogin prohibit-password/PermitRootLogin yes/" /etc/ssh/sshd_config
+    sed -i "s/^PermitRootLogin prohibit-password/PermitRootLogin yes/" /etc/ssh/sshd_config
+    
+    # Reiniciar SSH
+    systemctl restart sshd
+    
+    print_success "SSH configurado en puerto $SSH_PORT"
+}
+
+# Función para descargar y configurar los archivos del panel
+setup_panel_files() {
+    print_message "Configurando archivos del panel..."
+    
+    cd /tmp
+    
+    # Solicitar URL del repositorio
+    echo -e "${YELLOW}"
+    read -p "Introduce la URL de descarga de tu repositorio GitHub (archivo ZIP): " GITHUB_REPO
+    echo -e "${NC}"
+    
+    if [ -z "$GITHUB_REPO" ]; then
+        print_error "URL no proporcionada"
+        exit 1
+    fi
+    
+    # Descargar archivos
+    print_message "Descargando archivos del panel..."
+    wget -O panel.zip "$GITHUB_REPO"
+    
+    if [ $? -ne 0 ]; then
+        print_error "Error al descargar los archivos"
+        exit 1
+    fi
+    
+    # Extraer archivos
+    unzip -o panel.zip -d /tmp/panel_extracted/
+    
+    # Mover archivos al directorio del panel
+    find /tmp/panel_extracted -type f -name "*.html" -exec cp {} $PANEL_DIR/ \;
+    find /tmp/panel_extracted -type f -name "*.php" -exec cp {} $PANEL_DIR/php/ \;
+    find /tmp/panel_extracted -type f -name "*.js" -exec cp {} $PANEL_DIR/js/ \;
+    
+    # Ajustar rutas en los archivos JavaScript
+    if [ -f $PANEL_DIR/js/ssh_manager.js ]; then
+        sed -i "s|/ssh/php/endpoints/ssh_connect.php|/php/ssh_connect.php|g" $PANEL_DIR/js/ssh_manager.js
+    fi
+    
+    # Mover ssh_connect.php al directorio correcto
+    if [ -f /tmp/panel_extracted/ssh_connect.php ]; then
+        cp /tmp/panel_extracted/ssh_connect.php $PANEL_DIR/php/
+    elif [ -f /tmp/panel_extracted/*/ssh_connect.php ]; then
+        find /tmp/panel_extracted -name "ssh_connect.php" -exec cp {} $PANEL_DIR/php/ \;
+    fi
+    
+    # Mover index.html
+    if [ -f /tmp/panel_extracted/index.html ]; then
+        cp /tmp/panel_extracted/index.html $PANEL_DIR/
+    elif [ -f /tmp/panel_extracted/*/index.html ]; then
+        find /tmp/panel_extracted -name "index.html" -exec cp {} $PANEL_DIR/ \;
+    fi
+    
+    # Establecer permisos correctos
+    chown -R www-data:www-data $PANEL_DIR
+    chmod -R 755 $PANEL_DIR
+    
+    # Limpiar archivos temporales
+    rm -rf /tmp/panel.zip /tmp/panel_extracted
+    
+    print_success "Archivos del panel configurados correctamente"
+}
+
+# Función para configurar firewall
+configure_firewall() {
+    print_message "Configurando firewall..."
+    
+    # Habilitar puertos necesarios
+    if command -v ufw &> /dev/null; then
+        ufw allow $SSH_PORT/tcp comment 'SSH Personalizado'
+        ufw allow $PANEL_PORT/tcp comment 'Panel SSH'
+        ufw allow 80/tcp comment 'HTTP'
+        ufw allow 443/tcp comment 'HTTPS'
+        
+        # Habilitar UFW si no está activo
+        ufw --force enable
+    elif command -v firewall-cmd &> /dev/null; then
+        firewall-cmd --permanent --add-port=$SSH_PORT/tcp
+        firewall-cmd --permanent --add-port=$PANEL_PORT/tcp
+        firewall-cmd --permanent --add-service=http
+        firewall-cmd --permanent --add-service=https
+        firewall-cmd --reload
+    else
+        print_warning "No se detectó firewall. Asegúrate de configurar manualmente los puertos:"
+        print_warning "  - SSH: $SSH_PORT"
+        print_warning "  - Panel: $PANEL_PORT"
+    fi
+    
+    print_success "Firewall configurado"
+}
+
+# Función para crear script de acceso rápido
+create_access_script() {
+    print_message "Creando script de acceso rápido..."
+    
+    cat > /usr/local/bin/sshpanel <<EOF
+#!/bin/bash
+echo "==================================="
+echo "    Panel SSH - Información de Acceso"
+echo "==================================="
+echo ""
+echo "URL del Panel: http://$(curl -s ifconfig.me):$PANEL_PORT"
+echo "Puerto SSH: $SSH_PORT"
+echo ""
+echo "Comandos útiles:"
+echo "  - Ver logs: tail -f $PANEL_DIR/php/error_log"
+echo "  - Reiniciar panel: systemctl restart apache2"
+echo "  - Ver estado: systemctl status apache2"
+echo ""
+EOF
+    
+    chmod +x /usr/local/bin/sshpanel
+    
+    print_success "Script de acceso creado: 'sshpanel'"
+}
+
+# Función para mostrar información final
+show_final_info() {
+    IP_VPS=$(curl -s ifconfig.me)
+    
+    echo ""
+    echo -e "${GREEN}========================================${NC}"
+    echo -e "${GREEN}    INSTALACIÓN COMPLETADA ÉXITOSAMENTE${NC}"
+    echo -e "${GREEN}========================================${NC}"
+    echo ""
+    echo -e "${YELLOW}INFORMACIÓN DE ACCESO:${NC}"
+    echo -e "  Panel Web: ${GREEN}http://$IP_VPS:$PANEL_PORT${NC}"
+    echo -e "  SSH Puerto: ${GREEN}$SSH_PORT${NC}"
+    echo ""
+    echo -e "${YELLOW}CREDENCIALES SSH PARA EL PANEL:${NC}"
+    echo -e "  Cuando abras el panel, usa estas credenciales para conectar:"
+    echo -e "  IP: ${GREEN}$IP_VPS${NC}"
+    echo -e "  Puerto SSH: ${GREEN}$SSH_PORT${NC}"
+    echo -e "  Usuario: ${GREEN}root${NC} (o tu usuario del sistema)"
+    echo -e "  Contraseña: ${GREEN}La contraseña de tu VPS${NC}"
+    echo ""
+    echo -e "${YELLOW}COMANDOS ÚTILES:${NC}"
+    echo -e "  Ver información del panel: ${GREEN}sshpanel${NC}"
+    echo -e "  Reiniciar Apache: ${GREEN}systemctl restart apache2${NC}"
+    echo -e "  Ver logs: ${GREEN}tail -f $PANEL_DIR/php/error_log${NC}"
+    echo ""
+    echo -e "${YELLOW}ARCHIVOS DEL PANEL:${NC}"
+    echo -e "  Directorio: ${GREEN}$PANEL_DIR${NC}"
+    echo ""
+    echo -e "${RED}NOTA IMPORTANTE:${NC}"
+    echo -e "  1. Asegúrate de que los puertos $PANEL_PORT y $SSH_PORT estén abiertos"
+    echo -e "  2. Si tu VPS tiene firewall externo, abre estos puertos manualmente"
+    echo -e "  3. Guarda esta información en un lugar seguro"
+    echo ""
+    echo -e "${GREEN}========================================${NC}"
+}
+
+# Función principal
+main() {
+    echo -e "${GREEN}"
+    echo "╔════════════════════════════════════════╗"
+    echo "║     INSTALADOR PANEL SSH - VPS         ║"
+    echo "╚════════════════════════════════════════╝"
+    echo -e "${NC}"
+    
+    # Ejecutar funciones
+    detect_os
+    install_dependencies
+    install_sshpass
+    configure_webserver
+    configure_ssh
+    setup_panel_files
+    configure_firewall
+    create_access_script
+    show_final_info
+}
+
+# Ejecutar función principal
+main
