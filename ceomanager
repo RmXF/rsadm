@@ -1,0 +1,504 @@
+#!/bin/bash
+
+# ====================================================
+# CEO MANAGER PRO - INSTALADOR AUTOMÁTICO
+# Author: @ReyRs_VIPro
+# Versión: 1.0
+# Enlace del Panel: https://github.com/RmXF/rsadm/raw/main/panelv2.zip
+# ====================================================
+
+# Colores
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+PURPLE='\033[0;35m'
+CYAN='\033[0;36m'
+NC='\033[0m'
+
+# Configuración
+INSTALL_DIR="/var/www/ceo-manager"
+NGINX_CONF="/etc/nginx/sites-available/ceo-manager"
+LOG_FILE="/tmp/ceo-install.log"
+
+# ⚠️ ENLACE ACTUALIZADO CON EL QUE ME PROPORCIONASTE ⚠️
+ZIP_URL="https://github.com/RmXF/rsadm/raw/main/panelv2.zip"
+
+# Variables que se llenarán durante la instalación
+PANEL_USER=""
+PANEL_PASS=""
+PANEL_PORT=""
+PANEL_HASH=""
+
+# Funciones
+print_banner() {
+    clear
+    echo -e "${PURPLE}"
+    echo "╔══════════════════════════════════════════════════════════════╗"
+    echo "║                                                              ║"
+    echo "║              CEO MANAGER PRO - INSTALADOR v1.0              ║"
+    echo "║                                                              ║"
+    echo "║                  Desarrollado por @ReyRs_VIPro              ║"
+    echo "║                                                              ║"
+    echo "║              Panel: https://github.com/RmXF/rsadm           ║"
+    echo "║                                                              ║"
+    echo "╚══════════════════════════════════════════════════════════════╝"
+    echo -e "${NC}"
+    echo ""
+}
+
+print_message() {
+    echo -e "${BLUE}[CEO]${NC} $1"
+}
+
+print_success() {
+    echo -e "${GREEN}[✓]${NC} $1"
+}
+
+print_error() {
+    echo -e "${RED}[✗]${NC} $1"
+}
+
+print_warning() {
+    echo -e "${YELLOW}[!]${NC} $1"
+}
+
+log() {
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" >> $LOG_FILE
+}
+
+check_root() {
+    if [[ $EUID -ne 0 ]]; then
+        print_error "Este script debe ejecutarse como root"
+        echo -e "${YELLOW}Ejecuta: sudo bash $0${NC}"
+        exit 1
+    fi
+}
+
+check_system() {
+    print_message "Verificando sistema..."
+    
+    if [[ -f /etc/os-release ]]; then
+        . /etc/os-release
+        OS=$ID
+        print_success "Sistema: $NAME $VERSION"
+    else
+        print_error "Sistema no detectado"
+        exit 1
+    fi
+    
+    # Verificar espacio
+    AVAILABLE=$(df / | awk 'NR==2 {print $4}')
+    AVAILABLE_MB=$((AVAILABLE / 1024))
+    
+    if [[ $AVAILABLE_MB -lt 500 ]]; then
+        print_error "Espacio insuficiente: ${AVAILABLE_MB}MB (mínimo 500MB)"
+        exit 1
+    fi
+    print_success "Espacio: ${AVAILABLE_MB}MB disponibles"
+}
+
+get_config() {
+    echo ""
+    print_warning "CONFIGURACIÓN DEL PANEL"
+    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo ""
+    
+    # Usuario
+    while true; do
+        read -p "👤 Usuario administrador: " PANEL_USER
+        if [[ -z "$PANEL_USER" ]]; then
+            print_error "El usuario no puede estar vacío"
+        elif [[ ! "$PANEL_USER" =~ ^[a-zA-Z0-9_]+$ ]]; then
+            print_error "Solo letras, números y guión bajo"
+        else
+            break
+        fi
+    done
+    
+    # Contraseña
+    while true; do
+        echo -n "🔑 Contraseña: "
+        read -s PANEL_PASS
+        echo ""
+        echo -n "🔒 Confirmar: "
+        read -s PANEL_PASS_CONFIRM
+        echo ""
+        
+        if [[ -z "$PANEL_PASS" ]]; then
+            print_error "La contraseña no puede estar vacía"
+        elif [[ "$PANEL_PASS" != "$PANEL_PASS_CONFIRM" ]]; then
+            print_error "Las contraseñas no coinciden"
+        elif [[ ${#PANEL_PASS} -lt 6 ]]; then
+            print_error "Mínimo 6 caracteres"
+        else
+            break
+        fi
+    done
+    
+    # Puerto
+    read -p "🔌 Puerto (default: 8080): " PANEL_PORT_INPUT
+    PANEL_PORT=${PANEL_PORT_INPUT:-8080}
+    
+    if ! [[ "$PANEL_PORT" =~ ^[0-9]+$ ]] || [[ "$PANEL_PORT" -lt 1 ]] || [[ "$PANEL_PORT" -gt 65535 ]]; then
+        print_error "Puerto inválido, usando 8080"
+        PANEL_PORT=8080
+    fi
+    
+    # Generar hash de contraseña
+    PANEL_HASH=$(php -r "echo password_hash('$PANEL_PASS', PASSWORD_DEFAULT);")
+    
+    # Resumen
+    echo ""
+    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo -e "${YELLOW}RESUMEN:${NC}"
+    echo "  Usuario: $PANEL_USER"
+    echo "  Puerto: $PANEL_PORT"
+    echo "  Directorio: $INSTALL_DIR"
+    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo ""
+    
+    read -p "¿Continuar? (s/n): " CONFIRM
+    if [[ ! "$CONFIRM" =~ ^[Ss]$ ]]; then
+        print_error "Instalación cancelada"
+        exit 0
+    fi
+}
+
+install_dependencies() {
+    print_message "Instalando dependencias..."
+    log "Instalando dependencias"
+    
+    apt-get update -y >> $LOG_FILE 2>&1
+    
+    apt-get install -y \
+        nginx \
+        php8.1 \
+        php8.1-fpm \
+        php8.1-cli \
+        php8.1-common \
+        php8.1-mbstring \
+        php8.1-xml \
+        php8.1-curl \
+        php8.1-zip \
+        php8.1-gd \
+        sshpass \
+        openssh-server \
+        curl \
+        wget \
+        unzip \
+        ufw \
+        >> $LOG_FILE 2>&1
+    
+    print_success "Dependencias instaladas"
+}
+
+download_panel() {
+    print_message "Descargando panel desde GitHub..."
+    print_message "URL: $ZIP_URL"
+    log "Descargando desde: $ZIP_URL"
+    
+    cd /tmp
+    rm -rf ceo-install 2>/dev/null
+    mkdir ceo-install
+    cd ceo-install
+    
+    # Descargar ZIP
+    if ! wget -O panel.zip $ZIP_URL >> $LOG_FILE 2>&1; then
+        if ! curl -L -o panel.zip $ZIP_URL >> $LOG_FILE 2>&1; then
+            print_error "No se pudo descargar el panel"
+            print_error "Verifica la URL: $ZIP_URL"
+            log "ERROR: Falló la descarga"
+            exit 1
+        fi
+    fi
+    
+    # Verificar ZIP
+    if [[ ! -f "panel.zip" ]] || [[ ! -s "panel.zip" ]]; then
+        print_error "Archivo ZIP vacío o corrupto"
+        log "ERROR: ZIP vacío"
+        exit 1
+    fi
+    
+    # Mostrar tamaño del ZIP
+    ZIP_SIZE=$(du -h panel.zip | cut -f1)
+    print_success "ZIP descargado: $ZIP_SIZE"
+    
+    # Descomprimir
+    if ! unzip -o panel.zip >> $LOG_FILE 2>&1; then
+        print_error "Error al descomprimir"
+        log "ERROR: Falló unzip"
+        exit 1
+    fi
+    
+    print_success "Panel descargado y descomprimido correctamente"
+}
+
+configure_panel() {
+    print_message "Configurando panel..."
+    
+    # Crear directorio de instalación
+    mkdir -p $INSTALL_DIR
+    
+    # Copiar archivos (maneja diferentes estructuras de ZIP)
+    if [[ -d "/tmp/ceo-install/ceo-manager" ]]; then
+        cp -rf /tmp/ceo-install/ceo-manager/* $INSTALL_DIR/ 2>/dev/null
+    elif [[ -d "/tmp/ceo-install/panelv2" ]]; then
+        cp -rf /tmp/ceo-install/panelv2/* $INSTALL_DIR/ 2>/dev/null
+    else
+        cp -rf /tmp/ceo-install/* $INSTALL_DIR/ 2>/dev/null
+    fi
+    
+    # Crear directorios necesarios si no existen
+    mkdir -p $INSTALL_DIR/{assets/{css,js},includes,php/endpoints,logs}
+    
+    # Configurar credenciales en config.php
+    if [[ -f "$INSTALL_DIR/includes/config.php" ]]; then
+        sed -i "s/define('CEO_USER', '.*');/define('CEO_USER', '$PANEL_USER');/" $INSTALL_DIR/includes/config.php
+        sed -i "s|define('CEO_PASS', '.*');|define('CEO_PASS', '$PANEL_HASH');|" $INSTALL_DIR/includes/config.php
+        print_success "Credenciales configuradas en config.php"
+    else
+        print_warning "No se encontró config.php, creando uno nuevo..."
+        
+        # Crear config.php básico
+        cat > $INSTALL_DIR/includes/config.php << EOF
+<?php
+/**
+ * CEO MANAGER PRO - Configuración
+ * Author: @ReyRs_VIPro
+ */
+
+define('CEO_VERSION', '1.0.0');
+define('CEO_NAME', 'CEO MANAGER PRO');
+define('CEO_AUTHOR', '@ReyRs_VIPro');
+define('SESSION_TIMEOUT', 3600);
+
+define('CEO_USER', '$PANEL_USER');
+define('CEO_PASS', '$PANEL_HASH');
+
+define('LOG_FILE', __DIR__ . '/../logs/panel.log');
+define('ACCESS_LOG', __DIR__ . '/../logs/access.log');
+define('ERROR_LOG', __DIR__ . '/../logs/error.log');
+
+define('DEFAULT_SSH_PORT', 22);
+define('SSH_TIMEOUT', 10);
+?>
+EOF
+        print_success "config.php creado"
+    fi
+    
+    # Crear archivos de log
+    touch $INSTALL_DIR/logs/{panel,access,error}.log
+    
+    print_success "Panel configurado en $INSTALL_DIR"
+}
+
+configure_nginx() {
+    print_message "Configurando Nginx..."
+    
+    cat > $NGINX_CONF << EOF
+server {
+    listen $PANEL_PORT;
+    server_name _;
+    
+    root $INSTALL_DIR;
+    index index.html index.php login.php;
+    
+    access_log $INSTALL_DIR/logs/access.log;
+    error_log $INSTALL_DIR/logs/error.log;
+    
+    location / {
+        try_files \$uri \$uri/ =404;
+    }
+    
+    location ~ \.php$ {
+        include fastcgi_params;
+        fastcgi_pass unix:/var/run/php/php8.1-fpm.sock;
+        fastcgi_index index.php;
+        fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
+    }
+    
+    location ~ /\.ht {
+        deny all;
+    }
+    
+    location ~* \.(jpg|jpeg|png|gif|ico|css|js)$ {
+        expires 1y;
+        add_header Cache-Control "public, no-transform";
+    }
+}
+EOF
+    
+    # Habilitar sitio
+    ln -sf $NGINX_CONF /etc/nginx/sites-enabled/
+    rm -f /etc/nginx/sites-enabled/default
+    
+    # Verificar configuración
+    nginx -t >> $LOG_FILE 2>&1
+    
+    if [[ $? -eq 0 ]]; then
+        systemctl restart nginx >> $LOG_FILE 2>&1
+        systemctl restart php8.1-fpm >> $LOG_FILE 2>&1
+        print_success "Nginx configurado en puerto $PANEL_PORT"
+    else
+        print_error "Error en configuración de Nginx"
+        nginx -t
+        exit 1
+    fi
+}
+
+configure_firewall() {
+    print_message "Configurando firewall..."
+    
+    if command -v ufw &> /dev/null; then
+        ufw allow $PANEL_PORT/tcp >> $LOG_FILE 2>&1
+        ufw allow ssh >> $LOG_FILE 2>&1
+        ufw --force enable >> $LOG_FILE 2>&1
+        print_success "Firewall UFW configurado"
+    else
+        print_warning "UFW no encontrado, firewall no configurado"
+    fi
+}
+
+set_permissions() {
+    print_message "Estableciendo permisos..."
+    
+    chown -R www-data:www-data $INSTALL_DIR
+    find $INSTALL_DIR -type d -exec chmod 755 {} \;
+    find $INSTALL_DIR -type f -exec chmod 644 {} \;
+    
+    # Permisos especiales
+    chmod 750 $INSTALL_DIR/includes 2>/dev/null
+    chmod 640 $INSTALL_DIR/includes/config.php 2>/dev/null
+    chmod 666 $INSTALL_DIR/logs/*.log 2>/dev/null
+    
+    print_success "Permisos establecidos"
+}
+
+create_command() {
+    print_message "Creando comando 'ceo'..."
+    
+    IP=$(curl -s ifconfig.me)
+    
+    cat > /usr/local/bin/ceo << EOF
+#!/bin/bash
+echo -e "${GREEN}╔════════════════════════════════════════════╗${NC}"
+echo -e "${GREEN}║         CEO MANAGER PRO - @ReyRs_VIPro    ║${NC}"
+echo -e "${GREEN}╚════════════════════════════════════════════╝${NC}"
+echo ""
+echo -e "${YELLOW}📌 URL:${NC}     http://$IP:$PANEL_PORT"
+echo -e "${YELLOW}👤 Usuario:${NC} $PANEL_USER"
+echo -e "${YELLOW}🔑 Pass:${NC}    (la que configuraste)"
+echo ""
+
+if command -v xdg-open &> /dev/null; then
+    xdg-open "http://$IP:$PANEL_PORT" 2>/dev/null
+    echo -e "${GREEN}✅ Abriendo panel en tu navegador...${NC}"
+elif command -v sensible-browser &> /dev/null; then
+    sensible-browser "http://$IP:$PANEL_PORT" 2>/dev/null
+    echo -e "${GREEN}✅ Abriendo panel en tu navegador...${NC}"
+else
+    echo -e "${CYAN}🌐 Abre esta URL en tu navegador:${NC}"
+    echo -e "${BLUE}http://$IP:$PANEL_PORT${NC}"
+fi
+EOF
+    
+    chmod +x /usr/local/bin/ceo
+    print_success "Comando 'ceo' creado - Ejecuta 'ceo' para abrir el panel"
+}
+
+cleanup() {
+    print_message "Limpiando archivos temporales..."
+    rm -rf /tmp/ceo-install
+    print_success "Limpieza completada"
+}
+
+test_panel() {
+    print_message "Probando panel localmente..."
+    
+    if [[ -f "$INSTALL_DIR/login.php" ]]; then
+        print_success "login.php encontrado"
+    else
+        print_warning "login.php no encontrado"
+    fi
+    
+    if [[ -f "$INSTALL_DIR/index.html" ]]; then
+        print_success "index.html encontrado"
+    else
+        print_warning "index.html no encontrado"
+    fi
+    
+    # Probar conexión local
+    if command -v curl &> /dev/null; then
+        curl -s http://localhost:$PANEL_PORT > /dev/null
+        if [[ $? -eq 0 ]]; then
+            print_success "Panel responde en localhost:$PANEL_PORT"
+        else
+            print_warning "No se pudo conectar a localhost:$PANEL_PORT"
+        fi
+    fi
+}
+
+show_summary() {
+    IP=$(curl -s ifconfig.me)
+    
+    echo ""
+    echo -e "${GREEN}╔════════════════════════════════════════════════════════════╗${NC}"
+    echo -e "${GREEN}║         INSTALACIÓN COMPLETADA EXITOSAMENTE               ║${NC}"
+    echo -e "${GREEN}╚════════════════════════════════════════════════════════════╝${NC}"
+    echo ""
+    echo -e "${PURPLE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo -e "${YELLOW}📋 DATOS DE ACCESO:${NC}"
+    echo -e "  ${CYAN}🌐 URL:${NC}       http://$IP:$PANEL_PORT"
+    echo -e "  ${CYAN}👤 Usuario:${NC}   $PANEL_USER"
+    echo -e "  ${CYAN}🔑 Contraseña:${NC} (la que ingresaste)"
+    echo -e "  ${CYAN}⚡ Comando:${NC}    ceo"
+    echo -e "${PURPLE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo ""
+    echo -e "${YELLOW}📂 RUTAS IMPORTANTES:${NC}"
+    echo -e "  ${CYAN}📁 Panel:${NC}      $INSTALL_DIR"
+    echo -e "  ${CYAN}📁 Logs:${NC}       $INSTALL_DIR/logs/"
+    echo -e "  ${CYAN}⚙️ Config:${NC}     $INSTALL_DIR/includes/config.php"
+    echo -e "${PURPLE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo ""
+    echo -e "${YELLOW}📊 COMANDOS ÚTILES:${NC}"
+    echo -e "  ${CYAN}▶ Ver logs:${NC}     tail -f $INSTALL_DIR/logs/panel.log"
+    echo -e "  ${CYAN}▶ Ver errores:${NC}  tail -f $INSTALL_DIR/logs/error.log"
+    echo -e "  ${CYAN}▶ Reiniciar:${NC}    systemctl restart nginx"
+    echo -e "  ${CYAN}▶ Abrir panel:${NC}  ceo"
+    echo -e "${PURPLE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo ""
+    echo -e "${GREEN}✅ Panel instalado por @ReyRs_VIPro${NC}"
+    echo -e "${YELLOW}⚠️  Guarda estos datos en un lugar seguro${NC}"
+    echo ""
+}
+
+# Función principal
+main() {
+    print_banner
+    check_root
+    check_system
+    get_config
+    install_dependencies
+    download_panel
+    configure_panel
+    configure_nginx
+    configure_firewall
+    set_permissions
+    create_command
+    test_panel
+    cleanup
+    show_summary
+    
+    log "Instalación completada exitosamente"
+    
+    # Preguntar si quiere abrir el panel ahora
+    echo ""
+    read -p "¿Quieres abrir el panel ahora? (s/n): " OPEN_NOW
+    if [[ "$OPEN_NOW" =~ ^[Ss]$ ]]; then
+        ceo
+    fi
+}
+
+# Ejecutar
+main
