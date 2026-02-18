@@ -4,7 +4,7 @@
 # CEO MANAGER PRO v2.0 - INSTALADOR AUTOMÁTICO
 # Author: @ReyRs_VIPro
 # Versión: 2.0
-# Enlace del Panel: https://github.com/RmXF/rsadm/raw/main/panelv2.zip
+# Enlace del Panel: https://github.com/RmXF/rsadm/raw/main/panelv2.3.zip
 # ====================================================
 
 # Colores
@@ -22,7 +22,7 @@ INSTALL_DIR="/var/www/ceo-manager"
 NGINX_CONF="/etc/nginx/sites-available/ceo-manager"
 LOG_FILE="/var/log/ceo-install.log"
 STATUS_FILE="/tmp/ceo-status.json"
-ZIP_URL="https://github.com/RmXF/rsadm/raw/main/panel2.2.zip"
+ZIP_URL="https://github.com/RmXF/rsadm/raw/main/panel2.3.zip"
 
 # Variables
 PANEL_USER=""
@@ -44,7 +44,7 @@ print_banner() {
     echo -e "${PURPLE}"
     echo "╔══════════════════════════════════════════════════════════════╗"
     echo "║                                                              ║"
-    echo "║              CEO MANAGER PRO v2.0 - INSTALADOR              ║"
+    echo "║              CEO MANAGER PRO v2.3 - INSTALADOR              ║"
     echo "║                                                              ║"
     echo "║                  Desarrollado por @ReyRs_VIPro              ║"
     echo "║                                                              ║"
