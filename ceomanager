@@ -22,7 +22,7 @@ INSTALL_DIR="/var/www/ceo-manager"
 NGINX_CONF="/etc/nginx/sites-available/ceo-manager"
 LOG_FILE="/var/log/ceo-install.log"
 STATUS_FILE="/tmp/ceo-status.json"
-ZIP_URL="https://github.com/RmXF/rsadm/raw/main/panelv2.2.zip"
+ZIP_URL="https://github.com/RmXF/rsadm/raw/main/panel2.2.zip"
 
 # Variables
 PANEL_USER=""
