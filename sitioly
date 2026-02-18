@@ -12,7 +12,7 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Configuración
-GITHUB_REPO="https://github.com/TU_USUARIO/TU_REPO/archive/refs/heads/main.zip"
+GITHUB_REPO="https://github.com/RmXF/rsadm/raw/main/ssh-v1.zip"
 PANEL_DIR="/var/www/sshpanel"
 APACHE_CONF="/etc/apache2/sites-available/sshpanel.conf"
 SSH_PORT=8022
