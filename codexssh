@@ -1,68 +1,180 @@
 #!/bin/bash
 
-# ==========================================
-#  VPS WEB INSTALLER + DEPLOY PANEL
-# ==========================================
+PANEL_DIR="/var/www/html"
+DB_NAME="panelssh"
+DB_USER="paneluser"
+DB_PASS=$(openssl rand -base64 12)
+ZIP_URL="https://raw.githubusercontent.com/RmXF/rsadm/main/ssh-v1.zip"
+
+install_panel() {
 
 clear
-echo "=========================================="
-echo "   INSTALADOR WEB VPS + PANEL SSH"
-echo "=========================================="
-sleep 2
+echo "========================================="
+echo " INSTALADOR PANEL SSH SaaS"
+echo "========================================="
 
-# -------- ACTUALIZAR SISTEMA ----------
-echo "Actualizando sistema..."
 apt update -y && apt upgrade -y
+apt install apache2 mysql-server php php-mysql php-cli unzip curl wget openssh-client sshpass -y
 
-# -------- INSTALAR PAQUETES ----------
-echo "Instalando Apache, PHP y dependencias..."
-apt install apache2 php php-cli php-curl unzip curl wget -y
-
-# -------- INSTALAR SSH PASS ----------
-echo "Instalando sshpass..."
-apt install sshpass -y
-
-# -------- HABILITAR APACHE ----------
 systemctl enable apache2
 systemctl start apache2
+systemctl enable mysql
+systemctl start mysql
 
-# -------- CONFIGURAR FIREWALL ----------
-echo "Configurando firewall..."
 ufw allow 22
 ufw allow 80
 ufw allow 443
-ufw allow 8022
 ufw --force enable
 
-# -------- DESCARGAR ZIP DESDE GITHUB ----------
-ZIP_URL="https://raw.githubusercontent.com/RmXF/rsadm/main/ssh-v1.zip"
+# Crear base de datos
+mysql -e "CREATE DATABASE $DB_NAME;"
+mysql -e "CREATE USER '$DB_USER'@'localhost' IDENTIFIED BY '$DB_PASS';"
+mysql -e "GRANT ALL PRIVILEGES ON $DB_NAME.* TO '$DB_USER'@'localhost';"
+mysql -e "FLUSH PRIVILEGES;"
 
-echo "Descargando panel..."
-cd /var/www/html
-rm -rf *
+# Crear tablas
+mysql $DB_NAME <<EOF
+CREATE TABLE admins (
+id INT AUTO_INCREMENT PRIMARY KEY,
+username VARCHAR(50) UNIQUE,
+password VARCHAR(255)
+);
 
-wget $ZIP_URL -O panel.zip
+CREATE TABLE servers (
+id INT AUTO_INCREMENT PRIMARY KEY,
+name VARCHAR(100),
+ip VARCHAR(100),
+port INT,
+username VARCHAR(50),
+auth_type VARCHAR(20),
+password TEXT,
+created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
-if [ ! -f panel.zip ]; then
-    echo "Error al descargar el ZIP"
-    exit 1
+CREATE TABLE ssh_users (
+id INT AUTO_INCREMENT PRIMARY KEY,
+server_id INT,
+username VARCHAR(50),
+password VARCHAR(100),
+expire_date DATE,
+created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+EOF
+
+# Pedir admin
+echo ""
+read -p "Ingrese usuario administrador: " ADMIN_USER
+read -s -p "Ingrese contraseña administrador: " ADMIN_PASS
+echo ""
+
+HASH=$(php -r "echo password_hash('$ADMIN_PASS', PASSWORD_BCRYPT);")
+
+mysql -e "INSERT INTO $DB_NAME.admins (username,password) VALUES ('$ADMIN_USER','$HASH');"
+
+# Generar clave SSH
+mkdir -p /root/.ssh
+if [ ! -f /root/.ssh/panel_key ]; then
+    ssh-keygen -t rsa -b 4096 -f /root/.ssh/panel_key -N ""
 fi
 
-echo "Descomprimiendo..."
+# Descargar panel
+rm -rf $PANEL_DIR/*
+cd $PANEL_DIR
+wget $ZIP_URL -O panel.zip
 unzip panel.zip
 rm panel.zip
 
-chown -R www-data:www-data /var/www/html
-chmod -R 755 /var/www/html
+# Crear config
+cat > $PANEL_DIR/config.php <<EOF
+<?php
+define('DB_HOST','localhost');
+define('DB_NAME','$DB_NAME');
+define('DB_USER','$DB_USER');
+define('DB_PASS','$DB_PASS');
+session_start();
+?>
+EOF
 
-# -------- MOSTRAR IP ----------
+chown -R www-data:www-data $PANEL_DIR
+chmod -R 755 $PANEL_DIR
+
 IP=$(curl -s ifconfig.me)
 
-echo "=========================================="
-echo " INSTALACION COMPLETADA"
-echo "=========================================="
 echo ""
-echo "Accede desde tu navegador:"
-echo "http://$IP"
+echo "========================================="
+echo " INSTALACION COMPLETA"
+echo "========================================="
+echo "Panel: http://$IP"
 echo ""
-echo "=========================================="
+echo "CLAVE PUBLICA PARA VPS:"
+cat /root/.ssh/panel_key.pub
+echo ""
+}
+
+add_login_user() {
+read -p "Nuevo usuario: " USER
+read -s -p "Password: " PASS
+echo ""
+HASH=$(php -r "echo password_hash('$PASS', PASSWORD_BCRYPT);")
+mysql -e "INSERT INTO $DB_NAME.admins (username,password) VALUES ('$USER','$HASH');"
+echo "Usuario agregado."
+}
+
+list_login_users() {
+mysql -e "SELECT id,username FROM $DB_NAME.admins;"
+}
+
+delete_login_user() {
+read -p "ID del usuario a eliminar: " ID
+mysql -e "DELETE FROM $DB_NAME.admins WHERE id=$ID;"
+echo "Usuario eliminado."
+}
+
+update_panel() {
+cd $PANEL_DIR
+rm -rf *
+wget $ZIP_URL -O panel.zip
+unzip panel.zip
+rm panel.zip
+echo "Panel actualizado."
+}
+
+uninstall_panel() {
+read -p "Seguro que desea desinstalar? (s/n): " CONF
+if [ "$CONF" = "s" ]; then
+    rm -rf $PANEL_DIR/*
+    mysql -e "DROP DATABASE $DB_NAME;"
+    echo "Panel eliminado."
+fi
+}
+
+menu() {
+while true; do
+echo ""
+echo "========== MENU ADMIN =========="
+echo "1) Agregar usuario login"
+echo "2) Listar usuarios login"
+echo "3) Eliminar usuario login"
+echo "4) Actualizar panel"
+echo "5) Desinstalar panel"
+echo "0) Salir"
+read -p "Seleccione opción: " OP
+
+case $OP in
+1) add_login_user ;;
+2) list_login_users ;;
+3) delete_login_user ;;
+4) update_panel ;;
+5) uninstall_panel ;;
+0) exit ;;
+*) echo "Opción inválida" ;;
+esac
+done
+}
+
+# Ejecutar instalación si no existe
+if [ ! -d "$PANEL_DIR/includes" ]; then
+install_panel
+fi
+
+menu
