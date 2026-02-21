@@ -15,7 +15,7 @@ NC='\033[0m'
 
 # Configuración
 WEB_ROOT="/var/www/html"
-INDEX_URL="https://raw.githubusercontent.com/tu-usuario/tu-repo/main/index.html" # CAMBIAR ESTA URL
+INDEX_URL="https://raw.githubusercontent.com/RmXF/rsadm/main/index.html" # CAMBIAR ESTA URL
 BACKUP_DIR="/root/backup_$(date +%Y%m%d_%H%M%S)"
 LOG_FILE="/root/install_$(date +%Y%m%d_%H%M%S).log"
 
