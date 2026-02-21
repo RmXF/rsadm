@@ -151,7 +151,7 @@ fi
 menu() {
 while true; do
 echo ""
-echo "========== MENU ADMIN =========="
+echo "========== MENU ADMIN v3=========="
 echo "1) Agregar usuario login"
 echo "2) Listar usuarios login"
 echo "3) Eliminar usuario login"
