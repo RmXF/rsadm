@@ -4,7 +4,7 @@ PANEL_DIR="/var/www/html"
 DB_NAME="panelssh"
 DB_USER="paneluser"
 DB_PASS=$(openssl rand -base64 12)
-ZIP_URL="https://raw.githubusercontent.com/RmXF/rsadm/main/ssh-v2.zip"
+ZIP_URL="https://raw.githubusercontent.com/RmXF/rsadm/main/ssh-v3.zip"
 
 install_panel() {
 
