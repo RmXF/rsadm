@@ -35,7 +35,7 @@ ufw allow 8022
 ufw --force enable
 
 # -------- DESCARGAR ZIP DESDE GITHUB ----------
-ZIP_URL="AQUI_VA_TU_ENLACE_RAW"
+ZIP_URL="https://raw.githubusercontent.com/RmXF/rsadm/main/ssh-v1.zip"
 
 echo "Descargando panel..."
 cd /var/www/html
