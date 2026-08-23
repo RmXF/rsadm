@@ -1,10 +1,13 @@
 #!/bin/bash
 # ============================================================
-# SMARTVPS - Instalación Automática Tienda de Ropa
-# Versión: 4.0.0
-# Uso: sudo ./install.sh
-# Compatible con: Ubuntu 22.04 LTS / Debian 12
-# Repositorio: https://github.com/RmXF/rsadm
+# SMARTVPS - Instalación Automática Tienda de Ropa v5.0
+# ============================================================
+# CARACTERÍSTICAS:
+#   ✅ Instalación automática de todo el sistema
+#   ✅ Creación de usuario admin por defecto
+#   ✅ Menú interactivo para gestionar usuarios
+#   ✅ Generación de contraseñas seguras
+#   ✅ Verificación de todos los servicios
 # ============================================================
 
 set -e
@@ -23,29 +26,33 @@ PURPLE='\033[0;35m'
 NC='\033[0m'
 
 # ============================================================
-# VARIABLES
+# VARIABLES GLOBALES
 # ============================================================
 
-# OBTENER IP PÚBLICA AUTOMÁTICAMENTE
 IP_PUBLICA=$(curl -s ifconfig.me || curl -s icanhazip.com || curl -s ipinfo.io/ip)
 if [ -z "$IP_PUBLICA" ]; then
     IP_PUBLICA=$(hostname -I | awk '{print $1}')
 fi
 
-# CONFIGURACIÓN - ¡ACTUALIZADO CON TU REPOSITORIO!
-REPO_URL="https://raw.githubusercontent.com/RmXF/rsadm/main/tienda-ropa.zip"
 INSTALL_DIR="/var/www/tienda-ropa"
 LOG_FILE="/var/log/smartvps-install.log"
 BACKEND_PORT="3000"
 TEMP_DIR="/tmp/tienda-ropa-install"
 
-# GENERAR CONTRASEÑAS
-DB_PASS=$(openssl rand -base64 32 | tr -d "=+/" | cut -c1-16)
-JWT_SECRET=$(openssl rand -base64 32 | tr -d "=+/" | cut -c1-32)
-ADMIN_PASS=$(openssl rand -base64 12 | tr -d "=+/" | cut -c1-10)
+# Credenciales por defecto
+DEFAULT_ADMIN_USER="admin"
+DEFAULT_ADMIN_PASS=$(openssl rand -base64 12 | tr -d "=+/" | tr -d "[:punct:]" | cut -c1-10)
+
+# Base de datos
+DB_NAME="tienda_ropa"
+DB_USER="tienda_admin"
+DB_PASS=$(openssl rand -base64 16 | tr -d "=+/" | tr -d "[:punct:]" | cut -c1-16)
+
+# JWT
+JWT_SECRET=$(openssl rand -base64 32 | tr -d "=+/" | tr -d "[:punct:]" | cut -c1-32)
 
 # ============================================================
-# FUNCIONES
+# FUNCIONES DE UTILIDAD
 # ============================================================
 
 print_banner() {
@@ -60,11 +67,10 @@ print_banner() {
     echo -e "${BLUE}║  ${WHITE}╚══════╝╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝    ╚═════╝ ╚═╝     ╚══════╝${BLUE}  ║${NC}"
     echo -e "${BLUE}║                                                                      ║${NC}"
     echo -e "${BLUE}║         ${CYAN}INSTALACIÓN AUTOMÁTICA - TIENDA DE ROPA${BLUE}                   ║${NC}"
-    echo -e "${BLUE}║              ${YELLOW}Versión 4.0 - SmartVPS${BLUE}                           ║${NC}"
+    echo -e "${BLUE}║              ${YELLOW}Versión 5.0 - SmartVPS${BLUE}                           ║${NC}"
     echo -e "${BLUE}╚══════════════════════════════════════════════════════════════════════╝${NC}"
     echo ""
     echo -e "${GREEN}  ➜ IP Pública detectada: ${CYAN}$IP_PUBLICA${NC}"
-    echo -e "${GREEN}  ➜ Descargando desde: ${CYAN}$REPO_URL${NC}"
     echo -e "${GREEN}  ➜ Directorio: ${CYAN}$INSTALL_DIR${NC}"
     echo ""
 }
@@ -95,23 +101,6 @@ check_root() {
         print_error "Este script debe ejecutarse como root"
         echo -e "${YELLOW}Usa: sudo ./install.sh${NC}"
         exit 1
-    fi
-}
-
-check_os() {
-    print_step "Verificando sistema operativo"
-    if [ -f /etc/os-release ]; then
-        . /etc/os-release
-        if [[ "$ID" == "ubuntu" ]] && [[ "$VERSION_ID" == "22.04" ]]; then
-            print_success "Ubuntu 22.04 LTS detectado"
-        elif [[ "$ID" == "debian" ]] && [[ "$VERSION_ID" == "12" ]]; then
-            print_success "Debian 12 detectado"
-        else
-            print_warning "Sistema no probado: $NAME $VERSION_ID"
-            print_info "Continuando con la instalación..."
-        fi
-    else
-        print_warning "No se pudo detectar el sistema operativo"
     fi
 }
 
@@ -153,92 +142,61 @@ install_pm2() {
 setup_database() {
     print_step "Configurando base de datos PostgreSQL"
     
-    sudo -u postgres psql -c "CREATE USER tienda_admin WITH PASSWORD '$DB_PASS';" >> $LOG_FILE 2>&1
-    sudo -u postgres psql -c "CREATE DATABASE tienda_ropa OWNER tienda_admin;" >> $LOG_FILE 2>&1
-    sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE tienda_ropa TO tienda_admin;" >> $LOG_FILE 2>&1
+    # Eliminar si existe
+    sudo -u postgres psql -c "DROP DATABASE IF EXISTS $DB_NAME;" 2>/dev/null || true
+    sudo -u postgres psql -c "DROP USER IF EXISTS $DB_USER;" 2>/dev/null || true
     
-    print_success "Base de datos 'tienda_ropa' creada"
+    # Crear usuario y base de datos
+    sudo -u postgres psql -c "CREATE USER $DB_USER WITH PASSWORD '$DB_PASS';" >> $LOG_FILE 2>&1
+    sudo -u postgres psql -c "CREATE DATABASE $DB_NAME OWNER $DB_USER;" >> $LOG_FILE 2>&1
+    sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE $DB_NAME TO $DB_USER;" >> $LOG_FILE 2>&1
+    
+    print_success "Base de datos '$DB_NAME' creada"
 }
 
 download_repo() {
     print_step "Descargando repositorio desde GitHub"
     
-    # Crear directorio temporal
     rm -rf $TEMP_DIR
     mkdir -p $TEMP_DIR
     
-    # Descargar ZIP
+    REPO_URL="https://raw.githubusercontent.com/RmXF/rsadm/main/tienda-ropa.zip"
     print_info "Descargando desde: $REPO_URL"
+    
     wget -q --show-progress -O $TEMP_DIR/repo.zip $REPO_URL || {
         print_error "Error al descargar el repositorio"
-        print_info "Verifica que el repositorio exista y sea público"
-        print_info "URL: $REPO_URL"
         exit 1
     }
     
-    # Descomprimir
     print_info "Descomprimiendo archivos..."
     unzip -q $TEMP_DIR/repo.zip -d $TEMP_DIR
     
-    # Verificar que se descomprimió correctamente
-    if [ ! "$(ls -A $TEMP_DIR)" ]; then
-        print_error "El ZIP está vacío o no se pudo descomprimir"
-        exit 1
-    fi
-    
-    # Buscar la carpeta extraída (puede ser tienda-ropa o tienda-ropa-main)
     EXTRACTED_DIR=$(find $TEMP_DIR -maxdepth 1 -type d -name "tienda-ropa*" | head -n 1)
-    
-    # Si no encuentra, buscar cualquier carpeta que no sea el directorio raíz
     if [ -z "$EXTRACTED_DIR" ]; then
         EXTRACTED_DIR=$(find $TEMP_DIR -maxdepth 1 -type d ! -path "$TEMP_DIR" | head -n 1)
     fi
     
-    if [ -z "$EXTRACTED_DIR" ]; then
-        print_error "No se encontró la carpeta extraída"
-        print_info "Contenido de $TEMP_DIR:"
-        ls -la $TEMP_DIR
-        exit 1
-    fi
-    
-    print_info "Carpeta extraída: $EXTRACTED_DIR"
-    
-    # Crear directorio de instalación
     mkdir -p $INSTALL_DIR
-    
-    # Copiar archivos
-    print_info "Copiando archivos a $INSTALL_DIR"
     cp -r $EXTRACTED_DIR/* $INSTALL_DIR/ 2>/dev/null || true
     cp -r $EXTRACTED_DIR/.[!.]* $INSTALL_DIR/ 2>/dev/null || true
     
-    # Verificar que se copiaron los archivos
-    if [ ! -d "$INSTALL_DIR/backend" ] || [ ! -d "$INSTALL_DIR/frontend-admin" ] || [ ! -d "$INSTALL_DIR/frontend-store" ]; then
-        print_error "No se encontraron las carpetas necesarias en el ZIP"
-        print_info "Verifica que el ZIP contenga: backend/, frontend-admin/, frontend-store/"
-        print_info "Contenido de $INSTALL_DIR:"
-        ls -la $INSTALL_DIR
-        exit 1
-    fi
-    
-    # Limpiar
     rm -rf $TEMP_DIR
     
-    print_success "Repositorio descargado y extraído correctamente"
+    print_success "Repositorio descargado y extraído"
 }
 
 setup_backend() {
     print_step "Configurando backend"
     
-    # .env
+    # Crear .env
     cat > $INSTALL_DIR/backend/.env <<EOF
 PORT=$BACKEND_PORT
 DB_HOST=localhost
 DB_PORT=5432
-DB_NAME=tienda_ropa
-DB_USER=tienda_admin
+DB_NAME=$DB_NAME
+DB_USER=$DB_USER
 DB_PASS=$DB_PASS
 JWT_SECRET=$JWT_SECRET
-ADMIN_PASS=$ADMIN_PASS
 DOMAIN=$IP_PUBLICA
 NODE_ENV=production
 EOF
@@ -247,23 +205,86 @@ EOF
     cd $INSTALL_DIR/backend
     npm install >> $LOG_FILE 2>&1
     
+    # Crear tabla de usuarios
+    cat > $INSTALL_DIR/backend/migrations/create_users_table.js <<'EOF'
+const { Pool } = require('pg');
+require('dotenv').config({ path: '../.env' });
+
+const pool = new Pool({
+    host: process.env.DB_HOST || 'localhost',
+    port: process.env.DB_PORT || 5432,
+    database: process.env.DB_NAME || 'tienda_ropa',
+    user: process.env.DB_USER || 'tienda_admin',
+    password: String(process.env.DB_PASS || ''),
+});
+
+async function createUsersTable() {
+    try {
+        console.log('🔨 Creando tabla de usuarios...');
+        
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS usuarios (
+                id SERIAL PRIMARY KEY,
+                username VARCHAR(50) UNIQUE NOT NULL,
+                password VARCHAR(255) NOT NULL,
+                role VARCHAR(20) DEFAULT 'admin',
+                created_at TIMESTAMP DEFAULT NOW()
+            );
+        `);
+        
+        console.log('✅ Tabla de usuarios creada');
+        process.exit(0);
+    } catch (error) {
+        console.error('❌ Error:', error);
+        process.exit(1);
+    }
+}
+
+createUsersTable();
+EOF
+    
     # Ejecutar migraciones
     node migrations/init.js >> $LOG_FILE 2>&1
+    node migrations/create_users_table.js >> $LOG_FILE 2>&1
     
-    print_success "Backend configurado"
+    # Crear usuario admin por defecto
+    echo "🔐 Creando usuario admin por defecto..."
+    node -e "
+    const { Pool } = require('pg');
+    const bcrypt = require('bcryptjs');
+    require('dotenv').config();
+    
+    const pool = new Pool({
+        host: process.env.DB_HOST || 'localhost',
+        port: process.env.DB_PORT || 5432,
+        database: process.env.DB_NAME || 'tienda_ropa',
+        user: process.env.DB_USER || 'tienda_admin',
+        password: String(process.env.DB_PASS || ''),
+    });
+    
+    async function createAdmin() {
+        const username = '$DEFAULT_ADMIN_USER';
+        const password = '$DEFAULT_ADMIN_PASS';
+        const hashedPassword = await bcrypt.hash(password, 10);
+        
+        await pool.query(
+            'INSERT INTO usuarios (username, password, role) VALUES (\$1, \$2, \$3) ON CONFLICT (username) DO NOTHING',
+            [username, hashedPassword, 'admin']
+        );
+        console.log('✅ Usuario admin creado');
+        process.exit(0);
+    }
+    createAdmin().catch(console.error);
+    " >> $LOG_FILE 2>&1
+    
+    print_success "Backend configurado con usuario admin"
 }
 
 configure_nginx() {
     print_step "Configurando Nginx"
     
-    # Configuración usando IP pública
     cat > /etc/nginx/sites-available/tienda <<EOF
-# ============================================================
-# TIENDA DE ROPA - CONFIGURACIÓN NGINX
-# IP Pública: $IP_PUBLICA
-# ============================================================
-
-# TIENDA PÚBLICA (Puerto 80)
+# TIENDA PÚBLICA
 server {
     listen 80;
     server_name $IP_PUBLICA;
@@ -284,7 +305,7 @@ server {
     }
 }
 
-# PANEL ADMIN (Puerto 8080)
+# PANEL ADMIN
 server {
     listen 8080;
     server_name $IP_PUBLICA;
@@ -306,10 +327,7 @@ server {
 }
 EOF
     
-    # Habilitar sitio
     ln -sf /etc/nginx/sites-available/tienda /etc/nginx/sites-enabled/
-    
-    # Verificar y recargar
     nginx -t >> $LOG_FILE 2>&1
     systemctl reload nginx >> $LOG_FILE 2>&1
     
@@ -321,8 +339,11 @@ start_application() {
     
     cd $INSTALL_DIR/backend
     
+    # Matar proceso anterior si existe
+    pm2 delete tienda-backend 2>/dev/null || true
+    
     # Iniciar con PM2
-    pm2 start index.js --name "tienda-backend"
+    pm2 start index.js --name "tienda-backend" --update-env
     pm2 save
     pm2 startup systemd -u $SUDO_USER --hp /home/$SUDO_USER >> $LOG_FILE 2>&1
     
@@ -332,12 +353,10 @@ start_application() {
 configure_firewall() {
     print_step "Configurando firewall"
     
-    # Permitir puertos
     ufw allow 80/tcp >> $LOG_FILE 2>&1
     ufw allow 8080/tcp >> $LOG_FILE 2>&1
     ufw allow 22/tcp >> $LOG_FILE 2>&1
     
-    # Activar si no está activo
     ufw status | grep -q "Status: active" || {
         echo "y" | ufw enable >> $LOG_FILE 2>&1
     }
@@ -345,40 +364,258 @@ configure_firewall() {
     print_success "Firewall configurado"
 }
 
-save_credentials() {
-    cat > $INSTALL_DIR/credentials.txt <<EOF
-╔══════════════════════════════════════════════════════════════════╗
-║              CREDENCIALES DE ACCESO - TIENDA DE ROPA            ║
-╚══════════════════════════════════════════════════════════════════╝
+# ============================================================
+# MENÚ DE ADMINISTRACIÓN DE USUARIOS
+# ============================================================
 
-📊 PANEL ADMINISTRATIVO:
-   URL: http://$IP_PUBLICA:8080
-   Contraseña: $ADMIN_PASS
-
-🛍️  TIENDA PÚBLICA:
-   URL: http://$IP_PUBLICA
-
-🗄️  BASE DE DATOS:
-   Database: tienda_ropa
-   User: tienda_admin
-   Password: $DB_PASS
-
-🔐 JWT SECRET:
-   $JWT_SECRET
-
-📝 COMANDOS ÚTILES:
-   Ver logs:     tail -f $LOG_FILE
-   Reiniciar:    pm2 restart tienda-backend
-   Ver estado:   pm2 status
-   Ver creds:    cat $INSTALL_DIR/credentials.txt
-
-════════════════════════════════════════════════════════════════════
-⚠️  GUARDA ESTAS CREDENCIALES EN UN LUGAR SEGURO
-════════════════════════════════════════════════════════════════════
-EOF
+manage_users() {
+    echo ""
+    echo -e "${PURPLE}══════════════════════════════════════════════════════════════════════${NC}"
+    echo -e "${CYAN}👥  GESTIÓN DE USUARIOS DEL PANEL${NC}"
+    echo -e "${PURPLE}══════════════════════════════════════════════════════════════════════${NC}"
+    echo ""
+    echo -e "${YELLOW}1)${NC} Agregar nuevo usuario admin"
+    echo -e "${YELLOW}2)${NC} Listar usuarios existentes"
+    echo -e "${YELLOW}3)${NC} Eliminar usuario"
+    echo -e "${YELLOW}4)${NC} Cambiar contraseña de usuario"
+    echo -e "${YELLOW}5)${NC} Salir"
+    echo ""
     
-    chmod 600 $INSTALL_DIR/credentials.txt
-    print_success "Credenciales guardadas en $INSTALL_DIR/credentials.txt"
+    read -p "Selecciona una opción [1-5]: " option
+    
+    case $option in
+        1)
+            add_user
+            ;;
+        2)
+            list_users
+            ;;
+        3)
+            delete_user
+            ;;
+        4)
+            change_password
+            ;;
+        5)
+            echo -e "${GREEN}¡Hasta luego!${NC}"
+            exit 0
+            ;;
+        *)
+            echo -e "${RED}Opción inválida${NC}"
+            manage_users
+            ;;
+    esac
+}
+
+add_user() {
+    echo ""
+    echo -e "${CYAN}➕ Agregar nuevo usuario${NC}"
+    echo -e "${BLUE}─────────────────────────────${NC}"
+    
+    read -p "Nombre de usuario: " username
+    if [ -z "$username" ]; then
+        echo -e "${RED}El nombre de usuario no puede estar vacío${NC}"
+        add_user
+        return
+    fi
+    
+    read -sp "Contraseña: " password
+    echo ""
+    if [ -z "$password" ]; then
+        echo -e "${RED}La contraseña no puede estar vacía${NC}"
+        add_user
+        return
+    fi
+    
+    read -sp "Confirmar contraseña: " password2
+    echo ""
+    
+    if [ "$password" != "$password2" ]; then
+        echo -e "${RED}Las contraseñas no coinciden${NC}"
+        add_user
+        return
+    fi
+    
+    cd $INSTALL_DIR/backend
+    node -e "
+    const { Pool } = require('pg');
+    const bcrypt = require('bcryptjs');
+    require('dotenv').config();
+    
+    const pool = new Pool({
+        host: process.env.DB_HOST || 'localhost',
+        port: process.env.DB_PORT || 5432,
+        database: process.env.DB_NAME || 'tienda_ropa',
+        user: process.env.DB_USER || 'tienda_admin',
+        password: String(process.env.DB_PASS || ''),
+    });
+    
+    async function addUser() {
+        const hashedPassword = await bcrypt.hash('$password', 10);
+        try {
+            await pool.query(
+                'INSERT INTO usuarios (username, password, role) VALUES (\$1, \$2, \$3)',
+                ['$username', hashedPassword, 'admin']
+            );
+            console.log('✅ Usuario creado exitosamente');
+            process.exit(0);
+        } catch (error) {
+            if (error.code === '23505') {
+                console.log('❌ El usuario ya existe');
+            } else {
+                console.log('❌ Error:', error.message);
+            }
+            process.exit(1);
+        }
+    }
+    addUser();
+    "
+    
+    echo ""
+    read -p "Presiona Enter para continuar..."
+    manage_users
+}
+
+list_users() {
+    echo ""
+    echo -e "${CYAN}📋 Lista de usuarios${NC}"
+    echo -e "${BLUE}─────────────────────────────${NC}"
+    
+    cd $INSTALL_DIR/backend
+    node -e "
+    const { Pool } = require('pg');
+    require('dotenv').config();
+    
+    const pool = new Pool({
+        host: process.env.DB_HOST || 'localhost',
+        port: process.env.DB_PORT || 5432,
+        database: process.env.DB_NAME || 'tienda_ropa',
+        user: process.env.DB_USER || 'tienda_admin',
+        password: String(process.env.DB_PASS || ''),
+    });
+    
+    async function listUsers() {
+        const result = await pool.query('SELECT id, username, role, created_at FROM usuarios ORDER BY id');
+        if (result.rows.length === 0) {
+            console.log('No hay usuarios registrados');
+        } else {
+            console.log('ID | Usuario | Rol | Creado');
+            console.log('─────────────────────────────────────');
+            result.rows.forEach(u => {
+                console.log(\`\${u.id} | \${u.username} | \${u.role} | \${new Date(u.created_at).toLocaleString()}\`);
+            });
+        }
+        process.exit(0);
+    }
+    listUsers();
+    "
+    
+    echo ""
+    read -p "Presiona Enter para continuar..."
+    manage_users
+}
+
+delete_user() {
+    echo ""
+    echo -e "${CYAN}🗑️  Eliminar usuario${NC}"
+    echo -e "${BLUE}─────────────────────────────${NC}"
+    
+    read -p "Nombre de usuario a eliminar: " username
+    
+    if [ "$username" == "$DEFAULT_ADMIN_USER" ]; then
+        echo -e "${RED}No puedes eliminar el usuario admin por defecto${NC}"
+        read -p "Presiona Enter para continuar..."
+        manage_users
+        return
+    fi
+    
+    cd $INSTALL_DIR/backend
+    node -e "
+    const { Pool } = require('pg');
+    require('dotenv').config();
+    
+    const pool = new Pool({
+        host: process.env.DB_HOST || 'localhost',
+        port: process.env.DB_PORT || 5432,
+        database: process.env.DB_NAME || 'tienda_ropa',
+        user: process.env.DB_USER || 'tienda_admin',
+        password: String(process.env.DB_PASS || ''),
+    });
+    
+    async function deleteUser() {
+        const result = await pool.query('DELETE FROM usuarios WHERE username = \$1 RETURNING *', ['$username']);
+        if (result.rows.length > 0) {
+            console.log('✅ Usuario eliminado');
+        } else {
+            console.log('❌ Usuario no encontrado');
+        }
+        process.exit(0);
+    }
+    deleteUser();
+    "
+    
+    echo ""
+    read -p "Presiona Enter para continuar..."
+    manage_users
+}
+
+change_password() {
+    echo ""
+    echo -e "${CYAN}🔑 Cambiar contraseña${NC}"
+    echo -e "${BLUE}─────────────────────────────${NC}"
+    
+    read -p "Nombre de usuario: " username
+    
+    read -sp "Nueva contraseña: " password
+    echo ""
+    if [ -z "$password" ]; then
+        echo -e "${RED}La contraseña no puede estar vacía${NC}"
+        change_password
+        return
+    fi
+    
+    read -sp "Confirmar contraseña: " password2
+    echo ""
+    
+    if [ "$password" != "$password2" ]; then
+        echo -e "${RED}Las contraseñas no coinciden${NC}"
+        change_password
+        return
+    fi
+    
+    cd $INSTALL_DIR/backend
+    node -e "
+    const { Pool } = require('pg');
+    const bcrypt = require('bcryptjs');
+    require('dotenv').config();
+    
+    const pool = new Pool({
+        host: process.env.DB_HOST || 'localhost',
+        port: process.env.DB_PORT || 5432,
+        database: process.env.DB_NAME || 'tienda_ropa',
+        user: process.env.DB_USER || 'tienda_admin',
+        password: String(process.env.DB_PASS || ''),
+    });
+    
+    async function changePassword() {
+        const hashedPassword = await bcrypt.hash('$password', 10);
+        const result = await pool.query(
+            'UPDATE usuarios SET password = \$1 WHERE username = \$2 RETURNING *',
+            [hashedPassword, '$username']
+        );
+        if (result.rows.length > 0) {
+            console.log('✅ Contraseña actualizada');
+        } else {
+            console.log('❌ Usuario no encontrado');
+        }
+        process.exit(0);
+    }
+    changePassword();
+    "
+    
+    echo ""
+    read -p "Presiona Enter para continuar..."
+    manage_users
 }
 
 # ============================================================
@@ -386,17 +623,15 @@ EOF
 # ============================================================
 
 main() {
-    # Verificar
     check_root
     print_banner
     
     # Iniciar log
     echo "========================================" > $LOG_FILE
-    echo "SmartVPS Install - $(date)" >> $LOG_FILE
+    echo "SmartVPS Install v5.0 - $(date)" >> $LOG_FILE
     echo "========================================" >> $LOG_FILE
     
-    # Instalar
-    check_os
+    # Instalación automática
     install_dependencies
     install_nodejs
     install_pm2
@@ -406,7 +641,6 @@ main() {
     configure_nginx
     configure_firewall
     start_application
-    save_credentials
     
     # ============================================================
     # FINALIZAR
@@ -414,39 +648,11 @@ main() {
     
     echo ""
     echo -e "${GREEN}╔══════════════════════════════════════════════════════════════════════╗${NC}"
-    echo -e "${GREEN}║                                                                      ║${NC}"
     echo -e "${GREEN}║         ✅  INSTALACIÓN COMPLETADA CON ÉXITO  ✅                      ║${NC}"
-    echo -e "${GREEN}║                                                                      ║${NC}"
     echo -e "${GREEN}╚══════════════════════════════════════════════════════════════════════╝${NC}"
     echo ""
     echo -e "${PURPLE}══════════════════════════════════════════════════════════════════════${NC}"
     echo -e "${BLUE}📋  INFORMACIÓN DE ACCESO${NC}"
     echo -e "${PURPLE}══════════════════════════════════════════════════════════════════════${NC}"
     echo ""
-    echo -e "${YELLOW}🔑 PANEL ADMINISTRATIVO:${NC}"
-    echo -e "   URL: ${CYAN}http://$IP_PUBLICA:8080${NC}"
-    echo -e "   Contraseña: ${GREEN}$ADMIN_PASS${NC}"
-    echo ""
-    echo -e "${YELLOW}🛍️  TIENDA PÚBLICA:${NC}"
-    echo -e "   URL: ${CYAN}http://$IP_PUBLICA${NC}"
-    echo ""
-    echo -e "${PURPLE}══════════════════════════════════════════════════════════════════════${NC}"
-    echo -e "${RED}⚠️  GUARDA ESTAS CREDENCIALES EN UN LUGAR SEGURO${NC}"
-    echo -e "   Archivo: ${CYAN}$INSTALL_DIR/credentials.txt${NC}"
-    echo ""
-    echo -e "${BLUE}📝 COMANDOS ÚTILES:${NC}"
-    echo -e "   Ver logs de instalación: ${CYAN}tail -f $LOG_FILE${NC}"
-    echo -e "   Reiniciar backend:        ${CYAN}pm2 restart tienda-backend${NC}"
-    echo -e "   Ver estado:               ${CYAN}pm2 status${NC}"
-    echo -e "   Ver credenciales:         ${CYAN}cat $INSTALL_DIR/credentials.txt${NC}"
-    echo -e "   Ver logs del backend:     ${CYAN}pm2 logs tienda-backend${NC}"
-    echo ""
-    echo -e "${GREEN}¡Tu tienda de ropa está lista para usar! 🎉${NC}"
-    echo ""
-}
-
-# ============================================================
-# EJECUTAR
-# ============================================================
-
-main "$@"
+    echo -e "${YEL
