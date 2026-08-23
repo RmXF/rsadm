@@ -4,6 +4,7 @@
 # Versión: 4.0.0
 # Uso: sudo ./install.sh
 # Compatible con: Ubuntu 22.04 LTS / Debian 12
+# Repositorio: https://github.com/RmXF/rsadm
 # ============================================================
 
 set -e
@@ -31,10 +32,8 @@ if [ -z "$IP_PUBLICA" ]; then
     IP_PUBLICA=$(hostname -I | awk '{print $1}')
 fi
 
-# CONFIGURACIÓN
-GITHUB_USER="tu-usuario"  # CAMBIAR POR TU USUARIO DE GITHUB
-REPO_NAME="tienda-ropa"
-REPO_URL="https://github.com/$GITHUB_USER/$REPO_NAME/archive/refs/heads/main.zip"
+# CONFIGURACIÓN - ¡ACTUALIZADO CON TU REPOSITORIO!
+REPO_URL="https://raw.githubusercontent.com/RmXF/rsadm/main/tienda-ropa.zip"
 INSTALL_DIR="/var/www/tienda-ropa"
 LOG_FILE="/var/log/smartvps-install.log"
 BACKEND_PORT="3000"
@@ -65,7 +64,7 @@ print_banner() {
     echo -e "${BLUE}╚══════════════════════════════════════════════════════════════════════╝${NC}"
     echo ""
     echo -e "${GREEN}  ➜ IP Pública detectada: ${CYAN}$IP_PUBLICA${NC}"
-    echo -e "${GREEN}  ➜ Repositorio: ${CYAN}$REPO_URL${NC}"
+    echo -e "${GREEN}  ➜ Descargando desde: ${CYAN}$REPO_URL${NC}"
     echo -e "${GREEN}  ➜ Directorio: ${CYAN}$INSTALL_DIR${NC}"
     echo ""
 }
@@ -173,6 +172,7 @@ download_repo() {
     wget -q --show-progress -O $TEMP_DIR/repo.zip $REPO_URL || {
         print_error "Error al descargar el repositorio"
         print_info "Verifica que el repositorio exista y sea público"
+        print_info "URL: $REPO_URL"
         exit 1
     }
     
@@ -180,26 +180,50 @@ download_repo() {
     print_info "Descomprimiendo archivos..."
     unzip -q $TEMP_DIR/repo.zip -d $TEMP_DIR
     
-    # Encontrar la carpeta extraída (tiene nombre con hash)
-    EXTRACTED_DIR=$(find $TEMP_DIR -maxdepth 1 -type d -name "$REPO_NAME-*" | head -n 1)
+    # Verificar que se descomprimió correctamente
+    if [ ! "$(ls -A $TEMP_DIR)" ]; then
+        print_error "El ZIP está vacío o no se pudo descomprimir"
+        exit 1
+    fi
+    
+    # Buscar la carpeta extraída (puede ser tienda-ropa o tienda-ropa-main)
+    EXTRACTED_DIR=$(find $TEMP_DIR -maxdepth 1 -type d -name "tienda-ropa*" | head -n 1)
+    
+    # Si no encuentra, buscar cualquier carpeta que no sea el directorio raíz
+    if [ -z "$EXTRACTED_DIR" ]; then
+        EXTRACTED_DIR=$(find $TEMP_DIR -maxdepth 1 -type d ! -path "$TEMP_DIR" | head -n 1)
+    fi
     
     if [ -z "$EXTRACTED_DIR" ]; then
         print_error "No se encontró la carpeta extraída"
+        print_info "Contenido de $TEMP_DIR:"
+        ls -la $TEMP_DIR
         exit 1
     fi
+    
+    print_info "Carpeta extraída: $EXTRACTED_DIR"
     
     # Crear directorio de instalación
     mkdir -p $INSTALL_DIR
     
     # Copiar archivos
     print_info "Copiando archivos a $INSTALL_DIR"
-    cp -r $EXTRACTED_DIR/* $INSTALL_DIR/
+    cp -r $EXTRACTED_DIR/* $INSTALL_DIR/ 2>/dev/null || true
     cp -r $EXTRACTED_DIR/.[!.]* $INSTALL_DIR/ 2>/dev/null || true
+    
+    # Verificar que se copiaron los archivos
+    if [ ! -d "$INSTALL_DIR/backend" ] || [ ! -d "$INSTALL_DIR/frontend-admin" ] || [ ! -d "$INSTALL_DIR/frontend-store" ]; then
+        print_error "No se encontraron las carpetas necesarias en el ZIP"
+        print_info "Verifica que el ZIP contenga: backend/, frontend-admin/, frontend-store/"
+        print_info "Contenido de $INSTALL_DIR:"
+        ls -la $INSTALL_DIR
+        exit 1
+    fi
     
     # Limpiar
     rm -rf $TEMP_DIR
     
-    print_success "Repositorio descargado y extraído"
+    print_success "Repositorio descargado y extraído correctamente"
 }
 
 setup_backend() {
@@ -279,13 +303,6 @@ server {
         proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto \$scheme;
     }
-}
-
-# REDIRECCIÓN 80 → 8080 para el panel
-server {
-    listen 80;
-    server_name panel.$IP_PUBLICA;
-    return 301 http://$IP_PUBLICA:8080;
 }
 EOF
     
